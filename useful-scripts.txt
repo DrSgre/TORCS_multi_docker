@@ -1,1 +1,2 @@
 ENABLE DISPLAY LOCAL: sudo xhost local:root
+CHECK CONTAINER IP: docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' <container-ID>

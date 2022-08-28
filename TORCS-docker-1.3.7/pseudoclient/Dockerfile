@@ -18,7 +18,7 @@ RUN git clone --recursive https://github.com/DrSgre/TORCS_multi_docker
 
 WORKDIR TORCS_multi_docker/scr-client-cpp
 
-RUN make
+RUN make clean && make
 
-CMD ./client host:172.23.0.3 port:3001
+CMD ./client host:172.23.0.2 port:3001
 

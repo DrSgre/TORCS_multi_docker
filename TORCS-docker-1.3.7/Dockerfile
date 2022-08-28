@@ -45,14 +45,13 @@ RUN ls
 
 RUN ./configure --prefix=$(pwd)/BUILD
 
-RUN make && make install && make datainstall
+RUN make clean && make && make install && make datainstall
 
 RUN ["chmod", "755", "./BUILD/bin/torcs"]
 
-WORKDIR /tmp/torcs-1.3.7-patched/BUILD/bin/
+WORKDIR /tmp/TORCS_multi_docker/torcs-1.3.7-patched/BUILD/bin/
 
 CMD sudo ./torcs
-
 
 ## DISCARDED DISPLAY MANAGEMENT
 

@@ -1,2 +1,0 @@
-docker run -it --entrypoint "/bin/bash" ubuntu:20.04
-docker network connect torcs-docker-137_default 0289acb4fd23
