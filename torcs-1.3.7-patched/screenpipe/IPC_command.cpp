@@ -57,7 +57,7 @@ int main(int argc, char const *argv[])
         fprintf(stderr, "shmat failed\n");  
         exit(EXIT_FAILURE);  
     }  
-    printf("\n********** Memory sharing started, attached at blablabal %X **********\n", shm);
+    printf("\n********** Memory sharing started, attached at blablabal %X **********\n", shmid);
 
     shared = (struct shared_use_st*)shm; 
     shared->written = 0;
@@ -71,9 +71,14 @@ int main(int argc, char const *argv[])
 
     // Setup zmq
     static zmq::context_t context(1);
-    static zmq::socket_t socket(context, ZMQ_PAIR);
+    static zmq::socket_t socket(context, ZMQ_PUB);
     printf("binding to socket\n");
-    socket.bind("tcp://*:5555");
+    try {
+        socket.bind("tcp://*:5555");
+    }
+    catch (error_t) {
+        printf("error binding to socket");
+    }
     printf("done\n");
     TorcsData torcs_data;
     unsigned char image[resize_width*resize_height * 3];
@@ -98,12 +103,12 @@ int main(int argc, char const *argv[])
                    screenRGB->imageData[(h*image_width+w)*3+0]=shared->data[((image_height-h-1)*image_width+w)*3+2];
                 }
             }
-            //printf("---screenRGB read complete.\n");
+            printf("---screenRGB read complete.\n");
             // Resize image and send it as protobuf message
             cvResize(screenRGB, resizeRGB);
             cvSplit(resizeRGB, out_blue, out_green, out_red, NULL);
 
-            // printf("---image read complete.\n");
+            printf("---image read complete.\n");
             torcs_data.clear_width();
             torcs_data.clear_height();
             torcs_data.clear_red();
@@ -116,13 +121,13 @@ int main(int argc, char const *argv[])
             torcs_data.add_width(resize_width);
             torcs_data.add_height(resize_height);
             torcs_data.add_save_flag(shared->save_flag);
-            //cout << "torcs_data shape: [" << torcs_data.width(0) << ", " << torcs_data.height(0) << "]" << endl;
+            cout << "torcs_data shape: [" << torcs_data.width(0) << ", " << torcs_data.height(0) << "]" << endl;
 
             cvShowImage("Image from TORCS", resizeRGB);
 
             string serialized_data;
             torcs_data.SerializeToString(&serialized_data);
-            std::cout << "I want to write!";
+            cout << "I want to write!" << std::endl;
 //            pplx::task<etcd::Response> response_task = etcd.set("/test/shared", serialized_data);
 //            try
 //            {
@@ -144,11 +149,11 @@ int main(int argc, char const *argv[])
             //std::cout << "Recived from client: " + replyMessage << std::endl;*/
 
             zmq::message_t reply(serialized_data.size());
-            // std::cout << "checked OK!  2" << std::endl;
+            std::cout << "checked OK!  2" << std::endl;
             memcpy((void*) reply.data(), serialized_data.data(), serialized_data.size());
-            //std::cout << "---length of message to client: " << reply.size() << std::endl;
-            socket.send(reply);
-
+            std::cout << "---length of message to client: " << reply.size() << std::endl;
+            socket.send(reply, zmq::send_flags::none);
+            std::cout << "message sent(?)" << std::endl;
             shared->written=0;
         }
 

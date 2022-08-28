@@ -13,11 +13,10 @@ import cv2
 # import h5py
 
 context = zmq.Context()
-socket = context.socket(zmq.REQ)
+socket = context.socket(zmq.SUB)
 port = "5555"
 socket.connect("tcp://localhost:5555")
 print("Connecting to server tcp://localhost:5555")
-
 # Set up protobuf class
 serialized_data = torcs_data_pb2.TorcsData()
 
@@ -27,7 +26,7 @@ image_dataset = []
 
 while True:
     # Receive data and parse it
-    socket.send_string("LD")
+    # socket.send_string("LD")
     message = socket.recv()
     serialized_data.ParseFromString(message)
 

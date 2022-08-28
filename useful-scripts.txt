@@ -1,2 +1,3 @@
 ENABLE DISPLAY LOCAL: sudo xhost local:root
+FIX GITHUB: export GCM_CREDENTIAL_STORE=cache
 CHECK CONTAINER IP: docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' <container-ID>
