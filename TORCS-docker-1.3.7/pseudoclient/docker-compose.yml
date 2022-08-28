@@ -1,7 +1,11 @@
 version: "3"
 
+networks:
+  torcs-docker-137_net-torcs:
+    external: true
+
 services:
-  app:
+  client:
     image: my-client:latest
     build: .
     privileged: true
@@ -11,3 +15,5 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix
     ports:
       - "8001:8001"
+    networks:
+      - torcs-docker-137_net-torcs

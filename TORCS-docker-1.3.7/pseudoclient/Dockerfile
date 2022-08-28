@@ -1,7 +1,24 @@
 FROM ubuntu:20.04
 
-RUN apt-get update && apt-get install -y openssh-server
+ARG DEBIAN_FRONTEND=noninteractive
 
-RUN ssh-keygen -A && mkdir -p /run/sshd
+RUN apt-get update && apt-get install -y \
+    g++ \
+    git-all \
+    sudo \
+    xorg openbox \
+    xterm \
+    make
 
-CMD ["/usr/sbin/sshd", "-D"]
+RUN apt-get install -y alsa-utils
+
+WORKDIR /tmp
+
+RUN git clone --recursive https://github.com/DrSgre/TORCS_multi_docker
+
+WORKDIR TORCS_multi_docker/scr-client-cpp
+
+RUN make
+
+CMD ./client host:172.23.0.3 port:3001
+
