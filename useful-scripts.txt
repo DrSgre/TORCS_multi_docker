@@ -1,3 +1,4 @@
 ENABLE DISPLAY LOCAL: sudo xhost local:root
 FIX GITHUB: export GCM_CREDENTIAL_STORE=cache
 CHECK CONTAINER IP: docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' <container-ID>
+COMPILE SCREENPIPE: g++ IPC_command.cpp torcs_data.pb.cc -o IPC_command `pkg-config --cflags --libs opencv protobuf libzmq`

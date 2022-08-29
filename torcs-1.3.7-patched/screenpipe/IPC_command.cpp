@@ -15,10 +15,8 @@
 #include <stdio.h>
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/core_c.h>
-// #include "cv.h"  
 #include "opencv2/highgui/highgui.hpp"
 #include <opencv2/highgui/highgui_c.h>
-#include <zmq.hpp> 
 #include "torcs_data.pb.h"
 #include <etcd/Client.hpp>
 
@@ -35,7 +33,6 @@ struct shared_use_st
     int written;
     unsigned char data[image_width*image_height*3];
     int pause;
-    int zmq_flag; 
     int save_flag; 
 };
 
@@ -61,32 +58,19 @@ int main(int argc, char const *argv[])
 
     shared = (struct shared_use_st*)shm; 
     shared->written = 0;
-    shared->pause = 0;
-    shared->zmq_flag = 0;  
+    shared->pause = 1; 
     shared->save_flag = 0;
 
     //ETCD setup
     etcd::Client etcd("http://127.0.0.1:2379");
     std::cout << "Connected to etcd...\n";
 
-    // Setup zmq
-    static zmq::context_t context(1);
-    static zmq::socket_t socket(context, ZMQ_PUB);
-    printf("binding to socket\n");
-    try {
-        socket.bind("tcp://*:5555");
-    }
-    catch (error_t) {
-        printf("error binding to socket");
-    }
-    printf("done\n");
     TorcsData torcs_data;
     unsigned char image[resize_width*resize_height * 3];
 
     // Setup opencv
     IplImage* screenRGB=cvCreateImage(cvSize(image_width,image_height),IPL_DEPTH_8U,3);
     IplImage* resizeRGB=cvCreateImage(cvSize(resize_width,resize_height),IPL_DEPTH_8U,3);
-    cvNamedWindow("Image from TORCS",1);
     int key;
     IplImage* out_red = cvCreateImage(cvSize(resize_width,resize_height), IPL_DEPTH_8U, 1);
     IplImage* out_green = cvCreateImage(cvSize(resize_width,resize_height), IPL_DEPTH_8U, 1);
@@ -103,12 +87,9 @@ int main(int argc, char const *argv[])
                    screenRGB->imageData[(h*image_width+w)*3+0]=shared->data[((image_height-h-1)*image_width+w)*3+2];
                 }
             }
-            printf("---screenRGB read complete.\n");
-            // Resize image and send it as protobuf message
             cvResize(screenRGB, resizeRGB);
             cvSplit(resizeRGB, out_blue, out_green, out_red, NULL);
 
-            printf("---image read complete.\n");
             torcs_data.clear_width();
             torcs_data.clear_height();
             torcs_data.clear_red();
@@ -121,56 +102,94 @@ int main(int argc, char const *argv[])
             torcs_data.add_width(resize_width);
             torcs_data.add_height(resize_height);
             torcs_data.add_save_flag(shared->save_flag);
-            cout << "torcs_data shape: [" << torcs_data.width(0) << ", " << torcs_data.height(0) << "]" << endl;
-
-            cvShowImage("Image from TORCS", resizeRGB);
 
             string serialized_data;
             torcs_data.SerializeToString(&serialized_data);
-            cout << "I want to write!" << std::endl;
-//            pplx::task<etcd::Response> response_task = etcd.set("/test/shared", serialized_data);
-//            try
-//            {
-//                etcd::Response response = response_task.get();
-//                if (response.is_ok())
-//                std::cout << "The new value is successfully set, previous value was "
-//                            << response.prev_value().as_string();
-//                else
-//                std::cout << "operation failed, details: " << response.error_message();
-//            }
-//            catch (std::exception const & ex)
-//            {
-//                std::cerr << "communication problem, details: " << ex.what();
-//            }
+            pplx::task<etcd::Response> response_task = etcd.set("/test/shared/width", std::to_string(torcs_data.width(0)));
+            try
+            {
+                etcd::Response response = response_task.get();
+                if (response.is_ok())
+                std::cout << "The new value for /test/shared/width is successfully set" << std::endl;
+                else
+                std::cout << "operation failed, details: " << response.error_message();
+            }
+            catch (std::exception const & ex)
+            {
+                std::cerr << "communication problem, details: " << ex.what();
+            }
 
-            /*zmq::message_t request;
-            socket.recv(&request);
-            std::string replyMessage = std::string(static_cast<char *>(request.data()), request.size());
-            //std::cout << "Recived from client: " + replyMessage << std::endl;*/
+            response_task = etcd.set("/test/shared/height", std::to_string(torcs_data.height(0)));
+            try
+            {
+                etcd::Response response = response_task.get();
+                if (response.is_ok())
+                std::cout << "The new value for /test/shared/height is successfully set" << std::endl;
+                else
+                std::cout << "operation failed, details: " << response.error_message();
+            }
+            catch (std::exception const & ex)
+            {
+                std::cerr << "communication problem, details: " << ex.what();
+            }
 
-            zmq::message_t reply(serialized_data.size());
-            std::cout << "checked OK!  2" << std::endl;
-            memcpy((void*) reply.data(), serialized_data.data(), serialized_data.size());
-            std::cout << "---length of message to client: " << reply.size() << std::endl;
-            socket.send(reply, zmq::send_flags::none);
-            std::cout << "message sent(?)" << std::endl;
+            response_task = etcd.set("/test/shared/red", torcs_data.red(0));
+            try
+            {
+                etcd::Response response = response_task.get();
+                if (response.is_ok())
+                std::cout << "The new value for /test/shared/red is successfully set" << std::endl;
+                else
+                std::cout << "operation failed, details: " << response.error_message();
+            }
+            catch (std::exception const & ex)
+            {
+                std::cerr << "communication problem, details: " << ex.what();
+            }
+
+            response_task = etcd.set("/test/shared/green", torcs_data.green(0));
+            try
+            {
+                etcd::Response response = response_task.get();
+                if (response.is_ok())
+                std::cout << "The new value for /test/shared/green is successfully set" << std::endl;
+                else
+                std::cout << "operation failed, details: " << response.error_message();
+            }
+            catch (std::exception const & ex)
+            {
+                std::cerr << "communication problem, details: " << ex.what();
+            }
+
+            response_task = etcd.set("/test/shared/blue", torcs_data.blue(0));
+            try
+            {
+                etcd::Response response = response_task.get();
+                if (response.is_ok())
+                std::cout << "The new value for /test/shared/blue is successfully set" << std::endl;
+                else
+                std::cout << "operation failed, details: " << response.error_message();
+            }
+            catch (std::exception const & ex)
+            {
+                std::cerr << "communication problem, details: " << ex.what();
+            }
+
+            response_task = etcd.set("/test/shared/save_flag", std::to_string(torcs_data.save_flag(0)));
+            try
+            {
+                etcd::Response response = response_task.get();
+                if (response.is_ok())
+                std::cout << "The new value for /test/shared/save_flag is successfully set" << std::endl;
+                else
+                std::cout << "operation failed, details: " << response.error_message();
+            }
+            catch (std::exception const & ex)
+            {
+                std::cerr << "communication problem, details: " << ex.what();
+            }
             shared->written=0;
         }
-
-        key = cvWaitKey(100);
-        if (key==1048688 || key==112){ // P
-            shared->pause = 1 - shared->pause;
-            printf("shared->pause = %d\n", shared->pause);
-        }else if(key == 115){ // S
-            shared->save_flag = 1 - shared->save_flag;
-            printf("shared->save_flag = %d\n", shared->save_flag);
-        }else if (key==1048603 || key==27){ // ESC
-            shared->pause = 0;
-            printf("ESC is pressed, exit\n");
-            break;
-        }
-
-
     }
 
     if(shmdt(shm) == -1)  
