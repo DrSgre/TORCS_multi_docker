@@ -1,14 +1,14 @@
 ''' 
 This file is used to: 
     1. receive image data from torcs
-    2. store data in hdf5 format
+    2. display it in a dedicated window
 '''
 import numpy as np
 import cv2
 import etcd3
 
 # Set up etcd
-etcd = etcd3.client(host='127.0.0.1', port=2379)
+etcd = etcd3.client(host='etcd', port=2379)
 
 image_dataset = []
 
