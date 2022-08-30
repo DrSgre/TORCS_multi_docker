@@ -54,7 +54,7 @@ int main(int argc, char const *argv[])
         fprintf(stderr, "shmat failed\n");  
         exit(EXIT_FAILURE);  
     }  
-    printf("\n********** Memory sharing started, attached at blablabal %X **********\n", shmid);
+    printf("\n********** Memory sharing started, attached at %X **********\n", shm);
 
     shared = (struct shared_use_st*)shm; 
     shared->written = 0;
