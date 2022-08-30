@@ -62,7 +62,7 @@ int main(int argc, char const *argv[])
     shared->save_flag = 0;
 
     //ETCD setup
-    etcd::Client etcd("http://127.0.0.1:2379");
+    etcd::Client etcd("http://etcd:2379");
     std::cout << "Connected to etcd...\n";
 
     TorcsData torcs_data;
