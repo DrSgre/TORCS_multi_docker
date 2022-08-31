@@ -11,9 +11,10 @@ services:
     privileged: true
     environment:
       - DISPLAY=${DISPLAY}
+      - LD_LIBRARY_PATH=/usr/local/lib:/libGL.so.1
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
     ports:
-      - "8001:8001"
+      - "8002:8002"
     networks:
       - torcs-docker-137_net-torcs

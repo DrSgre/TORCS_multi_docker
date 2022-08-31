@@ -3,16 +3,26 @@ FROM ubuntu:20.04
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
-    git-all \
-    sudo
+    wget \
+    unzip \
+    sudo \
+    pip \
+    libgtk2.0-dev \
+    pkg-config
 
-RUN sudo apt install python3.8
+RUN pip install numpy && pip install etcd3 && pip install opencv-python && pip install opencv-python-headless && pip install protobuf==3.20.*
+
+RUN pip install opencv-contrib-python
 
 WORKDIR /tmp
 
-RUN git clone --recursive https://github.com/DrSgre/TORCS_multi_docker
+RUN wget -O TORCS_multi_docker.zip https://github.com/DrSgre/TORCS_multi_docker/archive/master.zip
 
-WORKDIR TORCS_multi_docker/torcs-1.3.7-patched/screenpipe
+RUN unzip TORCS_multi_docker.zip
+
+RUN apt-get install ffmpeg libsm6 libxext6  -y
+
+WORKDIR /tmp/TORCS_multi_docker-master/torcs-1.3.7-patched/screenpipe
 
 CMD sudo python3 ./screenpipe_client.py
 

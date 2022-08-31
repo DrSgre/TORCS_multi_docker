@@ -1,0 +1,32 @@
+version: "3"
+
+networks:
+  net-torcs:
+    driver: bridge
+
+services:
+  Etcd:
+    image: 'bitnami/etcd:latest'
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+    ports:
+      - 2379:2379
+      - 2380:2380
+    networks:
+      - net-torcs
+  app:
+    image: my-app:latest
+    build: .
+    privileged: true
+    environment:
+      - DISPLAY=${DISPLAY}
+      - LD_LIBRARY_PATH=/usr/local/lib:/libetcd-cpp-api.so
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    ports:
+      - "8000:8000"
+    networks:
+      - net-torcs
+    depends_on:
+      - "Etcd"
