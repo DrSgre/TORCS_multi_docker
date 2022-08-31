@@ -35,7 +35,7 @@ while True:
     red = red.reshape(height, width)
     green = green.reshape(height, width)
     blue = blue.reshape(height, width)
-    image = cv2.merge([red, green, blue])
+    image = cv2.merge((blue, red, green))
 
     cv2.imshow('TORCS Image', image)
     cv2.waitKey(1)

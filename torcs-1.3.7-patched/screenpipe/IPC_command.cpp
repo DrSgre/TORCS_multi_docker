@@ -106,88 +106,11 @@ int main(int argc, char const *argv[])
             string serialized_data;
             torcs_data.SerializeToString(&serialized_data);
             pplx::task<etcd::Response> response_task = etcd.set("/test/shared/width", std::to_string(torcs_data.width(0)));
-            try
-            {
-                etcd::Response response = response_task.get();
-                if (response.is_ok())
-                std::cout << "The new value for /test/shared/width is successfully set" << std::endl;
-                else
-                std::cout << "operation failed, details: " << response.error_message();
-            }
-            catch (std::exception const & ex)
-            {
-                std::cerr << "communication problem, details: " << ex.what();
-            }
-
             response_task = etcd.set("/test/shared/height", std::to_string(torcs_data.height(0)));
-            try
-            {
-                etcd::Response response = response_task.get();
-                if (response.is_ok())
-                std::cout << "The new value for /test/shared/height is successfully set" << std::endl;
-                else
-                std::cout << "operation failed, details: " << response.error_message();
-            }
-            catch (std::exception const & ex)
-            {
-                std::cerr << "communication problem, details: " << ex.what();
-            }
-
             response_task = etcd.set("/test/shared/red", torcs_data.red(0));
-            try
-            {
-                etcd::Response response = response_task.get();
-                if (response.is_ok())
-                std::cout << "The new value for /test/shared/red is successfully set" << std::endl;
-                else
-                std::cout << "operation failed, details: " << response.error_message();
-            }
-            catch (std::exception const & ex)
-            {
-                std::cerr << "communication problem, details: " << ex.what();
-            }
-
             response_task = etcd.set("/test/shared/green", torcs_data.green(0));
-            try
-            {
-                etcd::Response response = response_task.get();
-                if (response.is_ok())
-                std::cout << "The new value for /test/shared/green is successfully set" << std::endl;
-                else
-                std::cout << "operation failed, details: " << response.error_message();
-            }
-            catch (std::exception const & ex)
-            {
-                std::cerr << "communication problem, details: " << ex.what();
-            }
-
             response_task = etcd.set("/test/shared/blue", torcs_data.blue(0));
-            try
-            {
-                etcd::Response response = response_task.get();
-                if (response.is_ok())
-                std::cout << "The new value for /test/shared/blue is successfully set" << std::endl;
-                else
-                std::cout << "operation failed, details: " << response.error_message();
-            }
-            catch (std::exception const & ex)
-            {
-                std::cerr << "communication problem, details: " << ex.what();
-            }
-
             response_task = etcd.set("/test/shared/save_flag", std::to_string(torcs_data.save_flag(0)));
-            try
-            {
-                etcd::Response response = response_task.get();
-                if (response.is_ok())
-                std::cout << "The new value for /test/shared/save_flag is successfully set" << std::endl;
-                else
-                std::cout << "operation failed, details: " << response.error_message();
-            }
-            catch (std::exception const & ex)
-            {
-                std::cerr << "communication problem, details: " << ex.what();
-            }
             shared->written=0;
         }
     }
