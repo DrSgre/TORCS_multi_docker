@@ -3,7 +3,9 @@ version: "3"
 networks:
   net-torcs:
     driver: bridge
-
+    ipam:
+      config:
+        - subnet: "172.20.0.0/16"
 services:
   Etcd:
     image: 'bitnami/etcd:latest'
@@ -15,6 +17,7 @@ services:
       - 2380:2380
     networks:
       - net-torcs
+      
     volumes:
       - ./etcd.conf.yml:/opt/bitnami/etcd/conf/etcd.conf.yml
   app:
@@ -29,6 +32,7 @@ services:
     ports:
       - "8000:8000"
     networks:
-      - net-torcs
+      net-torcs:
+        ipv4_address: 172.20.0.3
     depends_on:
       - "Etcd"

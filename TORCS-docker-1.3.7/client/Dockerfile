@@ -20,5 +20,5 @@ WORKDIR TORCS_multi_docker/scr-client-cpp
 
 RUN make clean && make
 
-CMD ./client host:172.23.0.3 port:3001
+CMD ./client host:172.20.0.3 port:3001
 
