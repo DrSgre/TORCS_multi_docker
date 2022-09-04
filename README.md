@@ -13,7 +13,8 @@ Representation of the current state of the modularization:
 As of now, the application has been tested to be working only on Docker instances run in a Linux environment.
 
 ## Pre-run script
-In order to allow the Docker containers to access the local display, the following script should be run: `sudo xhost local:root`
+In order to allow the Docker containers to access the local display, the following script should be run: <br/>
+`sudo xhost local:root`
 
 ## Run the Docker images
 In order to run the Docker images provided in the `TORCS-docker-1.3.7` directory, one should look at the nested folders and run the command `docker-compose up` in order to launch the related containers. In particular:
