@@ -4,5 +4,5 @@ This repository contains the source code of a project aimed toward the modulariz
 * *scr-client-cpp*: contains the scr client used to connect and play TORCS in "Quick game" or "Practice" modes.
 * *TORCS-docker-1.3.7*: contains the docker-compose.yml and Dockerfile of the 4 containers used for the project (app-etcd, watcher, client). 
 <br/>
-Representation of the current state of the modularization:
+Representation of the current state of the modularization: <br/>
 ![Thesis work related notes](https://user-images.githubusercontent.com/16836365/188315940-67621799-5587-4dee-bba0-9c82324f8d86.jpg)
