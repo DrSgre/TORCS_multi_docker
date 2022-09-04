@@ -5,4 +5,4 @@ This repository contains the source code of a project aimed toward the modulariz
 * *TORCS-docker-1.3.7*: contains the docker-compose.yml and Dockerfile of the 4 containers used for the project (app-etcd, watcher, client).
 
 Representation of the current state of the modularization:
-![Thesis work related notes](https://user-images.githubusercontent.com/16836365/188315972-fe3a0394-eaa0-4339-94b0-4c0e99416fef.jpg)
+<img src="https://user-images.githubusercontent.com/16836365/188315972-fe3a0394-eaa0-4339-94b0-4c0e99416fef.jpg" alt="drawing" width="75%"/>
