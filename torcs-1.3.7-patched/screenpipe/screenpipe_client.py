@@ -6,6 +6,7 @@ This file is used to:
 import numpy as np
 import cv2
 import etcd3
+import time
 
 # Set up etcd
 etcd = etcd3.client(host='etcd', port=2379)
@@ -14,11 +15,9 @@ image_dataset = []
 
 start = 0
 
-while True:
-   
+def watch_callback(event):  
     width = (int)(etcd.get('/test/shared/width')[0])
     height = (int)(etcd.get('/test/shared/height')[0])
-    save_flag = (int)(etcd.get('/test/shared/save_flag')[0])
     red_array = list(etcd.get('/test/shared/red')[0])
     green_array = list(etcd.get('/test/shared/green')[0])
     blue_array = list(etcd.get('/test/shared/blue')[0])
@@ -40,7 +39,7 @@ while True:
     cv2.imshow('TORCS Image', image)
     cv2.waitKey(1)
 
-    print("[width, height] = [{}, {}]".format(width, height))
+etcd.add_watch_callback("/test/shared/red", watch_callback)
 
-
-    
+while True:
+    None

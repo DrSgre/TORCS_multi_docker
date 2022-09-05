@@ -110,7 +110,6 @@ int main(int argc, char const *argv[])
             response_task = etcd.set("/test/shared/red", torcs_data.red(0));
             response_task = etcd.set("/test/shared/green", torcs_data.green(0));
             response_task = etcd.set("/test/shared/blue", torcs_data.blue(0));
-            response_task = etcd.set("/test/shared/save_flag", std::to_string(torcs_data.save_flag(0)));
             shared->written=0;
         }
     }
