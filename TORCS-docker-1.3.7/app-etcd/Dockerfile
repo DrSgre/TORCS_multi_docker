@@ -71,11 +71,9 @@ RUN ./configure --prefix=$(pwd)/BUILD
 RUN make clean && make && make install && make datainstall
 
 RUN ["chmod", "755", "./BUILD/bin/torcs"]
-RUN ["chmod", "777", "./BUILD/bin/remote_torcs.sh"]
+RUN ["chmod", "777", "./remote_torcs.sh"]
 
 ARG LD_LIBRARY_PATH=/usr/local/lib/libetcd-cpp-api.so
-
-WORKDIR /tmp/TORCS_multi_docker-master/torcs-1.3.7-patched/BUILD/bin/
 
 CMD ./remote_torcs.sh
 
