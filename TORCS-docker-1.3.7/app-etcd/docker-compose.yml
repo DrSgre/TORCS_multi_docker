@@ -8,7 +8,8 @@ networks:
         - subnet: "172.20.0.0/16"
 services:
   Etcd:
-    image: 'bitnami/etcd:latest'
+    image: 'my-etcd:latest'
+    build: ./etcd
     environment:
       - ALLOW_NONE_AUTHENTICATION=yes
       - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
@@ -18,11 +19,9 @@ services:
     networks:
       - net-torcs
       
-    volumes:
-      - ./etcd.conf.yml:/opt/bitnami/etcd/conf/etcd.conf.yml
   app:
     image: my-app:latest
-    build: .
+    build: ./app
     privileged: true
     environment:
       - DISPLAY=${DISPLAY}
