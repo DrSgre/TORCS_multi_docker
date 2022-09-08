@@ -11,7 +11,7 @@ VERSION_SYMBOL="${ROOT_MODULE}/api/v3/version.GitSHA"
 
 # Set GO_LDFLAGS="-s" for building without symbols for debugging.
 # shellcheck disable=SC2206
-GO_LDFLAGS=(${GO_LDFLAGS} "-X=${VERSION_SYMBOL}=${GIT_SHA}")
+GO_LDFLAGS=(${GO_LDFLAGS} "-X=${VERSION_SYMBOL}=946a5a6f2")
 GO_BUILD_ENV=("CGO_ENABLED=0" "GO_BUILD_FLAGS=${GO_BUILD_FLAGS}" "GOOS=${GOOS}" "GOARCH=${GOARCH}")
 
 # enable/disable failpoints
