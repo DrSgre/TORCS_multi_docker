@@ -13,6 +13,9 @@ services:
     environment:
       - ALLOW_NONE_AUTHENTICATION=yes
       - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+      - ETCD_AUTO_COMPACTION_RETENTION=5s
+      - ETCD_AUTO_COMPACTION_MODE=periodic
+      - ETCD_MAX_WALS=1
     ports:
       - 2379:2379
       - 2380:2380

@@ -124,12 +124,12 @@ func (rc *raftNode) saveSnap(snap raftpb.Snapshot) error {
 	// save the snapshot file before writing the snapshot to the wal.
 	// This makes it possible for the snapshot file to become orphaned, but prevents
 	// a WAL snapshot entry from having no corresponding snapshot file.
-	if err := rc.snapshotter.SaveSnap(snap); err != nil {
+/*  	if err := rc.snapshotter.SaveSnap(snap); err != nil {
 		return err
 	}
 	if err := rc.wal.SaveSnapshot(walSnap); err != nil {
 		return err
-	}
+	} */
 	return rc.wal.ReleaseLockTo(snap.Metadata.Index)
 }
 
@@ -217,7 +217,8 @@ func (rc *raftNode) loadSnapshot() *raftpb.Snapshot {
 
 // openWAL returns a WAL ready for reading.
 func (rc *raftNode) openWAL(snapshot *raftpb.Snapshot) *wal.WAL {
-	if !wal.Exist(rc.waldir) {
+	*wal.WAL w;
+ 	if !wal.Exist(rc.waldir) {
 		if err := os.Mkdir(rc.waldir, 0750); err != nil {
 			log.Fatalf("raftexample: cannot create dir for wal (%v)", err)
 		}
@@ -237,7 +238,7 @@ func (rc *raftNode) openWAL(snapshot *raftpb.Snapshot) *wal.WAL {
 	w, err := wal.Open(zap.NewExample(), rc.waldir, walsnap)
 	if err != nil {
 		log.Fatalf("raftexample: error loading wal (%v)", err)
-	}
+	} 
 
 	return w
 }
@@ -464,7 +465,7 @@ func (rc *raftNode) serveChannels() {
 			}
 			rc.maybeTriggerSnapshot(applyDoneC)
 			rc.node.Advance()
-
+		
 		case err := <-rc.transport.ErrorC:
 			rc.writeError(err)
 			return
@@ -472,7 +473,7 @@ func (rc *raftNode) serveChannels() {
 		case <-rc.stopc:
 			rc.stop()
 			return
-		}
+		} 
 	}
 }
 

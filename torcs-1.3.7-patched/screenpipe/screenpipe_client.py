@@ -6,16 +6,17 @@ This file is used to:
 import numpy as np
 import cv2
 import etcd3
-import time
+from datetime import date, datetime
 
 # Set up etcd
 etcd = etcd3.client(host='etcd', port=2379)
 
 image_dataset = []
 
-start = 0
+start = datetime.now()
 
 def watch_callback(event):  
+    global start
     width = (int)(etcd.get('/test/shared/width')[0])
     height = (int)(etcd.get('/test/shared/height')[0])
     red_array = list(etcd.get('/test/shared/red')[0])
@@ -36,6 +37,10 @@ def watch_callback(event):
     blue = blue.reshape(height, width)
     image = cv2.merge((blue, green, red))
 
+    finish = datetime.now()
+    tdelta = finish - start
+    print("Time from last frame " + str(tdelta.total_seconds()))
+    start = finish
     cv2.imshow('TORCS Image', image)
     cv2.waitKey(1)
 

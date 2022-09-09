@@ -4,33 +4,26 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG DISPLAY=$DISPLAY
 
 RUN apt-get update && apt-get install -y \
+    git-all \
     sudo \
     cmake \
     wget \
     unzip \
     make
 
-RUN sudo apt search golang-go && sudo apt search gccgo-go
+RUN sudo apt-get install software-properties-common -y
 
-RUN sudo apt install golang-go -y
+RUN sudo apt update
 
-WORKDIR /tmp
+RUN sudo add-apt-repository ppa:longsleep/golang-backports
 
-RUN wget -O etcd-cpp-apiv3.zip https://github.com/etcd-cpp-apiv3/etcd-cpp-apiv3/archive/master.zip
+RUN sudo apt update
 
-RUN unzip etcd-cpp-apiv3.zip
-
-WORKDIR /tmp/etcd-cpp-apiv3-master
-
-RUN mkdir build
-
-WORKDIR /tmp/etcd-cpp-apiv3-master/build
-
-RUN cmake ..
-
-RUN make -j$(nproc) && make install
+RUN sudo apt install golang -y
 
 WORKDIR /tmp
+
+ARG test=test
 
 RUN wget -O TORCS_multi_docker.zip https://github.com/DrSgre/TORCS_multi_docker/archive/master.zip
 
@@ -38,9 +31,15 @@ RUN unzip TORCS_multi_docker.zip
 
 WORKDIR /tmp/TORCS_multi_docker-master/etcd/
 
+RUN go version
+
+RUN git init
+
 RUN sudo ./build.sh
 
 RUN export PATH="$PATH:`pwd`/bin"
 
-CMD ./etcd
+RUN ["chmod", "777", "./run_w_defrag.sh"]
+
+CMD ./run_w_defrag.sh
 

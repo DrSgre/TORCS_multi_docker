@@ -43,7 +43,7 @@ func newEventHistory(capacity int) *EventHistory {
 func (eh *EventHistory) addEvent(e *Event) *Event {
 	eh.rwl.Lock()
 	defer eh.rwl.Unlock()
-	
+
 	//eh.Queue.insert(e)
 
 	//eh.LastIndex = e.Index()
