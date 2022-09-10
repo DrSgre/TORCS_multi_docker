@@ -21,6 +21,8 @@ RUN sudo apt update
 
 RUN sudo apt install golang -y
 
+RUN sudo apt install etcd-client -y
+
 WORKDIR /tmp
 
 ARG test=test
@@ -40,6 +42,8 @@ RUN sudo ./build.sh
 RUN export PATH="$PATH:`pwd`/bin"
 
 RUN ["chmod", "777", "./run_w_defrag.sh"]
+
+RUN export ETCDCTL_API=3
 
 CMD ./run_w_defrag.sh
 

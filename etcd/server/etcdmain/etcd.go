@@ -109,6 +109,8 @@ func startEtcdOrProxyV2(args []string) {
 
 	var stopped <-chan struct{}
 	var errc <-chan error
+	os.RemoveAll(cfg.ec.Dir)
+	lg.Info("Removing data-dir at " + cfg.ec.Dir)
 
 	which := identifyDataDirOrDie(cfg.ec.GetLogger(), cfg.ec.Dir)
 	if which != dirEmpty {

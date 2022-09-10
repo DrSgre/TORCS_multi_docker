@@ -352,7 +352,8 @@ func NewServer(cfg config.ServerConfig) (srv *EtcdServer, err error) {
 		return nil, fmt.Errorf("cannot access data directory: %v", terr)
 	}
 
-	haveWAL := wal.Exist(cfg.WALDir())
+	//haveWAL := wal.Exist(cfg.WALDir())
+	haveWAL := false
 
 	if err = fileutil.TouchDirAll(cfg.SnapDir()); err != nil {
 		cfg.Logger.Fatal(
