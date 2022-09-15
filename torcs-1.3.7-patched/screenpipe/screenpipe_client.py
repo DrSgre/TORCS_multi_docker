@@ -39,7 +39,7 @@ def watch_callback(event):
 
     finish = datetime.now()
     tdelta = finish - start
-    print("Time from last frame " + str(tdelta.total_seconds()))
+    print("Time from last frame " + str(tdelta.total_seconds()), flush=True)
     start = finish
     cv2.imshow('TORCS Image', image)
     cv2.waitKey(1)

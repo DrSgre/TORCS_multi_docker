@@ -55,7 +55,7 @@ while True:
     finish = datetime.now()
     tdelta = finish - start
     start = finish
-    print("Time from last frame " + str(tdelta.total_seconds()))
+    print("Time from last frame " + str(tdelta.total_seconds()), flush=True)
     cv2.imshow('TORCS Image', image)
     cv2.waitKey(1)
 
