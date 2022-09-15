@@ -12,7 +12,8 @@ services:
     build: ./etcd
     environment:
       - ALLOW_NONE_AUTHENTICATION=yes
-      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+      - ETCD_ADVERTISE_CLIENT_URLS=http://0.0.0.0:2379,http://0.0.0.0:4001
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379,http://0.0.0.0:4001
       - ETCD_AUTO_COMPACTION_RETENTION=5s
       - ETCD_AUTO_COMPACTION_MODE=periodic
       - ETCD_MAX_WALS=1
@@ -21,6 +22,7 @@ services:
       - 2380:2380
     networks:
       - net-torcs
+    cpuset: "4"
       
   app:
     image: my-app:latest
