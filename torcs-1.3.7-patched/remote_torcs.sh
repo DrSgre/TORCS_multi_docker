@@ -1,4 +1,4 @@
 #!/bin/bash
 ./BUILD/bin/torcs &
 sleep 2
-./screenpipe/IPC_command
+./old_screenpipe/IPC_command
