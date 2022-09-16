@@ -15,7 +15,7 @@ socket = context.socket(zmq.SUB)
 port = "5555"
 socket.setsockopt(zmq.SUBSCRIBE, b"")
 socket.connect("tcp://localhost:5555")
-print("Connecting to server tcp://localhost:5555")
+print("Connecting to server tcp://localhost:5555", flush=True)
 
 # Set up protobuf class
 serialized_data = torcs_data_pb2.TorcsData()
@@ -25,9 +25,9 @@ start = datetime.now()
 
 while True:
     # Receive data and parse it
-    print("Trying to receive")
+    print("Trying to receive", flush=True)
     message = socket.recv()
-    print("Received something")
+    print("Received something", flush=True)
     serialized_data.ParseFromString(message)
 
     
@@ -59,4 +59,4 @@ while True:
     cv2.imshow('TORCS Image', image)
     cv2.waitKey(1)
 
-    print("[width, height] = [{}, {}]".format(width, height))
+    print("[width, height] = [{}, {}]".format(width, height), flush=True)
