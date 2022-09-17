@@ -27,7 +27,7 @@ all: $(OBJECTS) client
 
 
 client: client.cpp $(OBJECTS)
-		$(CC) $(CPPFLAGS) $(EXTFLAGS) -o client client.cpp $(OBJECTS) `pkg-config --cflags --libs opencv`
+		$(CC) $(CPPFLAGS) $(EXTFLAGS) -o client client.cpp $(OBJECTS) -L -lopencv_calib3d -lopencv_imgproc -lopencv_core -lopencv_ml -lopencv_features2d -lopencv_objdetect -lopencv_flann -lopencv_video -lopencv_highgui -lcpprest -letcd-cpp-api
 
 clean:
 	rm -f *.o client  
