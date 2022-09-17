@@ -18,6 +18,7 @@ MODULE      = ${ROBOT}.so
 MODULEDIR   = drivers/${ROBOT}
 SOURCES     = ${ROBOT}.cpp sensors.cpp SimpleParser.cpp CarControl.cpp ObstacleSensors.cpp 
 
+LIBS = -letcd-cpp-api
 SHIPDIR     = drivers/${ROBOT}
 SHIP        = ${ROBOT}.xml 
 SHIPSUBDIRS = 0 1 2 3 4 5 6 7 8 9

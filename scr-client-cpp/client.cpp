@@ -51,6 +51,7 @@ typedef struct sockaddr_in tSockAddrIn;
 class __DRIVER_CLASS__;
 typedef __DRIVER_CLASS__ tDriver;
 
+#include <etcd/Client.hpp>
 
 using namespace std;
 
@@ -61,6 +62,8 @@ void parse_args(int argc, char *argv[], char *hostName, unsigned int &serverPort
 
 int main(int argc, char *argv[])
 {
+    static etcd::Client etcd_client("http://etcd:2379");
+    std::cout << "Connected to ETCD..." << std::endl;
     SOCKET socketDescriptor;
     int numRead;
 
@@ -225,6 +228,8 @@ int main(int argc, char *argv[])
                 // Read data sent by the solorace server
                 memset(buf, 0x0, UDP_MSGLEN);  // Zero out the buffer.
                 numRead = recv(socketDescriptor, buf, UDP_MSGLEN, 0);
+                memset(buf, 0x0, UDP_MSGLEN);
+                strcpy(buf, etcd_client.get("/test/shared/gamestate").get().value().as_string().c_str());
                 if (numRead < 0)
                 {
                     cerr << "didn't get response from server?";
@@ -262,15 +267,15 @@ int main(int argc, char *argv[])
 		}
 		else
 			sprintf (buf, "(meta 1)");
-
-                if (sendto(socketDescriptor, buf, strlen(buf)+1, 0,
-                           (struct sockaddr *) &serverAddress,
-                           sizeof(serverAddress)) < 0)
-                {
-                    cerr << "cannot send data ";
-                    CLOSE(socketDescriptor);
-                    exit(1);
-                }
+            pplx::task<etcd::Response> response_task = etcd_client.set("/test/shared/driver_action", buf);
+            if (sendto(socketDescriptor, buf, strlen(buf)+1, 0,
+                        (struct sockaddr *) &serverAddress,
+                        sizeof(serverAddress)) < 0)
+            {
+                cerr << "cannot send data ";
+                CLOSE(socketDescriptor);
+                exit(1);
+            }
 #ifdef __UDP_CLIENT_VERBOSE__
                 else
                     cout << "Sending " << buf << endl;

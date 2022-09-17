@@ -25,6 +25,7 @@
 #include <iostream>
 #include <sstream>
 #include <ctime>
+#include <etcd/Client.hpp>
 
 #include <tgf.h>
 #include <track.h>
@@ -59,7 +60,7 @@ typedef struct sockaddr_in tSockAddrIn;
 /*** defines for UDP *****/
 #define UDP_LISTEN_PORT 3001
 #define UDP_ID "SCR"
-#define UDP_DEFAULT_TIMEOUT 10000
+#define UDP_DEFAULT_TIMEOUT 100000
 #define UDP_MSGLEN 1000
 //#define __UDP_SERVER_VERBOSE__
 /************************/
@@ -109,6 +110,9 @@ static int listenSocket[NBBOTS];
 socklen_t clientAddressLength[NBBOTS];
 tSockAddrIn clientAddress[NBBOTS], serverAddress[NBBOTS];
 /************************************************/
+
+//ETCD setup
+static etcd::Client etcd_client("http://etcd:2379");
 
 static tdble oldAccel[NBBOTS];
 static tdble oldBrake[NBBOTS];
@@ -498,15 +502,6 @@ drive(int index, tCarElt* car, tSituation *s)
     stateString += SimpleParser::stringify("wheelSpinVel", wheelSpinVel, 4);
     stateString += SimpleParser::stringify("z", car->_pos_Z  - RtTrackHeightL(&(car->_trkPos)));
 	stateString += SimpleParser::stringify("focus", focusSensorOut, 5);//ML
-    stateString += SimpleParser::stringify("x", car->_pos_X);
-    stateString += SimpleParser::stringify("y", car->_pos_Y);
-    stateString += SimpleParser::stringify("roll", car->_roll);
-    stateString += SimpleParser::stringify("pitch", car->_pitch);
-    stateString += SimpleParser::stringify("yaw", car->_yaw);
-    stateString += SimpleParser::stringify("speedGlobalX", car->_speed_X);
-    stateString += SimpleParser::stringify("speedGlobalY", car->_speed_Y);
-
-
 
     char line[UDP_MSGLEN];
     sprintf(line,"%s",stateString.c_str());
@@ -539,6 +534,8 @@ if (RESTARTING[index]==0)
 #endif
 	
 
+    pplx::task<etcd::Response> response_task = etcd_client.set("/test/shared/gamestate", line);
+
     // Sending the car state to the client
     if (sendto(listenSocket[index], line, strlen(line) + 1, 0,
                (struct sockaddr *) &clientAddress[index],
@@ -558,6 +555,8 @@ if (RESTARTING[index]==0)
         // Read the client controller action
         memset(line, 0x0,UDP_MSGLEN );  // Zero out the buffer.
         int numRead = recv(listenSocket[index], line, UDP_MSGLEN, 0);
+        memset(line, 0x0, UDP_MSGLEN);
+        strcpy(line, etcd_client.get("/test/shared/driver_action").get().value().as_string().c_str());
         if (numRead < 0)
         {
             std::cerr << "Error, cannot get any response from the client!";

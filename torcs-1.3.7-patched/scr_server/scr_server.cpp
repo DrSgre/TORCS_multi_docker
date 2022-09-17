@@ -36,6 +36,7 @@
 #include "SimpleParser.h"
 #include "CarControl.h"
 #include "ObstacleSensors.h"
+#include <etcd/Client.hpp>
 
 #ifdef _WIN32
 typedef sockaddr_in tSockAddrIn;
@@ -59,7 +60,7 @@ typedef struct sockaddr_in tSockAddrIn;
 /*** defines for UDP *****/
 #define UDP_LISTEN_PORT 3001
 #define UDP_ID "SCR"
-#define UDP_DEFAULT_TIMEOUT 10000
+#define UDP_DEFAULT_TIMEOUT 100000
 #define UDP_MSGLEN 1000
 //#define __UDP_SERVER_VERBOSE__
 /************************/
@@ -109,6 +110,9 @@ static int listenSocket[NBBOTS];
 socklen_t clientAddressLength[NBBOTS];
 tSockAddrIn clientAddress[NBBOTS], serverAddress[NBBOTS];
 /************************************************/
+
+//ETCD setup
+static etcd::Client etcd_client("http://etcd:2379");
 
 static tdble oldAccel[NBBOTS];
 static tdble oldBrake[NBBOTS];
@@ -529,6 +533,9 @@ if (RESTARTING[index]==0)
     }
 #endif
 	
+
+    pplx::task<etcd::Response> response_task = etcd_client.set("/test/shared/gamestate", line);
+    std::cout << "Saved state to ETCD" << std::endl;
 
     // Sending the car state to the client
     if (sendto(listenSocket[index], line, strlen(line) + 1, 0,

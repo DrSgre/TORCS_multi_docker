@@ -27,7 +27,7 @@ all: $(OBJECTS) client
 
 
 client: client.cpp $(OBJECTS)
-		$(CC) $(CPPFLAGS) $(EXTFLAGS) -o client client.cpp $(OBJECTS)
+		$(CC) $(CPPFLAGS) $(EXTFLAGS) -o client client.cpp $(OBJECTS) `pkg-config --cflags --libs opencv`
 
 clean:
 	rm -f *.o client  
