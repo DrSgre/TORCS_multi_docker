@@ -29,8 +29,6 @@
 #include <iostream>
 #include <cstdlib>
 #include <cstdio>
-#include <ctime>
-#include <chrono>
 #include __DRIVER_INCLUDE__
 
 /*** defines for UDP *****/
@@ -53,7 +51,6 @@ typedef struct sockaddr_in tSockAddrIn;
 class __DRIVER_CLASS__;
 typedef __DRIVER_CLASS__ tDriver;
 
-#include <etcd/Client.hpp>
 
 using namespace std;
 
@@ -64,10 +61,6 @@ void parse_args(int argc, char *argv[], char *hostName, unsigned int &serverPort
 
 int main(int argc, char *argv[])
 {
-    static etcd::Client etcd_client("http://etcd:2379");
-    static double total_time = 0;
-    static int count_time = 0;
-    std::cout << "Connected to ETCD..." << std::endl;
     SOCKET socketDescriptor;
     int numRead;
 
@@ -218,7 +211,7 @@ int main(int argc, char *argv[])
         }  while(1);
 
 	unsigned long currentStep=0; 
-        auto start = std::chrono::system_clock::now();
+
         while(1)
         {
             // wait until answer comes back, for up to UDP_CLIENT_TIMEUOT micro sec
@@ -226,13 +219,22 @@ int main(int argc, char *argv[])
             FD_SET(socketDescriptor, &readSet);
             timeVal.tv_sec = 0;
             timeVal.tv_usec = UDP_CLIENT_TIMEUOT;
-            memset(buf, 0x0, UDP_MSGLEN);
 
-            etcd::Response query = etcd_client.get("/test/shared/gamestate").get();
-            if (query.prev_value().as_string() != query.value().as_string())
+            if (select(socketDescriptor+1, &readSet, NULL, NULL, &timeVal))
             {
                 // Read data sent by the solorace server
-                strcpy(buf, query.value().as_string().c_str());
+                memset(buf, 0x0, UDP_MSGLEN);  // Zero out the buffer.
+                numRead = recv(socketDescriptor, buf, UDP_MSGLEN, 0);
+                if (numRead < 0)
+                {
+                    cerr << "didn't get response from server?";
+                    CLOSE(socketDescriptor);
+                    exit(1);
+                }
+
+#ifdef __UDP_CLIENT_VERBOSE__
+                cout << "Received: " << buf << endl;
+#endif
 
                 if (strcmp(buf,"***shutdown***")==0)
                 {
@@ -252,29 +254,27 @@ int main(int argc, char *argv[])
                  * Compute The Action to send to the solorace sever
                  **************************************************/
 
-		        if ( (++currentStep) != maxSteps)
-		        {
+		if ( (++currentStep) != maxSteps)
+		{
                 	string action = d.drive(string(buf));
                 	memset(buf, 0x0, UDP_MSGLEN);
-			        sprintf(buf,"%s",action.c_str());
-		        }
-		        else
+			sprintf(buf,"%s",action.c_str());
+		}
+		else
+			sprintf (buf, "(meta 1)");
+
+                if (sendto(socketDescriptor, buf, strlen(buf)+1, 0,
+                           (struct sockaddr *) &serverAddress,
+                           sizeof(serverAddress)) < 0)
                 {
-			        sprintf (buf, "(meta 1)");
+                    cerr << "cannot send data ";
+                    CLOSE(socketDescriptor);
+                    exit(1);
                 }
-                pplx::task<etcd::Response> response_task = etcd_client.set("/test/shared/driver_action", buf);
-                auto end = std::chrono::system_clock::now();
-                std::chrono::duration<double> elapsed_seconds = end-start;
-                total_time += elapsed_seconds.count();
-                count_time += 1;
-                std::cout << "average time: " << total_time/count_time << "s" << std::endl;
-                start = end;
-                // if (sendto(socketDescriptor, buf, strlen(buf)+1, 0, (struct sockaddr *) &serverAddress, sizeof(serverAddress)) < 0)
-                //{
-                //    cerr << "cannot send data ";
-                //    CLOSE(socketDescriptor);
-                //    exit(1);
-                //}
+#ifdef __UDP_CLIENT_VERBOSE__
+                else
+                    cout << "Sending " << buf << endl;
+#endif
             }
             else
             {

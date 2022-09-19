@@ -1,8 +1,6 @@
 /***************************************************************************
-
     file                 : scr_server.cpp
     copyright            : (C) 2007 Daniele Loiacono
-
  ***************************************************************************/
 
 /***************************************************************************
@@ -36,7 +34,6 @@
 #include "SimpleParser.h"
 #include "CarControl.h"
 #include "ObstacleSensors.h"
-#include <etcd/Client.hpp>
 
 #ifdef _WIN32
 typedef sockaddr_in tSockAddrIn;
@@ -60,7 +57,7 @@ typedef struct sockaddr_in tSockAddrIn;
 /*** defines for UDP *****/
 #define UDP_LISTEN_PORT 3001
 #define UDP_ID "SCR"
-#define UDP_DEFAULT_TIMEOUT 100000
+#define UDP_DEFAULT_TIMEOUT 10000
 #define UDP_MSGLEN 1000
 //#define __UDP_SERVER_VERBOSE__
 /************************/
@@ -110,9 +107,6 @@ static int listenSocket[NBBOTS];
 socklen_t clientAddressLength[NBBOTS];
 tSockAddrIn clientAddress[NBBOTS], serverAddress[NBBOTS];
 /************************************************/
-
-//ETCD setup
-static etcd::Client etcd_client("http://etcd:2379");
 
 static tdble oldAccel[NBBOTS];
 static tdble oldBrake[NBBOTS];
@@ -502,6 +496,15 @@ drive(int index, tCarElt* car, tSituation *s)
     stateString += SimpleParser::stringify("wheelSpinVel", wheelSpinVel, 4);
     stateString += SimpleParser::stringify("z", car->_pos_Z  - RtTrackHeightL(&(car->_trkPos)));
 	stateString += SimpleParser::stringify("focus", focusSensorOut, 5);//ML
+    stateString += SimpleParser::stringify("x", car->_pos_X);
+    stateString += SimpleParser::stringify("y", car->_pos_Y);
+    stateString += SimpleParser::stringify("roll", car->_roll);
+    stateString += SimpleParser::stringify("pitch", car->_pitch);
+    stateString += SimpleParser::stringify("yaw", car->_yaw);
+    stateString += SimpleParser::stringify("speedGlobalX", car->_speed_X);
+    stateString += SimpleParser::stringify("speedGlobalY", car->_speed_Y);
+
+
 
     char line[UDP_MSGLEN];
     sprintf(line,"%s",stateString.c_str());
@@ -533,9 +536,6 @@ if (RESTARTING[index]==0)
     }
 #endif
 	
-
-    pplx::task<etcd::Response> response_task = etcd_client.set("/test/shared/gamestate", line);
-    std::cout << "Saved state to ETCD" << std::endl;
 
     // Sending the car state to the client
     if (sendto(listenSocket[index], line, strlen(line) + 1, 0,
@@ -745,4 +745,3 @@ double normRand(double avg,double std)
 	    y2 = x2 * w;
 	    return y1*std + avg;
 }
-
