@@ -18,6 +18,8 @@
 #include "opencv2/highgui/highgui.hpp"
 #include <opencv2/highgui/highgui_c.h>
 #include "torcs_data.pb.h"
+#include <ctime>
+#include <chrono>
 #include <etcd/Client.hpp>
 
 using namespace std;
@@ -88,20 +90,12 @@ int main(int argc, char const *argv[])
                 }
             }
             cvResize(screenRGB, resizeRGB);
-            cvSplit(resizeRGB, out_blue, out_green, out_red, NULL);
+            cvSplit(resizeRGB, out_blue, out_green, out_red, NULL);            
 
-            torcs_data.clear_red();
-            torcs_data.clear_green();
-            torcs_data.clear_blue();
-            torcs_data.add_red((const void*)out_red->imageData, (size_t) resize_width * resize_height);
-            torcs_data.add_green((const void*)out_green->imageData, (size_t) resize_width * resize_height);
-            torcs_data.add_blue((const void*)out_blue->imageData, (size_t) resize_width * resize_height);
-
-            string serialized_data;
-            torcs_data.SerializeToString(&serialized_data);
-            pplx::task<etcd::Response> response_task = etcd.set("/test/shared/red", torcs_data.red(0));
-            response_task = etcd.set("/test/shared/green", torcs_data.green(0));
-            response_task = etcd.set("/test/shared/blue", torcs_data.blue(0));
+            pplx::task<etcd::Response> response_task = etcd.set("/test/shared/red", out_red->imageData);
+            response_task = etcd.set("/test/shared/green", out_green->imageData);
+            response_task = etcd.set("/test/shared/blue", out_blue->imageData);
+            
             shared->written=0;
         }
     }

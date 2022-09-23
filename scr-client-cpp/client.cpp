@@ -30,7 +30,6 @@
 #include <cstdlib>
 #include <cstdio>
 #include <ctime>
-#include <chrono>
 #include __DRIVER_INCLUDE__
 
 /*** defines for UDP *****/
@@ -65,8 +64,6 @@ void parse_args(int argc, char *argv[], char *hostName, unsigned int &serverPort
 int main(int argc, char *argv[])
 {
     static etcd::Client etcd_client("http://etcd:2379");
-    static double total_time = 0;
-    static int count_time = 0;
     std::cout << "Connected to ETCD..." << std::endl;
     SOCKET socketDescriptor;
     int numRead;
@@ -218,7 +215,6 @@ int main(int argc, char *argv[])
         }  while(1);
 
 	unsigned long currentStep=0; 
-        auto start = std::chrono::system_clock::now();
         while(1)
         {
             // wait until answer comes back, for up to UDP_CLIENT_TIMEUOT micro sec
@@ -263,12 +259,6 @@ int main(int argc, char *argv[])
 			        sprintf (buf, "(meta 1)");
                 }
                 pplx::task<etcd::Response> response_task = etcd_client.set("/test/shared/driver_action", buf);
-                auto end = std::chrono::system_clock::now();
-                std::chrono::duration<double> elapsed_seconds = end-start;
-                total_time += elapsed_seconds.count();
-                count_time += 1;
-                std::cout << "average time: " << total_time/count_time << "s" << std::endl;
-                start = end;
                 // if (sendto(socketDescriptor, buf, strlen(buf)+1, 0, (struct sockaddr *) &serverAddress, sizeof(serverAddress)) < 0)
                 //{
                 //    cerr << "cannot send data ";
