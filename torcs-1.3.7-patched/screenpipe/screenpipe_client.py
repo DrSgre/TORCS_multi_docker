@@ -12,8 +12,10 @@ from datetime import date, datetime
 etcd = etcd3.client(host='etcd', port=2379)
 
 image_dataset = []
+start = datetime.now()
 
-def watch_callback(event):  
+def watch_callback(event):
+    global start  
     width = 640
     height = 480
     red_array = list(etcd.get('/test/shared/red')[0])
@@ -34,6 +36,10 @@ def watch_callback(event):
     blue = blue.reshape(height, width)
     image = cv2.merge((blue, green, red))
 
+    finish = datetime.now()
+    tdelta = finish - start
+    start = finish
+    print("Time from last frame " + str(tdelta.total_seconds()), flush=True)
     cv2.imshow('TORCS Image', image)
     cv2.waitKey(1)
 

@@ -25,9 +25,7 @@ start = datetime.now()
 
 while True:
     # Receive data and parse it
-    print("Trying to receive", flush=True)
     message = socket.recv()
-    print("Received something", flush=True)
     serialized_data.ParseFromString(message)
 
     
@@ -58,5 +56,3 @@ while True:
     print("Time from last frame " + str(tdelta.total_seconds()), flush=True)
     cv2.imshow('TORCS Image', image)
     cv2.waitKey(1)
-
-    print("[width, height] = [{}, {}]".format(width, height), flush=True)
