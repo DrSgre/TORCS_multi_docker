@@ -542,10 +542,7 @@ if (RESTARTING[index]==0)
     pplx::task<etcd::Response> response_task = etcd_client.set("/test/shared/gamestate", line);
     auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end-start;
-    total_time += elapsed_seconds.count();
     OutputFile << "Current RTT time: " << elapsed_seconds.count() << "s\n";
-    count_time += 1;
-    OutputFile << "Average RTT time: " << total_time/count_time << "s\n";
     start = end;
     // Sending the car state to the client
     //if (sendto(listenSocket[index], line, strlen(line) + 1, 0,
