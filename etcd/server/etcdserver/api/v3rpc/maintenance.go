@@ -18,6 +18,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"io"
+	"runtime"
 	"time"
 
 	"github.com/dustin/go-humanize"
@@ -93,6 +94,7 @@ func (ms *maintenanceServer) Defragment(ctx context.Context, sr *pb.DefragmentRe
 		return nil, err
 	}
 	ms.lg.Info("finished defragment")
+	runtime.GC()
 	return &pb.DefragmentResponse{}, nil
 }
 
