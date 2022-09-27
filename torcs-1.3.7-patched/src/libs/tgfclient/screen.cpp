@@ -64,8 +64,6 @@ static int GfScrCenY;
 
 static void	*scrHandle = NULL;
 
-extern void musicmenu(int, bool);
-
 static int usedGM = 0;
 #if !defined(FREEGLUT) && !defined(WIN32)
 static int usedFG = 0;
@@ -494,8 +492,7 @@ GfScrReinit(void * /* dummy */)
 	static const int CMDSIZE = 1024;
 	char cmd[CMDSIZE];
 
-	//stopMenuMusic();
-	musicmenu(0, false);
+	stopMenuMusic();
 	
 #ifndef WIN32
     const char *arg[8];
