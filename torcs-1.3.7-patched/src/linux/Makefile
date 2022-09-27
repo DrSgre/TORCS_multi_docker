@@ -21,7 +21,7 @@ TOOLSCRIPT  = torcs
 
 PROGRAM = torcs-bin
 
-SOURCES = main.cpp linuxspec.cpp
+SOURCES = main.cpp linuxspec.cpp musicconnector.cpp
 
 LDFLAGS = -rdynamic
 

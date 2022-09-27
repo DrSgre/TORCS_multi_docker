@@ -24,7 +24,9 @@
 
 #include "mainmenu.h"
 #include "splash.h"
-#include <musicplayer/musicplayer.h>
+//#include <musicplayer/musicplayer.h>
+
+extern void musicmenu(int, bool);
 
 /*
  * Function
@@ -53,5 +55,5 @@ TorcsEntry(void)
 
 	SplashScreen();
 	
-	startMenuMusic();
+	musicmenu(0, true);
 }

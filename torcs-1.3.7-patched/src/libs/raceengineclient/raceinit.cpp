@@ -37,7 +37,7 @@
 #include <string>
 #include <map>
 #include <portability.h>
-#include <musicplayer/musicplayer.h>
+//#include <musicplayer/musicplayer.h>
 
 #include "raceengine.h"
 #include "racemain.h"
@@ -51,6 +51,8 @@ static const char *level_str[] = { ROB_VAL_ROOKIE, ROB_VAL_AMATEUR, ROB_VAL_SEMI
 
 static tModList *reEventModList = 0;
 tModList *ReRaceModList = 0;
+
+extern void musicmenu(int, bool);
 
 typedef struct 
 {
@@ -823,7 +825,7 @@ ReRaceCleanup(void)
 	ReInfo->_reSimItf.shutdown();
 	if (ReInfo->_displayMode == RM_DISP_MODE_NORMAL) {
 		ReInfo->_reGraphicItf.shutdowncars();
-		startMenuMusic();
+		musicmenu(0, true);
 	}
 	ReStoreRaceResults(ReInfo->_reRaceName);
 	ReRaceCleanDrivers();

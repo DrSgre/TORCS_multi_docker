@@ -78,7 +78,7 @@ int main(int argc, char const *argv[])
 {
     cvNamedWindow("Image from TORCS",1);
     watch_for_changes();
-    getchar();
+    while (true) { }
 
     return 0;
 }

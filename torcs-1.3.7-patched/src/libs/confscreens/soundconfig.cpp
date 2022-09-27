@@ -32,6 +32,8 @@
 
 #include "soundconfig.h"
 
+extern void musicmenu(int, bool);
+
 static float LabelColor[] = {1.0, 0.0, 1.0, 1.0};
 
 // list of options.
@@ -133,9 +135,10 @@ static void saveSoundOption(void *)
 	GfParmReleaseHandle(paramHandle);
 	
 	if (curOptionMenuMusic == 1) {
-		startMenuMusic();
+		//startMenuMusic();
+		musicmenu(0, true);
 	} else {
-		stopMenuMusic();
+		musicmenu(0, false);
 	}
 	
 	// Return to previous screen.

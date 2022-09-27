@@ -28,6 +28,8 @@ RUN apt-get install -y libgrpc-dev \
 
 WORKDIR /tmp
 
+ARG t=t
+
 RUN wget -O TORCS_multi_docker.zip https://github.com/DrSgre/TORCS_multi_docker/archive/master.zip
 
 RUN unzip TORCS_multi_docker.zip
@@ -50,4 +52,7 @@ WORKDIR /tmp/TORCS_multi_docker-master/torcs-1.3.7-patched/new_screenpipe
 
 RUN ["chmod", "755", "./screenpipe_client"]
 
-CMD ./screenpipe_client
+RUN export NO_AT_BRIDGE=1
+
+CMD tail -f /dev/null
+

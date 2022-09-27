@@ -42,6 +42,8 @@
 
 #include "racemain.h"
 
+extern void musicmenu(int, bool);
+
 /***************************************************************/
 /* ABANDON RACE HOOK */
 
@@ -81,7 +83,8 @@ AbortRaceHookActivate(void * /* dummy */)
 	ReInfo->_reSimItf.shutdown();
 	if (ReInfo->_displayMode == RM_DISP_MODE_NORMAL) {
 		ReInfo->_reGraphicItf.shutdowncars();
-		startMenuMusic();
+		//startMenuMusic();
+		musicmenu(0, true);
 	}
 	ReInfo->_reGraphicItf.shutdowntrack();
 	ReRaceCleanDrivers();
