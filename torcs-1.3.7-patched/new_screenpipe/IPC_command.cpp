@@ -90,12 +90,22 @@ int main(int argc, char const *argv[])
                 }
             }
             cvResize(screenRGB, resizeRGB);
-            cvSplit(resizeRGB, out_blue, out_green, out_red, NULL);            
+            cvSplit(resizeRGB, out_blue, out_green, out_red, NULL);
 
-            pplx::task<etcd::Response> response_task = etcd.set("/test/shared/red", out_red->imageData);
-            response_task = etcd.set("/test/shared/green", out_green->imageData);
-            response_task = etcd.set("/test/shared/blue", out_blue->imageData);
-            
+            cv::Mat img = cvarrToMat(resizeRGB);
+
+            std::vector<uchar> data_vector;
+            if (img.isContinuous()) {
+            data_vector.assign(img.data, img.data + img.total()*img.channels());
+            } else {
+                for (int i = 0; i < img.rows; ++i) {
+                    data_vector.insert(data_vector.end(), img.ptr<uchar>(i), img.ptr<uchar>(i)+img.cols*img.channels());
+                }
+            }
+            std::string image_string(data_vector.begin(), data_vector.end()); 
+
+            pplx::task<etcd::Response> response_task = etcd.set("/test/shared/image", image_string);
+
             shared->written=0;
         }
     }

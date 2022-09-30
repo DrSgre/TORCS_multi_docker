@@ -34,41 +34,33 @@ static int count_time = 0;
 //ETCD setup
 etcd::Client etcd_client("http://etcd:2379");
 unsigned char image[resize_width*resize_height * 3];
-IplImage* resizeRGB=cvCreateImage(cvSize(resize_width,resize_height),IPL_DEPTH_8U,3);
 int key;
-IplImage* out_red = cvCreateImage(cvSize(resize_width,resize_height), IPL_DEPTH_8U, 1);
-IplImage* out_green = cvCreateImage(cvSize(resize_width,resize_height), IPL_DEPTH_8U, 1);
-IplImage* out_blue = cvCreateImage(cvSize(resize_width,resize_height), IPL_DEPTH_8U, 1);
+
 
 int indes = 0;
 
 void watch_for_changes()
 {
-    etcd_client.watch("/test/shared/red", indes + 1, true).then([](pplx::task<etcd::Response> resp_task)
+    etcd_client.watch("/test/shared/image", indes + 1, true).then([](pplx::task<etcd::Response> resp_task)
     {
-        //IplImage* resizeRGB=cvCreateImage(cvSize(resize_width,resize_height),IPL_DEPTH_8U,3);
-        //IplImage* out_red = cvCreateImage(cvSize(resize_width,resize_height), IPL_DEPTH_8U, 1);
-        //IplImage* out_green = cvCreateImage(cvSize(resize_width,resize_height), IPL_DEPTH_8U, 1);
-        //IplImage* out_blue = cvCreateImage(cvSize(resize_width,resize_height), IPL_DEPTH_8U, 1);
-        strcpy(out_red->imageData, etcd_client.get("/test/shared/red").get().value().as_string().c_str());  
-        strcpy(out_green->imageData, etcd_client.get("/test/shared/green").get().value().as_string().c_str());
-        strcpy(out_blue->imageData, etcd_client.get("/test/shared/blue").get().value().as_string().c_str());
+        try {
+            string output_string = etcd_client.get("/test/shared/image").get().value().as_string();
 
-        try
-        {
-            cvMerge(out_blue, out_green, out_red, NULL, resizeRGB);
-            cvShowImage("Image from TORCS", resizeRGB);
+            std::vector<uchar> image_vector(output_string.begin(), output_string.end());
+
+            auto p_img = cv::Mat(480, 640, CV_8UC3, image_vector.data());
+            cv::imshow("Image from TORCS", p_img);
             key = cvWaitKey(1);
             auto end = std::chrono::system_clock::now();
             std::chrono::duration<double> elapsed_seconds = end-start;
             total_time += elapsed_seconds.count();
             count_time += 1;
-            std::cout << "average fps: " << count_time/total_time << "s" << std::endl;
+            std::cout << "Average fps: " << count_time/total_time << std::endl;
             start = end;
         }
-        catch (Exception e)
+        catch (std::exception const & ex)
         {
-            std::cout << e.msg << std::endl;
+            std::cerr << "communication problem, details: " << ex.what();
         }
         watch_for_changes();
     });

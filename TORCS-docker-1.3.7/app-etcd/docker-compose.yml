@@ -17,6 +17,8 @@ services:
       - ETCD_AUTO_COMPACTION_RETENTION=5s
       - ETCD_AUTO_COMPACTION_MODE=periodic
       - ETCD_MAX_WALS=1
+      - ETCD_MAX_REQUEST_BYTES=3145728
+
     ports:
       - 2379:2379
       - 2380:2380
