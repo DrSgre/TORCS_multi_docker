@@ -23,7 +23,7 @@ SOLIBDIR     = .
 SOURCES      = singleplayer.cpp raceinit.cpp racemain.cpp racemanmenu.cpp racestate.cpp racegl.cpp \
 	       raceengine.cpp raceresults.cpp
 
-SOLIBS      = -lracescreens -lrobottools
+SOLIBS      = -lracescreens -lrobottools -lcpprest -letcd-cpp-api -lopencv_imgproc -lopencv_core -lopencv_highgui 
 
 EXPDIR       = include
 

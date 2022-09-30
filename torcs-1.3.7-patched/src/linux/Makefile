@@ -31,11 +31,13 @@ SOLIBS  =  -lclient       \
 	   -ltgfclient    \
 	   -ltxml	  \
 	   -lplibul	  \
+	   -lcpprest \
+	   -letcd-cpp-api \
 	   -lraceengine   \
 	   -lmusicplayer  \
 	   -lracescreens  \
 	   -lrobottools   \
-	   -llearning
+	   -llearning 
 
 EXPDIR  = include
 

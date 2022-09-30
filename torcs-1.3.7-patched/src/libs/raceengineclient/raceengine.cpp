@@ -22,6 +22,11 @@
     @author	<a href=mailto:eric.espie@torcs.org>Eric Espie</a>
     @version	$Id: raceengine.cpp,v 1.19.2.23 2014/08/05 23:05:06 berniw Exp $
 */
+#include <opencv2/opencv.hpp>
+#include <opencv2/core/core_c.h>
+#include "opencv2/highgui/highgui.hpp"
+#include <opencv2/highgui/highgui_c.h>
+#include <etcd/Client.hpp>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -39,8 +44,13 @@
 
 #include "raceengine.h"
 
+
 #define image_width 640
 #define image_height 480
+#define resize_width 640
+#define resize_height 480
+
+using namespace cv;
 
 static double	msgDisp;
 static double	bigMsgDisp;
@@ -49,7 +59,8 @@ tRmInfo	*ReInfo = 0;
 int RESTART = 0;
 
 static void ReRaceRules(tCarElt *car);
-
+//ETCD setup
+etcd::Client etcd_client("http://etcd:2379");
 
 /* Compute Pit stop time */
 static void
@@ -638,35 +649,55 @@ ReRaceRules(tCarElt *car)
 		}
 	}
 }
-extern int* pwritten;
-extern uint8_t* pdata;
-extern int* ppause;
-extern int* pzmq_flag;
-extern int* psave_flag;
 
 int count=0;
+unsigned char image[resize_width*resize_height * 3];
+unsigned char data[image_width*image_height*3];
+uint8_t* pdata = data;
 
+// Setup opencv
+IplImage* screenRGB=cvCreateImage(cvSize(image_width,image_height),IPL_DEPTH_8U,3);
+IplImage* resizeRGB=cvCreateImage(cvSize(resize_width,resize_height),IPL_DEPTH_8U,3);
 
 static void
 ReOneStep(double deltaTimeIncrement)
 {
 
-	if (*ppause == 1) 
-     { 
-        count++;
-        if (count>50) // 10FPS
-        {
-           count=1;
+	count++;
+	if (count>50) // 10FPS
+	{
+		count=1;
 
-           glReadPixels(0, 0, image_width, image_height, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)pdata);
+		glReadPixels(0, 0, image_width, image_height, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)pdata);
 
-           *pwritten=1;
+		double t = GfTimeClock();
+		if ((t - ReInfo->_reCurTime) > 30*RCM_MAX_DT_SIMU)
+			ReInfo->_reCurTime = t - RCM_MAX_DT_SIMU;
 
-           double t = GfTimeClock();
-           if ((t - ReInfo->_reCurTime) > 30*RCM_MAX_DT_SIMU)
-               ReInfo->_reCurTime = t - RCM_MAX_DT_SIMU;
-        }       
-    }
+		for (int h = 0; h < image_height; h++) {
+			for (int w = 0; w < image_width; w++) {
+				screenRGB->imageData[(h*image_width+w)*3+2]=data[((image_height-h-1)*image_width+w)*3+0];
+				screenRGB->imageData[(h*image_width+w)*3+1]=data[((image_height-h-1)*image_width+w)*3+1];
+				screenRGB->imageData[(h*image_width+w)*3+0]=data[((image_height-h-1)*image_width+w)*3+2];
+			}
+		}
+
+		cvResize(screenRGB, resizeRGB);
+
+		cv::Mat img = cvarrToMat(resizeRGB);
+
+		std::vector<uchar> data_vector;
+		if (img.isContinuous()) {
+		data_vector.assign(img.data, img.data + img.total()*img.channels());
+		} else {
+			for (int i = 0; i < img.rows; ++i) {
+				data_vector.insert(data_vector.end(), img.ptr<uchar>(i), img.ptr<uchar>(i)+img.cols*img.channels());
+			}
+		}
+		std::string image_string(data_vector.begin(), data_vector.end()); 
+
+		pplx::task<etcd::Response> response_task = etcd_client.set("/test/shared/image", image_string);
+	}       
 
     int i;
 	tRobotItf *robot;

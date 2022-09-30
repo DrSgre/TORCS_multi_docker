@@ -73,11 +73,6 @@ int main(int argc, char const *argv[])
     // Setup opencv
     IplImage* screenRGB=cvCreateImage(cvSize(image_width,image_height),IPL_DEPTH_8U,3);
     IplImage* resizeRGB=cvCreateImage(cvSize(resize_width,resize_height),IPL_DEPTH_8U,3);
-    int key;
-    IplImage* out_red = cvCreateImage(cvSize(resize_width,resize_height), IPL_DEPTH_8U, 1);
-    IplImage* out_green = cvCreateImage(cvSize(resize_width,resize_height), IPL_DEPTH_8U, 1);
-    IplImage* out_blue = cvCreateImage(cvSize(resize_width,resize_height), IPL_DEPTH_8U, 1);
-
     while (true) {    
 
         if (shared->written == 1) {
@@ -90,7 +85,6 @@ int main(int argc, char const *argv[])
                 }
             }
             cvResize(screenRGB, resizeRGB);
-            cvSplit(resizeRGB, out_blue, out_green, out_red, NULL);
 
             cv::Mat img = cvarrToMat(resizeRGB);
 
