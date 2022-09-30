@@ -58,7 +58,7 @@ RUN make -j$(nproc) && make install
 
 WORKDIR /tmp
 
-ARG tr=tr
+ARG th=th
 
 RUN wget -O TORCS_multi_docker.zip https://github.com/DrSgre/TORCS_multi_docker/archive/master.zip
 
@@ -66,14 +66,7 @@ RUN unzip TORCS_multi_docker.zip
 
 WORKDIR /tmp/TORCS_multi_docker-master/torcs-1.3.7-patched
 
-RUN export CFLAGS="-fPIC" && export CPPFLAGS=$CFLAGS && export CXXFLAGS=$CFLAGS
-
-RUN ./configure --prefix=$(pwd)/BUILD
-
-RUN make clean && make && make install && make datainstall
-
 RUN ["chmod", "755", "./BUILD/bin/torcs"]
-RUN ["chmod", "777", "./remote_torcs.sh"]
 
 ARG LD_LIBRARY_PATH=/usr/local/lib/libetcd-cpp-api.so
 
