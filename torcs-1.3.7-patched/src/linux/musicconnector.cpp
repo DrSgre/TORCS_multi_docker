@@ -36,6 +36,10 @@ newconnection(int index)
     char line[UDP_MSGLEN];
 
     listenSocket[index] = socket(AF_INET, SOCK_DGRAM, 0);
+    const int enable = 1;
+    if (setsockopt(listenSocket[index], SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0)
+        std::cout << "setsockopt(SO_REUSEADDR) failed" << std::endl;
+
     if (listenSocket[index] < 0)
     {
         std::cerr << "Error: cannot create listenSocket!";
