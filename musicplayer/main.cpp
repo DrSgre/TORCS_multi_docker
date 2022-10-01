@@ -32,7 +32,7 @@ int main() {
     fd_set readSet;
     int numRead;
     char buf[UDP_MSGLEN];
-    unsigned int serverPort = 4001;
+    unsigned int serverPort = 4005;
     char id[1000] = "musicplayer";
     char hostName[1000] = "172.20.0.3";
 

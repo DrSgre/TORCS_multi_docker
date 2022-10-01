@@ -15,7 +15,7 @@ typedef struct sockaddr_in tSockAddrIn;
 #include <netinet/in.h>
 #include <unistd.h>
 
-#define UDP_LISTEN_PORT 4001
+#define UDP_LISTEN_PORT 4005
 #define UDP_ID "musicplayer-connect"
 #define UDP_DEFAULT_TIMEOUT 10000
 #define UDP_MSGLEN 1000
@@ -39,6 +39,8 @@ newconnection(int index)
     const int enable = 1;
     if (setsockopt(listenSocket[index], SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0)
         std::cout << "setsockopt(SO_REUSEADDR) failed" << std::endl;
+    if (setsockopt(listenSocket[index], SOL_SOCKET, SO_REUSEPORT, &enable, sizeof(int)) < 0)
+        std::cout << "setsockopt(SO_REUSEPORT) failed" << std::endl;
 
     if (listenSocket[index] < 0)
     {
