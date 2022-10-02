@@ -34,7 +34,7 @@ static int count_time = 0;
 
 //ETCD setup
 etcd::Client etcd_client("http://etcd:2379");
-static std::ofstream OutputFile("output.txt");
+static std::ofstream OutputFile;
 unsigned char image[resize_width*resize_height * 3];
 int key;
 
@@ -59,7 +59,9 @@ void watch_for_changes()
             count_time += 1;
             if (total_time >= 1)
             {
-                OutputFile << "Current FPS: " << (int)count_time/total_time << "\n";
+                OutputFile.open("output.txt", std::fstream::out | std::fstream::app);
+                OutputFile << "Current FPS: " + std::to_string((int)count_time/total_time) << "\n";
+                OutputFile.close();
                 count_time = 0;
                 total_time = 0;
             }
