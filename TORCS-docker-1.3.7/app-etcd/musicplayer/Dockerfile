@@ -28,6 +28,8 @@ RUN apt-get install -y libopencv-dev python3-opencv
 
 WORKDIR /tmp
 
+ARG tg=tg
+
 RUN wget -O TORCS_multi_docker.zip https://github.com/DrSgre/TORCS_multi_docker/archive/master.zip
 
 RUN unzip TORCS_multi_docker.zip

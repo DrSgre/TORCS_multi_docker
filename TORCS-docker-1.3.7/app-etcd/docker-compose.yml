@@ -18,14 +18,14 @@ services:
       - ETCD_AUTO_COMPACTION_MODE=periodic
       - ETCD_MAX_WALS=1
       - ETCD_MAX_REQUEST_BYTES=3145728
-
     ports:
       - 2379:2379
       - 2380:2380
     networks:
       - net-torcs
-    cpuset: "4"
-  
+    cap_add:
+      - NET_ADMIN
+    
   music:
     image: my-music:latest
     build: ./musicplayer
@@ -53,3 +53,5 @@ services:
     depends_on:
       - "Etcd"
       - "music"
+    cap_add:
+      - NET_ADMIN

@@ -58,13 +58,15 @@ RUN make -j$(nproc) && make install
 
 WORKDIR /tmp
 
-ARG tl=tl
+ARG ty=ty
 
 RUN wget -O TORCS_multi_docker.zip https://github.com/DrSgre/TORCS_multi_docker/archive/master.zip
 
 RUN unzip TORCS_multi_docker.zip
 
 WORKDIR /tmp/TORCS_multi_docker-master/torcs-1.3.7-patched
+
+RUN ln -s /usr/include/opencv4/opencv2 /usr/include/opencv2
 
 RUN export CFLAGS="-fPIC" && export CPPFLAGS=$CFLAGS && export CXXFLAGS=$CFLAGS
 
@@ -75,6 +77,8 @@ RUN make && make install && make datainstall
 RUN ["chmod", "755", "./BUILD/bin/torcs"]
 
 ARG LD_LIBRARY_PATH=/usr/local/lib/libetcd-cpp-api.so
+
+RUN apt-get install iproute2 iputils-ping -y
 
 CMD ./BUILD/bin/torcs
 

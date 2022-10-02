@@ -20,6 +20,8 @@
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <iostream>
+#include <fstream>
 #ifdef WIN32
 #include <windows.h>
 #endif
@@ -62,6 +64,7 @@ void *grTrackHandle = NULL;
 int grWinx, grWiny, grWinw, grWinh;
 
 static float grMouseRatioX, grMouseRatioY;
+static std::ofstream OutputFile("output.txt");
 
 tgrCarInfo *grCarInfo;
 ssgContext grContext;
@@ -304,7 +307,6 @@ initView(int x, int y, int width, int height, int /* flag */, void *screen)
 	return 0;
 }
 
-
 int
 refresh(tSituation *s)
 {
@@ -318,6 +320,7 @@ refresh(tSituation *s)
     if ((grCurTime - OldTime) > 1.0) {
 	/* The Frames Per Second (FPS) display is refreshed every second */
 	grFps = (tdble)nFrame / (grCurTime - OldTime);
+    OutputFile << "Current FPS: " << grFps << "\n";
 	nFrame = 0;
 	OldTime = grCurTime;
     }

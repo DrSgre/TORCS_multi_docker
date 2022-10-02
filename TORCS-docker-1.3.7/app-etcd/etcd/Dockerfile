@@ -45,5 +45,7 @@ RUN ["chmod", "777", "./run_w_defrag.sh"]
 
 RUN export ETCDCTL_API=3
 
+RUN apt-get install iproute2 iputils-ping -y
+
 CMD ./run_w_defrag.sh
 

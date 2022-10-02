@@ -115,8 +115,6 @@ tSockAddrIn clientAddress[NBBOTS], serverAddress[NBBOTS];
 
 //ETCD setup
 static etcd::Client etcd_client("http://etcd:2379");
-static ofstream OutputFile("output.txt");
-
 static tdble oldAccel[NBBOTS];
 static tdble oldBrake[NBBOTS];
 static tdble oldSteer[NBBOTS];
@@ -135,9 +133,6 @@ static float trackSensAngle[NBBOTS][19];
 static const char* botname[NBBOTS] = {"scr_server 1", "scr_server 2", "scr_server 3", "scr_server 4", "scr_server 5", "scr_server 6", "scr_server 7", "scr_server 8", "scr_server 9", "scr_server 10"};
 
 static unsigned long total_tics[NBBOTS];
-static auto start = std::chrono::system_clock::now();
-static double total_time = 0;
-static int count_time = 0;
 
 /*
  * Module entry point
@@ -540,10 +535,6 @@ if (RESTARTING[index]==0)
 	
 
     pplx::task<etcd::Response> response_task = etcd_client.set("/test/shared/gamestate", line);
-    auto end = std::chrono::system_clock::now();
-    std::chrono::duration<double> elapsed_seconds = end-start;
-    OutputFile << "Current RTT time: " << elapsed_seconds.count() << "s\n";
-    start = end;
     // Sending the car state to the client
     //if (sendto(listenSocket[index], line, strlen(line) + 1, 0,
     //           (struct sockaddr *) &clientAddress[index],
