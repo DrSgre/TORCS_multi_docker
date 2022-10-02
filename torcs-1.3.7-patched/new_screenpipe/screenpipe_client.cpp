@@ -9,6 +9,7 @@
 // 
 
 #include <iostream>
+#include <fstream>
 #include <unistd.h>
 #include <sys/shm.h>
 #include <stdlib.h>  
@@ -33,6 +34,7 @@ static int count_time = 0;
 
 //ETCD setup
 etcd::Client etcd_client("http://etcd:2379");
+static std::ofstream OutputFile("output.txt");
 unsigned char image[resize_width*resize_height * 3];
 int key;
 
@@ -55,7 +57,12 @@ void watch_for_changes()
             std::chrono::duration<double> elapsed_seconds = end-start;
             total_time += elapsed_seconds.count();
             count_time += 1;
-            std::cout << "Average fps: " << count_time/total_time << std::endl;
+            if (total_time >= 1)
+            {
+                OutputFile << "Current FPS: " << (int)count_time/total_time << "\n";
+                count_time = 0;
+                total_time = 0;
+            }
             start = end;
         }
         catch (std::exception const & ex)
