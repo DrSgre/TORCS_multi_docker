@@ -1,0 +1,25 @@
+version: "3"
+
+networks:
+  app-etcd_net-torcs:
+    external: true
+
+services:
+  prometheus:
+    image: my-prometheus:latest
+    build: ./prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      app-etcd_net-torcs:
+        ipv4_address: 172.20.0.10
+  grafana:
+    image: grafana/grafana:latest
+    volumes:
+      - ./provisioning:/etc/grafana/provisioning
+    ports:
+      - "3000:3000"
+    networks:
+      - app-etcd_net-torcs
+    depends_on:
+      - "prometheus"

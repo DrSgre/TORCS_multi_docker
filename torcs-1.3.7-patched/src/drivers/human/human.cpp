@@ -492,7 +492,7 @@ static void common_drive(int index, tCarElt* car, tSituation *s)
 		car->_raceCmd = RM_CMD_PIT_ASKED;
 	}
 
-	if (lastKeyUpdate != std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string())) {
+	if (lastKeyUpdate != s->currentTime) {
 		/* Update the controls only once for all the players */
 		updateKeys();
 
@@ -501,7 +501,7 @@ static void common_drive(int index, tCarElt* car, tSituation *s)
 		}
 
 		GfctrlMouseGetCurrent(mouseInfo);
-		lastKeyUpdate = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string());
+		lastKeyUpdate = s->currentTime;
 	}
 
 	if (((cmd[CMD_ABS].type == GFCTRL_TYPE_JOY_BUT) && joyInfo->edgeup[cmd[CMD_ABS].val]) ||
@@ -588,7 +588,7 @@ static void common_drive(int index, tCarElt* car, tSituation *s)
 				HCtx[idx]->prevLeftSteer = leftSteer = 0;
 			} else {
 				ax0 = 2 * ax0 - 1;
-				leftSteer = HCtx[idx]->prevLeftSteer + ax0 * cmd[CMD_LEFTSTEER].sens * std::stod(etcd_client.get("/test/situation/deltaTime").get().value().as_string()) / (1.0 + cmd[CMD_LEFTSTEER].spdSens * car->pub.speed / 10.0);
+				leftSteer = HCtx[idx]->prevLeftSteer + ax0 * cmd[CMD_LEFTSTEER].sens * s->deltaTime / (1.0 + cmd[CMD_LEFTSTEER].spdSens * car->pub.speed / 10.0);
 				if (leftSteer > 1.0) leftSteer = 1.0;
 				if (leftSteer < 0.0) leftSteer = 0.0;
 				HCtx[idx]->prevLeftSteer = leftSteer;
@@ -636,7 +636,7 @@ static void common_drive(int index, tCarElt* car, tSituation *s)
 				HCtx[idx]->prevRightSteer = rightSteer = 0;
 			} else {
 				ax0 = 2 * ax0 - 1;
-				rightSteer = HCtx[idx]->prevRightSteer - ax0 * cmd[CMD_RIGHTSTEER].sens * std::stod(etcd_client.get("/test/situation/deltaTime").get().value().as_string())/ (1.0 + cmd[CMD_RIGHTSTEER].spdSens * car->pub.speed / 10.0);
+				rightSteer = HCtx[idx]->prevRightSteer - ax0 * cmd[CMD_RIGHTSTEER].sens * s->deltaTime / (1.0 + cmd[CMD_RIGHTSTEER].spdSens * car->pub.speed / 10.0);
 				if (rightSteer > 0.0) rightSteer = 0.0;
 				if (rightSteer < -1.0) rightSteer = -1.0;
 				HCtx[idx]->prevRightSteer = rightSteer;
@@ -778,7 +778,7 @@ static void common_drive(int index, tCarElt* car, tSituation *s)
 			break;
 	}
 
-	if (std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string()) > 1.0) {
+	if (s->currentTime > 1.0) {
 		// thanks Christos for the following: gradual accel/brake changes for on/off controls.
 		const tdble inc_rate = 0.2f;
 		
