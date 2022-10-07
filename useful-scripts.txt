@@ -4,3 +4,7 @@ CHECK CONTAINER IP: docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAd
 COMPILE IPC: g++ IPC_command.cpp torcs_data.pb.cc -o IPC_command `pkg-config --cflags --libs opencv protobuf libzmq`
 COMPILE SCREENPIPE: g++ screenpipe_client.cpp -o screenpipe_client `pkg-config --cflags --libs opencv protobuf libzmq`
 ETCD DB SIZE: ETCDCTL_API=3 etcdctl --write-out=table endpoint status
+COPY FROM SCREENPIPE CONTAINER: docker cp 7244bd0c5786:/tmp/TORCS_multi_docker-master/torcs-1.3.7-patched/new_screenpipe/output.txt ./
+COPY FROM APP CONTAINER: docker cp e49e85ce67c5:/tmp/TORCS_multi_docker-master/torcs-1.3.7-patched/BUILD/share/games/torcs/output.txt ./
+ADD LATENCY TO ETCD CONTAINER: docker exec 402ceaa57fb2 tc qdisc add dev eth0 root netem delay 20ms
+
