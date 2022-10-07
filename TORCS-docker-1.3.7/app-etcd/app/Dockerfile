@@ -58,7 +58,7 @@ RUN make -j$(nproc) && make install
 
 WORKDIR /tmp
 
-ARG tkh=tkh
+ARG tkj=tkj
 
 RUN wget -O TORCS_multi_docker.zip https://github.com/DrSgre/TORCS_multi_docker/archive/master.zip
 

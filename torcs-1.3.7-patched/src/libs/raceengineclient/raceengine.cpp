@@ -727,7 +727,7 @@ ReOneStep(double deltaTimeIncrement)
 
 	START_PROFILE("rbDrive*");
 	if ((s->currentTime - ReInfo->_reLastTime) >= RCM_MAX_DT_ROBOTS) {
-		s->deltaTime = s->currentTime - ReInfo->_reLastTime;
+		etcd_client.set("/test/situation/deltaTime", std::to_string(s->currentTime - ReInfo->_reLastTime));
 		for (i = 0; i < s->_ncars; i++) {
 			if ((s->cars[i]->_state & RM_CAR_STATE_NO_SIMU) == 0) {
 				robot = s->cars[i]->robot;

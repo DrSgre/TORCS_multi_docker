@@ -23,8 +23,11 @@
     @version	$Id: racemain.cpp,v 1.13.2.11 2014/05/22 17:21:38 berniw Exp $
 */
 
+#include <etcd/Client.hpp>
+
 #include <stdlib.h>
 #include <stdio.h>
+#include <iostream>
 #include <tgfclient.h>
 #include <raceman.h>
 #include <robot.h>
@@ -43,6 +46,7 @@
 #include "racemain.h"
 
 extern void musicmenu(int, bool);
+extern etcd::Client etcd_client;
 
 /***************************************************************/
 /* ABANDON RACE HOOK */
@@ -313,7 +317,7 @@ static int reRaceRealStart(void)
 	ReInfo->_reTimeMult = 1.0;
 	ReInfo->_reLastTime = -1.0;
 	ReInfo->s->currentTime = -2.0;
-	ReInfo->s->deltaTime = RCM_MAX_DT_SIMU;
+	etcd_client.set("/test/situation/deltaTime", std::to_string(RCM_MAX_DT_SIMU));
 
 	ReInfo->s->_raceState = RM_RACE_STARTING;
 
