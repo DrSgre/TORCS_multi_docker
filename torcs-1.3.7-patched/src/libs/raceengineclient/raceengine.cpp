@@ -55,6 +55,7 @@ using namespace cv;
 static double	msgDisp;
 static double	bigMsgDisp;
 
+
 tRmInfo	*ReInfo = 0;
 int RESTART = 0;
 
@@ -654,6 +655,7 @@ int count=0;
 unsigned char image[resize_width*resize_height * 3];
 unsigned char data[image_width*image_height*3];
 uint8_t* pdata = data;
+bool streamActive = false;
 
 // Setup opencv
 IplImage* screenRGB=cvCreateImage(cvSize(image_width,image_height),IPL_DEPTH_8U,3);
@@ -673,30 +675,32 @@ ReOneStep(double deltaTimeIncrement)
 		double t = GfTimeClock();
 		if ((t - ReInfo->_reCurTime) > 30*RCM_MAX_DT_SIMU)
 			ReInfo->_reCurTime = t - RCM_MAX_DT_SIMU;
-
-		for (int h = 0; h < image_height; h++) {
-			for (int w = 0; w < image_width; w++) {
-				screenRGB->imageData[(h*image_width+w)*3+2]=data[((image_height-h-1)*image_width+w)*3+0];
-				screenRGB->imageData[(h*image_width+w)*3+1]=data[((image_height-h-1)*image_width+w)*3+1];
-				screenRGB->imageData[(h*image_width+w)*3+0]=data[((image_height-h-1)*image_width+w)*3+2];
+		
+		if (streamActive = true) {
+			for (int h = 0; h < image_height; h++) {
+				for (int w = 0; w < image_width; w++) {
+					screenRGB->imageData[(h*image_width+w)*3+2]=data[((image_height-h-1)*image_width+w)*3+0];
+					screenRGB->imageData[(h*image_width+w)*3+1]=data[((image_height-h-1)*image_width+w)*3+1];
+					screenRGB->imageData[(h*image_width+w)*3+0]=data[((image_height-h-1)*image_width+w)*3+2];
+				}
 			}
-		}
 
-		cvResize(screenRGB, resizeRGB);
+			cvResize(screenRGB, resizeRGB);
 
-		cv::Mat img = cvarrToMat(resizeRGB);
+			cv::Mat img = cvarrToMat(resizeRGB);
 
-		std::vector<uchar> data_vector;
-		if (img.isContinuous()) {
-		data_vector.assign(img.data, img.data + img.total()*img.channels());
-		} else {
-			for (int i = 0; i < img.rows; ++i) {
-				data_vector.insert(data_vector.end(), img.ptr<uchar>(i), img.ptr<uchar>(i)+img.cols*img.channels());
+			std::vector<uchar> data_vector;
+			if (img.isContinuous()) {
+			data_vector.assign(img.data, img.data + img.total()*img.channels());
+			} else {
+				for (int i = 0; i < img.rows; ++i) {
+					data_vector.insert(data_vector.end(), img.ptr<uchar>(i), img.ptr<uchar>(i)+img.cols*img.channels());
+				}
 			}
-		}
-		std::string image_string(data_vector.begin(), data_vector.end()); 
+			std::string image_string(data_vector.begin(), data_vector.end()); 
 
-		pplx::task<etcd::Response> response_task = etcd_client.set("/test/shared/image", image_string);
+			pplx::task<etcd::Response> response_task = etcd_client.set("/test/shared/image", image_string);
+		}
 	}       
 
     int i;
