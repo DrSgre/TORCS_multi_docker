@@ -220,7 +220,7 @@ int RePreRace(void)
 		ReInfo->s->_raceType = RM_TYPE_PRACTICE;
 	}
 
-	ReInfo->s->_raceState = 0;
+	etcd_client.set("/test/situation/raceState", std::to_string(0));
 
 	/* Cleanup results */
 	snprintf(path, BUFSIZE, "%s/%s/%s", ReInfo->track->name, RE_SECT_RESULTS, raceName);
@@ -319,7 +319,7 @@ static int reRaceRealStart(void)
 	etcd_client.set("/test/situation/currentTime", std::to_string(-2.0));
 	etcd_client.set("/test/situation/deltaTime", std::to_string(RCM_MAX_DT_SIMU));
 
-	ReInfo->s->_raceState = RM_RACE_STARTING;
+	etcd_client.set("/test/situation/raceState", std::to_string(RM_RACE_STARTING));
 
 	if ((ReInfo->_displayMode != RM_DISP_MODE_CONSOLE) &&  ReInfo->_reGraphicItf.initview != 0) {
 		GfScrGetSize(&sw, &sh, &vw, &vh);

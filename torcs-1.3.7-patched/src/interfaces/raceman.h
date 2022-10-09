@@ -60,7 +60,7 @@ typedef int (*tfRmRunState) (struct RmInfo *);
 typedef struct {
     int			ncars;		/**< number of cars */
     int			totLaps;	/**< total laps */
-    int			state;
+//    int			state;
 #define RM_RACE_RUNNING		0X00000001
 #define RM_RACE_FINISHING	0X00000002
 #define RM_RACE_ENDED		0X00000004
@@ -77,7 +77,7 @@ typedef struct {
 
 #define _ncars		raceInfo.ncars
 #define _totLaps	raceInfo.totLaps
-#define _raceState	raceInfo.state
+//#define _raceState	raceInfo.state
 #define _raceType	raceInfo.type
 #define _maxDammage	raceInfo.maxDammage
 

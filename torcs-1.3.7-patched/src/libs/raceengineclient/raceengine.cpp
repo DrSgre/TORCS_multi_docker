@@ -322,9 +322,9 @@ ReManage(tCarElt *car)
 					info->topSpd = car->_speed_x;
 					info->botSpd = car->_speed_x;
 					car->_currentMinSpeedForLap = car->_speed_x;
-					if ((car->_remainingLaps < 0) || (s->_raceState == RM_RACE_FINISHING)) {
+					if ((car->_remainingLaps < 0) || (stoi(etcd_client.get("/test/situation/raceState").get().value().as_string()) == RM_RACE_FINISHING)) {
 						car->_state |= RM_CAR_STATE_FINISH;
-						s->_raceState = RM_RACE_FINISHING;
+						etcd_client.set("/test/situation/raceState", std::to_string(RM_RACE_FINISHING));
 						if (ReInfo->s->_raceType == RM_TYPE_RACE) {
 							if (car->_pos == 1) {
 								snprintf(buf, BUFSIZE, "Winner %s", car->_name);
@@ -413,7 +413,7 @@ static void ReSortCars(void)
 	}
 
 	if (allfinish) {
-		ReInfo->s->_raceState = RM_RACE_ENDED;
+		etcd_client.set("/test/situation/raceState", std::to_string(RM_RACE_ENDED));
 	}
 
 	for  (i = 0; i < s->_ncars; i++)
@@ -723,9 +723,9 @@ ReOneStep(double deltaTimeIncrement)
 
 	if (std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string()) < 0) {
 		/* no simu yet */
-		ReInfo->s->_raceState = RM_RACE_PRESTART;
-	} else if (ReInfo->s->_raceState == RM_RACE_PRESTART) {
-		ReInfo->s->_raceState = RM_RACE_RUNNING;
+		etcd_client.set("/test/situation/raceState", std::to_string(RM_RACE_PRESTART));
+	} else if (stoi(etcd_client.get("/test/situation/raceState").get().value().as_string()) == RM_RACE_PRESTART) {
+		etcd_client.set("/test/situation/raceState", std::to_string(RM_RACE_RUNNING));
 		etcd_client.set("/test/situation/currentTime", std::to_string(0.0)); /* resynchronize */
 		ReInfo->_reLastTime = 0.0;
 	}

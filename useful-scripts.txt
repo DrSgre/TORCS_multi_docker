@@ -5,6 +5,6 @@ COMPILE IPC: g++ IPC_command.cpp torcs_data.pb.cc -o IPC_command `pkg-config --c
 COMPILE SCREENPIPE: g++ screenpipe_client.cpp -o screenpipe_client `pkg-config --cflags --libs opencv protobuf libzmq`
 ETCD DB SIZE: ETCDCTL_API=3 etcdctl --write-out=table endpoint status
 COPY FROM SCREENPIPE CONTAINER: docker cp 7244bd0c5786:/tmp/TORCS_multi_docker-master/torcs-1.3.7-patched/new_screenpipe/output.txt ./
-COPY FROM APP CONTAINER: docker cp 13b2d1cdda53:/tmp/TORCS_multi_docker-master/torcs-1.3.7-patched/BUILD/share/games/torcs/output.txt ./output_8_1.txt
+COPY FROM APP CONTAINER: docker cp 13b2d1cdda53:/tmp/TORCS_multi_docker-master/torcs-1.3.7-patched/BUILD/share/games/torcs/output.txt ./output_0_2.txt
 ADD LATENCY TO ETCD CONTAINER: docker exec 0877c264da6b tc qdisc add dev eth0 root netem delay 4ms
 GET ETCD METRICS: curl -L http://etcd:2379/metrics | grep etcd_server_proposals_applied_total
