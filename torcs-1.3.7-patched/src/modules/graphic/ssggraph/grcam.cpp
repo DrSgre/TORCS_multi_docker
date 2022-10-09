@@ -17,6 +17,9 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <etcd/Client.hpp>
+
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -41,6 +44,8 @@
 #include "grmain.h"
 #include "grutil.h"
 #include <tgfclient.h>
+
+extern etcd::Client etcd_client;
 
 float
 cGrCamera::getDist2 (tCarElt *car)
@@ -938,16 +943,16 @@ class cGrCarCamRoadFly : public cGrPerspCamera
 	//curCam = car->_trkPos.seg->cam;
 
 	if (currenttime == 0.0) {
-	    currenttime = s->currentTime;
+	    currenttime = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string());
 	}
 	
-	if (currenttime == s->currentTime) {
+	if (currenttime == std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string())) {
             return;
         }
 
         bool reset_camera = false;
-        dt = s->currentTime - currenttime;
-        currenttime = s->currentTime;
+        dt = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string()) - currenttime;
+        currenttime = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string());
         if (fabs(dt) > 1.0f) { 
             dt = 0.1f; // avoid overflow
             reset_camera = true;
@@ -1165,8 +1170,8 @@ class cGrCarCamRoadZoomTVD : public cGrCarCamRoadZoom
 	int	i, j;
 	int	curCar;
 	double	curPrio;
-	double	deltaEventTime = s->currentTime - lastEventTime;
-	double	deltaViewTime = s->currentTime - lastViewTime;
+	double	deltaEventTime = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string()) - lastEventTime;
+	double	deltaViewTime = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string()) - lastViewTime;
 	int	event = 0;
 
 	if (current == -1) {
@@ -1271,8 +1276,8 @@ class cGrCarCamRoadZoomTVD : public cGrCarCamRoadZoom
 		    }
 		}
 		if (last_current != current) {
-		    lastEventTime = s->currentTime;
-		    lastViewTime = s->currentTime;
+		    lastEventTime = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string());
+		    lastViewTime = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string());
 
 		    for (i = 0; i < grNbCars; i++) {
 			s->cars[i]->priv.collision = 0;

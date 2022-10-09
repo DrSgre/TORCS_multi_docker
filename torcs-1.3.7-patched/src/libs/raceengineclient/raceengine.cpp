@@ -55,6 +55,7 @@ using namespace cv;
 static double	msgDisp;
 static double	bigMsgDisp;
 
+extern etcd::Client etcd_client;
 
 tRmInfo	*ReInfo = 0;
 int RESTART = 0;
@@ -81,7 +82,7 @@ ReUpdtPitTime(tCarElt *car)
 				// In case of the race no modifications are allowed, so completely reload the structure
 				RtInitCarPitSetup(car->_carHandle, &(car->pitcmd.setup), false);
 			}
-			car->_scheduledEventTime = s->currentTime + info->totalPitTime;
+			car->_scheduledEventTime = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string()) + info->totalPitTime;
 			car->_penaltyTime = 0.0f;
 			ReInfo->_reSimItf.reconfig(car);
 			for (i=0; i<4; i++) {
@@ -93,7 +94,7 @@ ReUpdtPitTime(tCarElt *car)
 			break;
 		case RM_PIT_STOPANDGO:
 			info->totalPitTime = car->_penaltyTime;
-			car->_scheduledEventTime = s->currentTime + info->totalPitTime;
+			car->_scheduledEventTime = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string()) + info->totalPitTime;
 			car->_penaltyTime = 0.0f;
 			break;
 	}
@@ -181,13 +182,13 @@ ReManage(tCarElt *car)
 		
 		if (car->_state & RM_CAR_STATE_PIT) {
 			car->ctrl.raceCmd &= ~RM_CMD_PIT_ASKED; // clear the flag.
-			if (car->_scheduledEventTime < s->currentTime) {
+			if (car->_scheduledEventTime < std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string())) {
 				car->_state &= ~RM_CAR_STATE_PIT;
 				car->_pit->pitCarIndex = TR_PIT_STATE_FREE;
 				snprintf(buf, BUFSIZE, "%s pit stop %.1fs", car->_name, info->totalPitTime);
 				ReRaceMsgSet(buf, 5);
 			} else {
-				snprintf(car->ctrl.msg[2], 32, "in pits %.1fs", s->currentTime - info->startPitTime);
+				snprintf(car->ctrl.msg[2], 32, "in pits %.1fs", std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string()) - info->startPitTime);
 			}
 		} else if ((car->ctrl.raceCmd & RM_CMD_PIT_ASKED) &&
 					car->_pit->pitCarIndex == TR_PIT_STATE_FREE &&	
@@ -238,7 +239,7 @@ ReManage(tCarElt *car)
 							break;
 						}
 					}
-					info->startPitTime = s->currentTime;
+					info->startPitTime = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string());
 					snprintf(buf, BUFSIZE, "%s in pits", car->_name);
 					ReRaceMsgSet(buf, 5);
 					if (car->robot->rbPitCmd(car->robot->index, car, s) == ROB_PIT_MENU) {
@@ -261,7 +262,7 @@ ReManage(tCarElt *car)
 					car->_laps++;
 					car->_remainingLaps--;
 					if (car->_laps > 1) {
-						car->_lastLapTime = s->currentTime - info->sTime;
+						car->_lastLapTime = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string()) - info->sTime;
 						car->_curTime += car->_lastLapTime;
 						if (car->_bestLapTime != 0) {
 							car->_deltaBestLapTime = car->_lastLapTime - car->_bestLapTime;
@@ -285,10 +286,10 @@ ReManage(tCarElt *car)
 							car->_timeBehindPrev = 0;
 
 							if (ReInfo->_displayMode == RM_DISP_MODE_CONSOLE) {
-								printf("Sim Time: %8.2f [s], Leader Laps: %4d, Leader Distance: %8.3f [km]\n", s->currentTime, car->_laps - 1, car->_distRaced/1000.0f);
+								printf("Sim Time: %8.2f [s], Leader Laps: %4d, Leader Distance: %8.3f [km]\n", std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string()), car->_laps - 1, car->_distRaced/1000.0f);
 							}
 						}
-						info->sTime = s->currentTime;
+						info->sTime = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string());
 						switch (ReInfo->s->_raceType) {
 							case RM_TYPE_PRACTICE:
 								if (ReInfo->_displayMode == RM_DISP_MODE_NONE) {
@@ -370,7 +371,7 @@ ReManage(tCarElt *car)
 	ReRaceRules(car);
 	
 	info->prevTrkPos = car->_trkPos;
-	car->_curLapTime = s->currentTime - info->sTime;
+	car->_curLapTime = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string()) - info->sTime;
 	car->_distFromStartLine = car->_trkPos.seg->lgfromstart +
 	(car->_trkPos.seg->type == TR_STR ? car->_trkPos.toStart : car->_trkPos.toStart * car->_trkPos.seg->radius);
 	car->_distRaced = (car->_laps - (info->lapFlag + 1)) * ReInfo->track->length + car->_distFromStartLine;
@@ -708,37 +709,37 @@ ReOneStep(double deltaTimeIncrement)
 	tSituation *s = ReInfo->s;
 
 	if ((ReInfo->_displayMode != RM_DISP_MODE_NONE) && (ReInfo->_displayMode != RM_DISP_MODE_CONSOLE)) {
-		if (floor(s->currentTime) == -2.0) {
+		if (floor(std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string())) == -2.0) {
 			ReRaceBigMsgSet("Ready", 1.0);
-		} else if (floor(s->currentTime) == -1.0) {
+		} else if (floor(std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string())) == -1.0) {
 			ReRaceBigMsgSet("Set", 1.0);
-		} else if (floor(s->currentTime) == 0.0) {
+		} else if (floor(std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string())) == 0.0) {
 			ReRaceBigMsgSet("Go", 1.0);
 		}
 	}
 
 	ReInfo->_reCurTime += deltaTimeIncrement * ReInfo->_reTimeMult; /* "Real" time */
-	s->currentTime += deltaTimeIncrement; /* Simulated time */
+	etcd_client.set("/test/situation/currentTime", std::to_string(std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string()) + deltaTimeIncrement)); /* Simulated time */
 
-	if (s->currentTime < 0) {
+	if (std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string()) < 0) {
 		/* no simu yet */
 		ReInfo->s->_raceState = RM_RACE_PRESTART;
 	} else if (ReInfo->s->_raceState == RM_RACE_PRESTART) {
 		ReInfo->s->_raceState = RM_RACE_RUNNING;
-		s->currentTime = 0.0; /* resynchronize */
+		etcd_client.set("/test/situation/currentTime", std::to_string(0.0)); /* resynchronize */
 		ReInfo->_reLastTime = 0.0;
 	}
 
 	START_PROFILE("rbDrive*");
-	if ((s->currentTime - ReInfo->_reLastTime) >= RCM_MAX_DT_ROBOTS) {
-		etcd_client.set("/test/situation/deltaTime", std::to_string(s->currentTime - ReInfo->_reLastTime));
+	if ((std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string()) - ReInfo->_reLastTime) >= RCM_MAX_DT_ROBOTS) {
+		etcd_client.set("/test/situation/deltaTime", std::to_string(std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string()) - ReInfo->_reLastTime));
 		for (i = 0; i < s->_ncars; i++) {
 			if ((s->cars[i]->_state & RM_CAR_STATE_NO_SIMU) == 0) {
 				robot = s->cars[i]->robot;
 				robot->rbDrive(robot->index, s->cars[i], s);
 			}
 		}
-		ReInfo->_reLastTime = s->currentTime;
+		ReInfo->_reLastTime = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string());
 	}
 	STOP_PROFILE("rbDrive*");
 

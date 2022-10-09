@@ -22,8 +22,12 @@
     @author	<a href=mailto:eric.espie@torcs.org>Eric Espie</a>
     @version	$Id: racegl.cpp,v 1.7.2.4 2013/09/01 10:24:23 berniw Exp $
 */
+
+#include <etcd/Client.hpp>
+
 #include <stdlib.h>
 #include <stdio.h>
+#include <iostream>
 
 #include <tgfclient.h>
 #include <raceman.h>
@@ -35,6 +39,8 @@
 #include "raceengine.h"
 
 #include "racegl.h"
+
+extern etcd::Client etcd_client;
 
 static void	*reScreenHandle = 0;
 static void	*reHookHandle = 0;
@@ -80,8 +86,8 @@ ReBoardInfo(void * /* vboard */)
 static void
 reSkipPreStart(void * /* dummy */)
 {
-    if (ReInfo->s->currentTime < -1.0) {
-	ReInfo->s->currentTime = -1.0;
+    if (std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string()) < -1.0) {
+	etcd_client.set("/test/situation/currentTime", std::to_string(-1.0));
 	ReInfo->_reLastTime = -1.0;
     }
 }

@@ -23,6 +23,10 @@
     @version	$Id: grscreen.cpp,v 1.22.2.5 2012/06/09 11:44:46 berniw Exp $
 */
 
+
+#include <etcd/Client.hpp>
+#include <iostream>
+
 #include <plib/ssg.h>
 
 #include <tgfclient.h>
@@ -37,6 +41,8 @@
 #include "grcarlight.h"
 
 #include "grscreen.h"
+
+extern etcd::Client etcd_client;
 
 cGrScreen::cGrScreen(int myid)
 {
@@ -287,7 +293,7 @@ void cGrScreen::camDraw(tSituation *s)
 	qsort(cars, s->_ncars, sizeof(tCarElt*), comparCars);
 	
 	for (i = 0; i < s->_ncars; i++) {
-		grDrawCar(cars[i], curCar, dispCam->getDrawCurrent(), dispCam->getDrawDriver(), s->currentTime, dispCam);
+		grDrawCar(cars[i], curCar, dispCam->getDrawCurrent(), dispCam->getDrawDriver(), std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string()), dispCam);
 	} 
 	STOP_PROFILE("grDrawCar*");
 	

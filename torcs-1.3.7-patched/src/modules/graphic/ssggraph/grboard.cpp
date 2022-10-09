@@ -17,9 +17,11 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <etcd/Client.hpp>
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <iostream>
 #include <math.h>
 #include <plib/ssg.h>
 #include <portability.h>
@@ -37,6 +39,8 @@
 #include <tgfclient.h>
 
 #include "grboard.h"
+
+extern etcd::Client etcd_client;
 
 static float grWhite[4] = {1.0, 1.0, 1.0, 1.0};
 static float grRed[4] = {1.0, 0.0, 0.0, 1.0};
@@ -333,7 +337,7 @@ cGrBoard::grDispCarBoard1(tCarElt *car, tSituation *s)
 	y -= dy;
 	
 	GfuiPrintString("Total:", clr, GFUI_FONT_SMALL_C, x, y, GFUI_ALIGN_HL_VB);
-	grWriteTime(clr, GFUI_FONT_SMALL_C, x2, y, s->currentTime, 0);
+	grWriteTime(clr, GFUI_FONT_SMALL_C, x2, y, std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string()), 0);
 	y -= dy;
 	
 	GfuiPrintString("Curr:", clr, GFUI_FONT_SMALL_C, x, y, GFUI_ALIGN_HL_VB);
