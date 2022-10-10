@@ -942,17 +942,19 @@ class cGrCarCamRoadFly : public cGrPerspCamera
 
 	//curCam = car->_trkPos.seg->cam;
 
+	double cTime = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string());
+
 	if (currenttime == 0.0) {
-	    currenttime = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string());
+	    currenttime = cTime;
 	}
 	
-	if (currenttime == std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string())) {
+	if (currenttime == cTime) {
             return;
         }
 
         bool reset_camera = false;
-        dt = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string()) - currenttime;
-        currenttime = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string());
+        dt = cTime - currenttime;
+        currenttime = cTime;
         if (fabs(dt) > 1.0f) { 
             dt = 0.1f; // avoid overflow
             reset_camera = true;
@@ -1170,8 +1172,9 @@ class cGrCarCamRoadZoomTVD : public cGrCarCamRoadZoom
 	int	i, j;
 	int	curCar;
 	double	curPrio;
-	double	deltaEventTime = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string()) - lastEventTime;
-	double	deltaViewTime = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string()) - lastViewTime;
+	double currentTime = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string());
+	double	deltaEventTime = currentTime - lastEventTime;
+	double	deltaViewTime = currentTime - lastViewTime;
 	int	event = 0;
 
 	if (current == -1) {
@@ -1276,8 +1279,8 @@ class cGrCarCamRoadZoomTVD : public cGrCarCamRoadZoom
 		    }
 		}
 		if (last_current != current) {
-		    lastEventTime = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string());
-		    lastViewTime = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string());
+		    lastEventTime = currentTime;
+		    lastViewTime = currentTime;
 
 		    for (i = 0; i < grNbCars; i++) {
 			s->cars[i]->priv.collision = 0;

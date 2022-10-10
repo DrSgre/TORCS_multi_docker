@@ -318,7 +318,6 @@ static int reRaceRealStart(void)
 	ReInfo->_reLastTime = -1.0;
 	etcd_client.set("/test/situation/currentTime", std::to_string(-2.0));
 	etcd_client.set("/test/situation/deltaTime", std::to_string(RCM_MAX_DT_SIMU));
-
 	etcd_client.set("/test/situation/raceState", std::to_string(RM_RACE_STARTING));
 
 	if ((ReInfo->_displayMode != RM_DISP_MODE_CONSOLE) &&  ReInfo->_reGraphicItf.initview != 0) {
