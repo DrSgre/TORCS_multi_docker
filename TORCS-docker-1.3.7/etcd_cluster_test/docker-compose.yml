@@ -1,0 +1,88 @@
+version: "3"
+
+networks:
+  net-torcs:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "172.20.0.0/16"
+services:
+  Etcd1:
+    image: 'my-etcd-1:latest'
+    build: ./etcd
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes 
+      - ETCD_AUTO_COMPACTION_RETENTION=5s
+      - ETCD_AUTO_COMPACTION_MODE=periodic
+      - ETCD_MAX_WALS=1
+      - ETCD_MAX_REQUEST_BYTES=3145728  
+      - ETCD_NAME=my-etcd-1
+      - ETCD_ADVERTISE_CLIENT_URLS=http://172.20.0.2:2379,http://172.20.0.2:4001
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379,http://0.0.0.0:4001
+      - ETCD_INITIAL_ADVERTISE_PEER_URLS=http://172.20.0.2:2380
+      - ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
+      - ETCD_INITIAL_CLUSTER=my-etcd-1=http://172.20.0.2:2380,my-etcd-2=http://172.20.0.3:2380,my-etcd-3=http://172.20.0.4:2380
+      - ETCD_INITIAL_CLUSTER_STATE=new
+      - ETCD_INITIAL_CLUSTER_TOKEN=my-etcd-token
+    expose:
+      - "2379"
+      - "2380"
+      - "4001"
+    networks:
+      net-torcs:
+        ipv4_address: 172.20.0.2
+    cap_add:
+      - NET_ADMIN
+  Etcd2:
+    image: 'my-etcd-2:latest'
+    build: ./etcd
+    environment:     
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_AUTO_COMPACTION_RETENTION=5s
+      - ETCD_AUTO_COMPACTION_MODE=periodic
+      - ETCD_MAX_WALS=1
+      - ETCD_MAX_REQUEST_BYTES=3145728     
+      - ETCD_NAME=my-etcd-2
+      - ETCD_ADVERTISE_CLIENT_URLS=http://172.20.0.3:2379,http://172.20.0.3:4001
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379,http://0.0.0.0:4001
+      - ETCD_INITIAL_ADVERTISE_PEER_URLS=http://172.20.0.3:2380
+      - ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
+      - ETCD_INITIAL_CLUSTER=my-etcd-1=http://172.20.0.2:2380,my-etcd-2=http://172.20.0.3:2380,my-etcd-3=http://172.20.0.4:2380
+      - ETCD_INITIAL_CLUSTER_STATE=new
+      - ETCD_INITIAL_CLUSTER_TOKEN=my-etcd-token
+    expose:
+      - "2379"
+      - "2380"
+      - "4001"
+    networks:
+      net-torcs:
+        ipv4_address: 172.20.0.3
+    cap_add:
+      - NET_ADMIN
+  Etcd3:
+    image: 'my-etcd-3:latest'
+    build: ./etcd
+    environment:     
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_AUTO_COMPACTION_RETENTION=5s
+      - ETCD_AUTO_COMPACTION_MODE=periodic
+      - ETCD_MAX_WALS=1
+      - ETCD_MAX_REQUEST_BYTES=3145728     
+      - ETCD_NAME=my-etcd-3
+      - ETCD_ADVERTISE_CLIENT_URLS=http://172.20.0.4:2379,http://172.20.0.4:4001
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379,http://0.0.0.0:4001
+      - ETCD_INITIAL_ADVERTISE_PEER_URLS=http://172.20.0.4:2380
+      - ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
+      - ETCD_INITIAL_CLUSTER=my-etcd-1=http://172.20.0.2:2380,my-etcd-2=http://172.20.0.3:2380,my-etcd-3=http://172.20.0.4:2380
+      - ETCD_INITIAL_CLUSTER_STATE=new
+      - ETCD_INITIAL_CLUSTER_TOKEN=my-etcd-token
+    expose:
+      - "2379"
+      - "2380"
+      - "4001"
+    networks:
+      net-torcs:
+        ipv4_address: 172.20.0.4
+    cap_add:
+      - NET_ADMIN
+    
