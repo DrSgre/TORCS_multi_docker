@@ -252,7 +252,6 @@ newrace(int index, tCarElt* car, tSituation *s)
     listen(listenSocket[index], 5);
 
     std::cout << "Waiting for request on port " << UDP_LISTEN_PORT+index << "\n";
-
     // Loop until a client identifies correctly
     while (!identified)
     {
@@ -533,8 +532,10 @@ if (RESTARTING[index]==0)
     }
 #endif
 	
+    string statePoint = "/gamestate/" + std::to_string(UDP_LISTEN_PORT+index);
+    string actionPoint = "/driver_action/" + std::to_string(UDP_LISTEN_PORT+index);
 
-    pplx::task<etcd::Response> response_task = etcd_client.set("/test/shared/gamestate", line);
+    pplx::task<etcd::Response> response_task = etcd_client.set(statePoint, line);
     // Sending the car state to the client
     //if (sendto(listenSocket[index], line, strlen(line) + 1, 0,
     //           (struct sockaddr *) &clientAddress[index],
@@ -549,7 +550,7 @@ if (RESTARTING[index]==0)
     timeVal.tv_usec = UDP_TIMEOUT;
     memset(line, 0x0,1000 );
 
-    etcd::Response query = etcd_client.get("/test/shared/driver_action").get();
+    etcd::Response query = etcd_client.get(actionPoint).get();
     if (query.prev_value().as_string() != query.value().as_string())
     {
         strcpy(line, query.value().as_string().c_str());

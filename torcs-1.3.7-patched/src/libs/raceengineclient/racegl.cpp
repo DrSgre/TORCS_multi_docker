@@ -63,7 +63,7 @@ reScreenActivate(void * /* dummy */)
 {
     glutDisplayFunc(reDisplay);
 
-    if ((stoi(etcd_client.get("/test/situation/raceState").get().value().as_string()) & RM_RACE_PAUSED) == 0) {
+    if ((ReInfo->s->_raceState & RM_RACE_PAUSED) == 0) {
 	ReStart(); 			/* resynchro */
     }
     glutPostRedisplay();
@@ -72,23 +72,23 @@ reScreenActivate(void * /* dummy */)
 static void
 ReBoardInfo(void * /* vboard */)
 {
-    if (stoi(etcd_client.get("/test/situation/raceState").get().value().as_string()) & RM_RACE_PAUSED) {
-	etcd_client.set("/test/situation/raceState", std::to_string(~RM_RACE_PAUSED));
-	ReStart();
-	GfuiVisibilitySet(reScreenHandle, rePauseId, 0);
+    if (ReInfo->s->_raceState & RM_RACE_PAUSED) {
+		ReInfo->s->_raceState &= ~RM_RACE_PAUSED;
+		ReStart();
+		GfuiVisibilitySet(reScreenHandle, rePauseId, 0);
     } else {
-	etcd_client.set("/test/situation/raceState", std::to_string(RM_RACE_PAUSED));
-	ReStop();
-	GfuiVisibilitySet(reScreenHandle, rePauseId, 1);
+		ReInfo->s->_raceState |= RM_RACE_PAUSED;
+		ReStop();
+		GfuiVisibilitySet(reScreenHandle, rePauseId, 1);
     }
 }
 
 static void
 reSkipPreStart(void * /* dummy */)
 {
-    if (std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string()) < -1.0) {
-	etcd_client.set("/test/situation/currentTime", std::to_string(-1.0));
-	ReInfo->_reLastTime = -1.0;
+    if (ReInfo->s->currentTime < -1.0) {
+		ReInfo->s->currentTime = -1.0;
+		ReInfo->_reLastTime = -1.0;
     }
 }
 

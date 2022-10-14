@@ -135,6 +135,9 @@ int main(int argc, char *argv[])
 
     cout << "TRACKNAME: " << trackName << endl;
 
+    static string statePoint = "/gamestate/" + std::to_string(serverPort);
+    static string actionPoint = "/driver_action/" + std::to_string(serverPort);
+
     if (stage == BaseDriver::WARMUP)
 		cout << "STAGE: WARMUP" << endl;
 	else if (stage == BaseDriver::QUALIFYING)
@@ -224,7 +227,7 @@ int main(int argc, char *argv[])
             timeVal.tv_usec = UDP_CLIENT_TIMEUOT;
             memset(buf, 0x0, UDP_MSGLEN);
 
-            etcd::Response query = etcd_client.get("/test/shared/gamestate").get();
+            etcd::Response query = etcd_client.get(statePoint).get();
             if (query.prev_value().as_string() != query.value().as_string())
             {
                 // Read data sent by the solorace server
@@ -258,7 +261,7 @@ int main(int argc, char *argv[])
                 {
 			        sprintf (buf, "(meta 1)");
                 }
-                pplx::task<etcd::Response> response_task = etcd_client.set("/test/shared/driver_action", buf);
+                pplx::task<etcd::Response> response_task = etcd_client.set(actionPoint, buf);
                 // if (sendto(socketDescriptor, buf, strlen(buf)+1, 0, (struct sockaddr *) &serverAddress, sizeof(serverAddress)) < 0)
                 //{
                 //    cerr << "cannot send data ";
@@ -271,6 +274,7 @@ int main(int argc, char *argv[])
                 cout << "** Server did not respond in 1 second.\n";
             }
         }
+        sleep(200);
     } while(shutdownClient==false && ( (++curEpisode) != maxEpisodes) );
 
     if (shutdownClient==false)

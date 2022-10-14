@@ -205,9 +205,9 @@ int RePreRace(void)
 
 	dist = GfParmGetNum(params, raceName, RM_ATTR_DISTANCE, NULL, 0);
 	if (dist < 0.001) {
-		ReInfo->s->_totLaps = (int)GfParmGetNum(params, raceName, RM_ATTR_LAPS, NULL, 30);
+		etcd_client.set("/test/situation/totLaps", std::to_string((int)GfParmGetNum(params, raceName, RM_ATTR_LAPS, NULL, 30)));
 	} else {
-		ReInfo->s->_totLaps = ((int)(dist / ReInfo->track->length)) + 1;
+		etcd_client.set("/test/situation/totLaps", std::to_string(((int)(dist / ReInfo->track->length)) + 1));
 	}
 	ReInfo->s->_maxDammage = (int)GfParmGetNum(params, raceName, RM_ATTR_MAX_DMG, NULL, 10000);
 
@@ -220,7 +220,7 @@ int RePreRace(void)
 		ReInfo->s->_raceType = RM_TYPE_PRACTICE;
 	}
 
-	etcd_client.set("/test/situation/raceState", std::to_string(0));
+	ReInfo->s->_raceState = 0;
 
 	/* Cleanup results */
 	snprintf(path, BUFSIZE, "%s/%s/%s", ReInfo->track->name, RE_SECT_RESULTS, raceName);
@@ -316,9 +316,9 @@ static int reRaceRealStart(void)
 
 	ReInfo->_reTimeMult = 1.0;
 	ReInfo->_reLastTime = -1.0;
-	etcd_client.set("/test/situation/currentTime", std::to_string(-2.0));
-	etcd_client.set("/test/situation/deltaTime", std::to_string(RCM_MAX_DT_SIMU));
-	etcd_client.set("/test/situation/raceState", std::to_string(RM_RACE_STARTING));
+	ReInfo->s->currentTime = -2.0;
+	ReInfo->s->deltaTime = RCM_MAX_DT_SIMU;
+	ReInfo->s->_raceState = RM_RACE_STARTING;
 
 	if ((ReInfo->_displayMode != RM_DISP_MODE_CONSOLE) &&  ReInfo->_reGraphicItf.initview != 0) {
 		GfScrGetSize(&sw, &sh, &vw, &vh);

@@ -23,6 +23,9 @@
     @version $Id: raceresults.cpp,v 1.9.2.15 2014/05/23 08:38:31 berniw Exp $
 */
 
+#include <etcd/Client.hpp>
+#include <iostream>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
@@ -39,6 +42,8 @@
 #include "raceengine.h"
 
 #include "raceresults.h"
+
+extern etcd::Client etcd_client;
 
 typedef struct
 {
@@ -126,13 +131,14 @@ static void ReApplyRaceTimePenalties(void)
 
 	// Now sort the cars taking into account the penalties
 	int j;
+	int totLaps = std::stoi(etcd_client.get("/test/situation/totLaps").get().value().as_string());
 	for (i = 1; i < s->_ncars; i++) {
 		j = i;
 		while (j > 0) {
 			// Order without penalties is already ok, so if there is no penalty we do not move down
 			if (s->cars[j-1]->_penaltyTime > 0.0f) {
-				int l1 = MIN(s->cars[j-1]->_laps, s->_totLaps + 1) - 1;
-				int l2 = MIN(s->cars[j]->_laps, s->_totLaps + 1) - 1;
+				int l1 = MIN(s->cars[j-1]->_laps, totLaps + 1) - 1;
+				int l2 = MIN(s->cars[j]->_laps, totLaps + 1) - 1;
 				// If the drivers did not at least complete one lap we cannot apply the rule, check.
 				// If the cars are wrecked we do not care about penalties.
 				if (
@@ -334,11 +340,13 @@ void ReStoreRaceResults(const char *race)
 	const int BUFSIZE = 1024;
 	char buf[BUFSIZE], path[BUFSIZE], path2[BUFSIZE];
 	
+	int totLaps = std::stoi(etcd_client.get("/test/situation/totLaps").get().value().as_string());
+
 	/* Store the number of laps of the race */
 	switch (ReInfo->s->_raceType) {
 		case RM_TYPE_RACE:
 			car = s->cars[0];
-			if (car->_laps > s->_totLaps) car->_laps = s->_totLaps + 1;
+			if (car->_laps > totLaps) car->_laps = totLaps + 1;
 
 			snprintf(path, BUFSIZE, "%s/%s/%s", ReInfo->track->name, RE_SECT_RESULTS, race);
 			GfParmListClean(results, path);
@@ -349,7 +357,7 @@ void ReStoreRaceResults(const char *race)
 			for (i = 0; i < s->_ncars; i++) {
 				snprintf(path, BUFSIZE, "%s/%s/%s/%s/%d", ReInfo->track->name, RE_SECT_RESULTS, race, RE_SECT_RANK, i + 1);
 				car = s->cars[i];
-				if (car->_laps > s->_totLaps) car->_laps = s->_totLaps + 1;
+				if (car->_laps > totLaps) car->_laps = totLaps + 1;
 			
 				GfParmSetStr(results, path, RE_ATTR_NAME, car->_name);
 			

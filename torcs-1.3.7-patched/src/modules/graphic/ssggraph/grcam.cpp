@@ -942,19 +942,17 @@ class cGrCarCamRoadFly : public cGrPerspCamera
 
 	//curCam = car->_trkPos.seg->cam;
 
-	double cTime = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string());
-
 	if (currenttime == 0.0) {
-	    currenttime = cTime;
+	    currenttime = s->currentTime;
 	}
 	
-	if (currenttime == cTime) {
+	if (currenttime == s->currentTime) {
             return;
         }
 
         bool reset_camera = false;
-        dt = cTime - currenttime;
-        currenttime = cTime;
+        dt = s->currentTime - currenttime;
+        currenttime = s->currentTime;
         if (fabs(dt) > 1.0f) { 
             dt = 0.1f; // avoid overflow
             reset_camera = true;
@@ -1172,9 +1170,8 @@ class cGrCarCamRoadZoomTVD : public cGrCarCamRoadZoom
 	int	i, j;
 	int	curCar;
 	double	curPrio;
-	double currentTime = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string());
-	double	deltaEventTime = currentTime - lastEventTime;
-	double	deltaViewTime = currentTime - lastViewTime;
+	double	deltaEventTime = s->currentTime - lastEventTime;
+	double	deltaViewTime = s->currentTime - lastViewTime;
 	int	event = 0;
 
 	if (current == -1) {
@@ -1279,8 +1276,8 @@ class cGrCarCamRoadZoomTVD : public cGrCarCamRoadZoom
 		    }
 		}
 		if (last_current != current) {
-		    lastEventTime = currentTime;
-		    lastViewTime = currentTime;
+		    lastEventTime = s->currentTime;
+		    lastViewTime = s->currentTime;
 
 		    for (i = 0; i < grNbCars; i++) {
 			s->cars[i]->priv.collision = 0;

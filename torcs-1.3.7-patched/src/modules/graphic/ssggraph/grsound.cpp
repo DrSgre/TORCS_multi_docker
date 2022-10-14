@@ -212,11 +212,10 @@ grRefreshSound(tSituation *s, cGrCamera	*camera)
 
 	// Update sound at most 50 times a second.
 	const double UPDATE_DT = 0.02;
-	double currentTime = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string());
-	if (currentTime - lastUpdated < UPDATE_DT) {
+	if (s->currentTime - lastUpdated < UPDATE_DT) {
 		return 0.0f;
 	}
-	lastUpdated = currentTime;
+	lastUpdated = s->currentTime;
 
     tCarElt	*car;//= s->cars[s->current];
 

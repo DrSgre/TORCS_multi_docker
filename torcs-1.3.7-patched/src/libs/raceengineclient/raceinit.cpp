@@ -26,6 +26,8 @@
 
 /* Race initialization routines */
 
+#include <etcd/Client.hpp>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <tgfclient.h>
@@ -46,6 +48,8 @@
 #include "raceresults.h"
 
 #include "raceinit.h"
+
+extern etcd::Client etcd_client;
 
 static const char *level_str[] = { ROB_VAL_ROOKIE, ROB_VAL_AMATEUR, ROB_VAL_SEMI_PRO, ROB_VAL_PRO };
 
@@ -617,7 +621,7 @@ ReInitCars(void)
 					}
 					elt->_startRank  = index;
 					elt->_pos        = index+1;
-					elt->_remainingLaps = ReInfo->s->_totLaps;
+					elt->_remainingLaps = std::stoi(etcd_client.get("/test/situation/totLaps").get().value().as_string());
 
 					/* handle contains the drivers modifications to the car */
 					/* Read Car model specifications */

@@ -49,7 +49,7 @@
 #include "grcarlight.h"
 #include <glfeatures.h>
 
-extern etcd::Client etcd_client;
+etcd::Client etcd_client("http://etcd:2379");
 
 int maxTextureUnits = 0;
 static double OldTime;
@@ -346,7 +346,7 @@ refresh(tSituation *s)
 	grScreens[i]->update(s, grFps);
     }
 
-    grUpdateSmoke(std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string()));
+    grUpdateSmoke(s->currentTime);
 
     STOP_PROFILE("refresh");
     return 0;

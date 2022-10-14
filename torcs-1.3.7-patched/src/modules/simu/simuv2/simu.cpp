@@ -34,7 +34,7 @@
 #include <robottools.h>
 #include "sim.h"
 
-extern etcd::Client etcd_client;
+etcd::Client etcd_client("http://etcd:2379");
 
 tCar *SimCarTable = 0;
 tdble SimDeltaTime;
@@ -351,7 +351,7 @@ SimUpdate(tSituation *s, double deltaTime, int telemetry)
 			}
 		}
 	
-		if (stoi(etcd_client.get("/test/situation/raceState").get().value().as_string())  & RM_RACE_PRESTART) {
+		if (s->_raceState & RM_RACE_PRESTART) {
 			car->ctrl->gear = 0;
 		}
 	
@@ -365,7 +365,7 @@ SimUpdate(tSituation *s, double deltaTime, int telemetry)
 		SimEngineUpdateTq(car);
 		CHECK(car);
 	
-		if (!(stoi(etcd_client.get("/test/situation/raceState").get().value().as_string())  & RM_RACE_PRESTART)) {
+		if (!(s->_raceState & RM_RACE_PRESTART)) {
 	
 			SimCarUpdateWheelPos(car);
 			CHECK(car);
