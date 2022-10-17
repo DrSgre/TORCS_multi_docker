@@ -1,5 +1,5 @@
 #!/bin/bash
-cp -r ../etcd /run
-run/bin/etcd &
+sudo cp -r ../etcd /etcd
+/etcd/bin/etcd &
 sleep 2
-run/periodic_defrag.sh
+/etcd/periodic_defrag.sh
