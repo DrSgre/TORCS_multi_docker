@@ -1,4 +1,5 @@
 #!/bin/bash
-./bin/etcd &
+cp -r ../etcd /run
+run/bin/etcd &
 sleep 2
-./periodic_defrag.sh
+run/periodic_defrag.sh
