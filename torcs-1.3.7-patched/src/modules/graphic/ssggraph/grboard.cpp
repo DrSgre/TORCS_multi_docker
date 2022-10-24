@@ -332,7 +332,7 @@ cGrBoard::grDispCarBoard1(tCarElt *car, tSituation *s)
 	clr = grWhite;
 	
 	GfuiPrintString("Laps:", clr, GFUI_FONT_SMALL_C, x, y, GFUI_ALIGN_HL_VB);
-	snprintf(buf, BUFSIZE, "%d / %d", car->_laps, stoi(etcd_client.get("/test/situation/totLaps").get().value().as_string()));
+	snprintf(buf, BUFSIZE, "%d / %d", car->_laps, s->_totLaps);
 	GfuiPrintString(buf, clr, GFUI_FONT_SMALL_C, x2, y, GFUI_ALIGN_HR_VB);
 	y -= dy;
 	
@@ -422,7 +422,7 @@ cGrBoard::grDispCarBoard2(tCarElt *car, tSituation *s)
 	clr = grWhite;
 	
 	GfuiPrintString("Laps:", clr, GFUI_FONT_SMALL_C, x, y, GFUI_ALIGN_HL_VB);
-	snprintf(buf, BUFSIZE, "%d / %d", car->_laps, stoi(etcd_client.get("/test/situation/totLaps").get().value().as_string()));
+	snprintf(buf, BUFSIZE, "%d / %d", car->_laps, s->_totLaps);
 	GfuiPrintString(buf, clr, GFUI_FONT_SMALL_C, x2, y, GFUI_ALIGN_HR_VB);
 	y -= dy;
 	
@@ -697,7 +697,7 @@ cGrBoard::grDispLeaderBoard(tCarElt *car, tSituation *s)
 
 	if (drawLaps) {
 		GfuiPrintString(" Lap:", grWhite, GFUI_FONT_SMALL_C, x, y, GFUI_ALIGN_HL_VB);
-		snprintf(buf, BUFSIZE, "%d / %d", s->cars[0]->_laps, stoi(etcd_client.get("/test/situation/totLaps").get().value().as_string()));
+		snprintf(buf, BUFSIZE, "%d / %d", s->cars[0]->_laps, s->_totLaps);
 		GfuiPrintString(buf, grWhite, GFUI_FONT_SMALL_C, x2, y, GFUI_ALIGN_HR_VB);
 	}
 }
@@ -833,7 +833,7 @@ cGrBoard::grDispArcade(tCarElt *car, tSituation *s)
 
 	x = Winx + Winw - XM;
 	y = Winy + Winh - YM - dy;
-	snprintf(buf, BUFSIZE, "Lap: %d/%d", car->_laps, stoi(etcd_client.get("/test/situation/totLaps").get().value().as_string()));
+	snprintf(buf, BUFSIZE, "Lap: %d/%d", car->_laps, s->_totLaps);
 	GfuiPrintString(buf, grDefaultClr, GFUI_FONT_LARGE_C, x, y, GFUI_ALIGN_HR_VB);
 	
 

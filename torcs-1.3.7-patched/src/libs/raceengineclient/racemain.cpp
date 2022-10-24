@@ -205,9 +205,9 @@ int RePreRace(void)
 
 	dist = GfParmGetNum(params, raceName, RM_ATTR_DISTANCE, NULL, 0);
 	if (dist < 0.001) {
-		etcd_client.set("/test/situation/totLaps", std::to_string((int)GfParmGetNum(params, raceName, RM_ATTR_LAPS, NULL, 30)));
+		ReInfo->s->_totLaps = (int)GfParmGetNum(params, raceName, RM_ATTR_LAPS, NULL, 30);
 	} else {
-		etcd_client.set("/test/situation/totLaps", std::to_string(((int)(dist / ReInfo->track->length)) + 1));
+		ReInfo->s->_totLaps = ((int)(dist / ReInfo->track->length)) + 1;
 	}
 	ReInfo->s->_maxDammage = (int)GfParmGetNum(params, raceName, RM_ATTR_MAX_DMG, NULL, 10000);
 
@@ -245,6 +245,7 @@ static int reRaceRealStart(void)
 	void *params = ReInfo->params;
 	void *results = ReInfo->results;
 	tSituation *s = ReInfo->s;
+	
 
 	RmLoadingScreenSetText("Loading Simulation Engine...");
 	const char* dllname = GfParmGetStr(ReInfo->_reParam, "Modules", "simu", "");
@@ -652,4 +653,3 @@ int ReEventShutdown(void)
 
 	return RM_SYNC | ret;
 }
-

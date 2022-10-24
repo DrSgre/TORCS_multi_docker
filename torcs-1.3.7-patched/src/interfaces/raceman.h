@@ -76,7 +76,7 @@ typedef struct {
 } tRaceAdmInfo;
 
 #define _ncars		raceInfo.ncars
-//#define _totLaps	raceInfo.totLaps
+#define _totLaps	raceInfo.totLaps
 #define _raceState	raceInfo.state
 #define _raceType	raceInfo.type
 #define _maxDammage	raceInfo.maxDammage

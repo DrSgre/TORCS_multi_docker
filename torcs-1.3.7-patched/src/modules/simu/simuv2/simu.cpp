@@ -20,6 +20,9 @@
 #include <etcd/Client.hpp>
 #include <iostream>
 
+#include <chrono>
+#include <thread>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <memory.h>
@@ -34,7 +37,7 @@
 #include <robottools.h>
 #include "sim.h"
 
-etcd::Client etcd_client("http://etcd:2379");
+extern etcd::Client etcd_client;
 
 tCar *SimCarTable = 0;
 tdble SimDeltaTime;
@@ -318,7 +321,8 @@ RemoveCar(tCar *car, tSituation *s)
 	car->restPos.vel.ay = dang / travelTime;
 }
 
-
+extern int counter;
+extern int delay;
 
 void
 SimUpdate(tSituation *s, double deltaTime, int telemetry)
@@ -328,6 +332,8 @@ SimUpdate(tSituation *s, double deltaTime, int telemetry)
 	tCarElt *carElt;
 	tCar *car;
 	
+	//std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+	//counter += 1;
 	SimDeltaTime = deltaTime;
 	SimTelemetry = telemetry;
 	for (ncar = 0; ncar < s->_ncars; ncar++) {

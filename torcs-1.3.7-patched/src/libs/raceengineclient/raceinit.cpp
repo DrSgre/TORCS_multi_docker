@@ -621,7 +621,7 @@ ReInitCars(void)
 					}
 					elt->_startRank  = index;
 					elt->_pos        = index+1;
-					elt->_remainingLaps = std::stoi(etcd_client.get("/test/situation/totLaps").get().value().as_string());
+					elt->_remainingLaps = ReInfo->s->_totLaps;
 
 					/* handle contains the drivers modifications to the car */
 					/* Read Car model specifications */

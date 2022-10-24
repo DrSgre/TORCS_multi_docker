@@ -307,7 +307,7 @@ static void initTrack(int index, tTrack* track, void *carHandle, void **carParmH
 	} else {
 		HCtx[idx]->NbPitStopProg = 0;
 	}
-	fuel = 0.0008 * curTrack->length * (std::stoi(etcd_client.get("/test/situation/totLaps").get().value().as_string()) + 1) / (1.0 + ((tdble)HCtx[idx]->NbPitStopProg)) + 20.0;
+	fuel = 0.0008 * curTrack->length * (s->_totLaps + 1) / (1.0 + ((tdble)HCtx[idx]->NbPitStopProg)) + 20.0;
 	if (*carParmHandle) {
 		GfParmSetNum(*carParmHandle, SECT_CAR, PRM_FUEL, (char*)NULL, fuel);
 	}
@@ -1186,4 +1186,3 @@ static int pitcmd(int index, tCarElt* car, tSituation *s)
 
 	return ROB_PIT_MENU; /* The player is able to modify the value by menu */
 }
-

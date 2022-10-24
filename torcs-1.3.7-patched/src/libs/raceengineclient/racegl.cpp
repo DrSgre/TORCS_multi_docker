@@ -446,4 +446,3 @@ ReResShowCont(void)
     glutDisplayFunc(reContDisplay);
     glutPostRedisplay();
 }
-

@@ -34,7 +34,7 @@
 #include <robottools.h>
 #include "sim.h"
 
-etcd::Client etcd_client("http://etcd:2379");
+extern etcd::Client etcd_client;
 
 extern double timer_coordinate_transform;
 extern double timer_reaction;
@@ -516,4 +516,3 @@ SimShutdown(void)
 		SimCarTable = 0;
     }
 }
-

@@ -58,6 +58,8 @@ static double	bigMsgDisp;
 static int refresh_count = 10;
 static int count_limit = 10;
 
+extern etcd::Client etcd_client;
+
 tRmInfo	*ReInfo = 0;
 int RESTART = 0;
 
@@ -796,6 +798,12 @@ reCapture(void)
 	free(img);
 }
 
+int counter = 0;
+int delay = 10;
+int averageTimes = 0;
+int averageCounter = 0;
+int averaging;
+int lastCounter = 0;
 
 int
 ReUpdate(void)
@@ -818,7 +826,11 @@ ReUpdate(void)
 				ReOneStep(RCM_MAX_DT_SIMU);
 			}
 			STOP_PROFILE("ReOneStep*");
-
+			//averageCounter += 1;
+			//averageTimes += counter - lastCounter;
+			//lastCounter = counter;
+			//averaging = averageTimes/averageCounter;
+			//std::cout << "Delay called an average of: " + std::to_string(averaging) + " times per loop." << std::endl;
 			if (i > MAXSTEPS) {
 				// Cannot keep up with time warp, reset time to avoid lag when running slower again
 				ReInfo->_reCurTime = GfTimeClock();
@@ -864,7 +876,6 @@ ReUpdate(void)
 
 	}
 	STOP_PROFILE("ReUpdate");
-
 	return mode;
 }
 

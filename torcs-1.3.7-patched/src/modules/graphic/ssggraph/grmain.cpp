@@ -49,7 +49,7 @@
 #include "grcarlight.h"
 #include <glfeatures.h>
 
-etcd::Client etcd_client("http://etcd:2379");
+extern etcd::Client etcd_client;
 
 int maxTextureUnits = 0;
 static double OldTime;
@@ -69,6 +69,8 @@ int grWinx, grWiny, grWinw, grWinh;
 
 static float grMouseRatioX, grMouseRatioY;
 static std::ofstream OutputFile;
+static float totFrames = 0;
+static int lastCount = 0;
 
 tgrCarInfo *grCarInfo;
 ssgContext grContext;
@@ -311,6 +313,13 @@ initView(int x, int y, int width, int height, int /* flag */, void *screen)
 	return 0;
 }
 
+static int geFps;
+
+extern int counter;
+extern int delay;
+extern int GEstepcount;
+int laststepcount;
+
 int
 refresh(tSituation *s)
 {
@@ -322,13 +331,18 @@ refresh(tSituation *s)
     grCurTime = GfTimeClock();
     grDeltaTime = grCurTime - OldTime;
     if ((grCurTime - OldTime) > 1.0) {
-	/* The Frames Per Second (FPS) display is refreshed every second */
-	grFps = (tdble)nFrame / (grCurTime - OldTime);
-	OutputFile.open("output.txt", std::fstream::out | std::fstream::app);
-    OutputFile << "Current FPS: " << std::to_string(grFps) << "\n";
-	OutputFile.close();
-	nFrame = 0;
-	OldTime = grCurTime;
+		/* The Frames Per Second (FPS) display is refreshed every second */
+		grFps = (tdble)nFrame / (grCurTime - OldTime);
+		//totFrames += nFrame;
+		//OutputFile.open("output.txt", std::fstream::out | std::fstream::app);
+		//OutputFile << "Current FPS: " << std::to_string(grFps) << " with " << std::to_string((int)((grCurTime - OldTime)*1000) - (counter*delay-lastCount)) << "ms of operational time\n";
+		//geFps = (tdble)GEstepcount / (grCurTime - OldTime);
+		//OutputFile << "Current RE FPS: " << std::to_string(geFps) << " with " << std::to_string((int)((grCurTime - OldTime)*1000) - (counter*delay-lastCount)) << "ms of operational time\n";
+		//lastCount += counter*delay-lastCount;
+		//OutputFile.close();
+		//GEstepcount = 0;
+		nFrame = 0;
+		OldTime = grCurTime;
     }
 
     TRACE_GL("refresh: start");
@@ -506,4 +520,3 @@ void muteForMenu(void)
 {
 	grMuteForMenu();
 }
-
