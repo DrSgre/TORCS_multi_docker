@@ -25,7 +25,7 @@ RUN sudo apt install etcd-client -y
 
 WORKDIR /tmp
 
-ARG test=test
+ARG tesi=tesi
 
 RUN wget -O TORCS_multi_docker.zip https://github.com/DrSgre/TORCS_multi_docker/archive/master.zip
 

@@ -24,6 +24,7 @@
 */
 
 #include <etcd/Client.hpp>
+#include <thread>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -44,6 +45,7 @@
 #include "racemanmenu.h"
 
 #include "racemain.h"
+#include "statemanager.h"
 
 extern void musicmenu(int, bool);
 extern etcd::Client etcd_client;
@@ -334,6 +336,8 @@ static int reRaceRealStart(void)
 		GfuiScreenActivate(ReInfo->_reGameScreen);
 	}
 
+	std::thread statemanager(StartStateManager, ReInfo);
+	statemanager.detach();
 	return RM_SYNC | RM_NEXT_STEP;
 }
 

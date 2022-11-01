@@ -14,7 +14,7 @@ RUN apt-get install -y alsa-utils
 
 WORKDIR /tmp
 
-ARG t=t
+ARG tf=tf
 
 RUN git clone --recursive https://github.com/DrSgre/TORCS_multi_docker
 
