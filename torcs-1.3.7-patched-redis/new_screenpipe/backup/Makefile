@@ -47,8 +47,7 @@ SOLIBS  =  -lclient       \
 	   -lopencv_flann \
 	   -lopencv_video \
 	   -lopencv_highgui \
-	   -lcpprest \
-	   -letcd-cpp-api
+	   -lcpprest 
 
 EXPDIR  = include
 
