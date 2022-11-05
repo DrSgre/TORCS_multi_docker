@@ -1,0 +1,50 @@
+version: "3"
+
+networks:
+  net-torcs:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "172.20.0.0/16"
+services:
+  Redis:
+    image: 'redis:latest'
+    expose:
+      - "2379"
+      - "2380"
+      - "4001"
+    networks:
+      net-torcs:
+        ipv4_address: 172.20.0.2
+    cap_add:
+      - NET_ADMIN
+    
+  music:
+    image: my-music:latest
+    build: ./musicplayer
+    privileged: true
+    ports:
+      - "7000:7000"
+    networks:
+      net-torcs:
+        ipv4_address: 172.20.0.4
+  
+  app:
+    image: my-app:latest
+    build: ./app
+    privileged: true
+    environment:
+      - DISPLAY=${DISPLAY}
+      - LD_LIBRARY_PATH=/usr/local/lib:/libetcd-cpp-api.so
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    ports:
+      - "8000:8000"
+    networks:
+      net-torcs:
+        ipv4_address: 172.20.0.3
+    depends_on:
+      - "Redis"
+      - "music"
+    cap_add:
+      - NET_ADMIN
