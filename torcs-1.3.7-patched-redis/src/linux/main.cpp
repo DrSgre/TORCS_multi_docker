@@ -173,7 +173,7 @@ main(int argc, char *argv[])
 	LinuxSpecInit();			/* init specific linux functions */
 
 	if(strlen(raceconfig) == 0) {
-		//newconnection(0);
+		newconnection(0);
 		GfScrInit(argc, argv);	/* init screen */
 		TorcsEntry();			/* launch TORCS */
 		glutMainLoop();			/* event loop of glut */
