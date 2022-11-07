@@ -57,13 +57,16 @@ void watch_for_changes()
             std::chrono::duration<double> elapsed_seconds = end-start;
             total_time += elapsed_seconds.count();
             count_time += 1;
-            std::cout << "Average fps: " << count_time/total_time << std::endl;
             if (total_time >= 1)
             {
-                OutputFile << "Current FPS: " << (int)count_time/total_time << "\n";
+                std::cout << "Average fps: " << count_time/total_time << std::endl;
+                OutputFile.open("output.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+                OutputFile << "Current FPS: " << count_time/total_time << "\n";
+                OutputFile.close();
                 count_time = 0;
                 total_time = 0;
             }
+            start = end;
         }
         catch (std::exception const & ex)
         {
