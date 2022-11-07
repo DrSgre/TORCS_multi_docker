@@ -42,23 +42,35 @@ RUN apt-get install -y libgrpc-dev \
 
 WORKDIR /tmp
 
-RUN wget -O etcd-cpp-apiv3.zip https://github.com/etcd-cpp-apiv3/etcd-cpp-apiv3/archive/master.zip
+RUN apt-get install -y git-all
 
-RUN unzip etcd-cpp-apiv3.zip
+RUN git clone https://github.com/redis/hiredis.git
 
-WORKDIR /tmp/etcd-cpp-apiv3-master
+WORKDIR ./hiredis
 
-RUN mkdir build
+RUN make
 
-WORKDIR /tmp/etcd-cpp-apiv3-master/build
-
-RUN cmake ..
-
-RUN make -j$(nproc) && make install
+RUN make install
 
 WORKDIR /tmp
 
-ARG tkl=tkl
+RUN git clone https://github.com/sewenew/redis-plus-plus.git
+
+WORKDIR ./redis-plus-plus
+
+RUN mkdir build
+
+WORKDIR ./build
+
+RUN cmake -DREDIS_PLUS_PLUS_CXX_STANDARD=11 ..
+
+RUN make
+
+RUN make install
+
+WORKDIR /tmp
+
+ARG thb=thb
 
 RUN wget -O TORCS_multi_docker.zip https://github.com/DrSgre/TORCS_multi_docker/archive/master.zip
 
@@ -75,8 +87,6 @@ RUN ./configure --prefix=$(pwd)/BUILD
 RUN make && make install && make datainstall
 
 RUN ["chmod", "755", "./BUILD/bin/torcs"]
-
-ARG LD_LIBRARY_PATH=/usr/local/lib/libetcd-cpp-api.so
 
 RUN apt-get install iproute2 iputils-ping -y
 

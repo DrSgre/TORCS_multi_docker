@@ -1,0 +1,21 @@
+version: "3"
+
+networks:
+  app-redis_net-torcs:
+    external: true
+
+services:
+  watcher:
+    image: my-watcher:latest
+    build: .
+    privileged: true
+    environment:
+      - DISPLAY=${DISPLAY}
+      - LD_LIBRARY_PATH=/usr/local/lib:/libGL.so.1
+      - NO_AT_BRIDGE=1
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    ports:
+      - "8002:8002"
+    networks:
+      - app-redis_net-torcs

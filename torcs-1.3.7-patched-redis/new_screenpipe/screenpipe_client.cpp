@@ -35,6 +35,7 @@ static int count_time = 0;
 
 auto redis = Redis("tcp://172.20.0.2:6379");
 auto sub = redis.subscriber();
+static std::ofstream OutputFile("output.txt");
 unsigned char image[resize_width*resize_height * 3];
 int key;
 
@@ -52,6 +53,17 @@ void watch_for_changes()
             auto p_img = cv::Mat(480, 640, CV_8UC3, image_vector.data());
             cv::imshow("Image from TORCS", p_img);
             key = cvWaitKey(1);
+            auto end = std::chrono::system_clock::now();
+            std::chrono::duration<double> elapsed_seconds = end-start;
+            total_time += elapsed_seconds.count();
+            count_time += 1;
+            std::cout << "Average fps: " << count_time/total_time << std::endl;
+            if (total_time >= 1)
+            {
+                OutputFile << "Current FPS: " << (int)count_time/total_time << "\n";
+                count_time = 0;
+                total_time = 0;
+            }
         }
         catch (std::exception const & ex)
         {

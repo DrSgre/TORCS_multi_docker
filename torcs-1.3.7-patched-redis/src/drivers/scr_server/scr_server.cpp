@@ -550,7 +550,6 @@ if (RESTARTING[index]==0)
     total_time += elapsed_seconds.count();
     OutputFile << "Current RTT time: " << elapsed_seconds.count() << "s\n";
     count_time += 1;
-    OutputFile << "Average RTT time: " << total_time/count_time << "s\n";
     start = end;
 
     // Set timeout for client answer
