@@ -545,12 +545,12 @@ if (RESTARTING[index]==0)
 
     redis.set(statePoint, line);
 
-    auto end = std::chrono::system_clock::now();
+    /*auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end-start;
     total_time += elapsed_seconds.count();
     OutputFile << "Current RTT time: " << elapsed_seconds.count() << "s\n";
     count_time += 1;
-    start = end;
+    start = end;*/
 
     // Set timeout for client answer
     FD_ZERO(&readSet);

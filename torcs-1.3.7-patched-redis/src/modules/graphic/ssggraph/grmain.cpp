@@ -329,7 +329,9 @@ refresh(tSituation *s)
     if ((grCurTime - OldTime) > 1.0) {
 	/* The Frames Per Second (FPS) display is refreshed every second */
 		grFps = (tdble)nFrame / (grCurTime - OldTime);
+		OutputFile.open("output.txt", std::fstream::in | std::fstream::out | std::fstream::app);
 		OutputFile << "Current FPS: " << grFps << "\n";
+		OutputFile.close();
 		nFrame = 0;
 		OldTime = grCurTime;
     }
