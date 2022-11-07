@@ -669,7 +669,7 @@ static void
 ReOneStep(double deltaTimeIncrement)
 {
 	count++;
-	if (count>10) // 10FPS
+	if (count>50) // 10FPS
 	{
 		count=1;
 
