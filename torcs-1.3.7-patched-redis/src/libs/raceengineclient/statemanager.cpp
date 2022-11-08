@@ -16,12 +16,12 @@ void SaveState(tSituation *s)
     //if (std::stod(redis.get("/state/deltaTime").value()) != s->deltaTime) {
     //    redis.set("/state/deltaTime", std::to_string(s->deltaTime));
     //}
-    if (std::stod(redis.get("/state/currentTime").value()) != s->currentTime) {
-        redis.set("/state/currentTime", std::to_string(s->currentTime));
-    }
-    if (std::stoi(redis.get("/state/raceState").value()) != s->_raceState) {
-        redis.set("/state/raceState", std::to_string(s->_raceState));
-    }
+    //if (std::stod(redis.get("/state/currentTime").value()) != s->currentTime) {
+    //    redis.set("/state/currentTime", std::to_string(s->currentTime));
+    //}
+    //if (std::stoi(redis.get("/state/raceState").value()) != s->_raceState) {
+    //    redis.set("/state/raceState", std::to_string(s->_raceState));
+    //}
     for (int i = 0; i < s->_ncars; i++) {
         // Store the infodelation related to the position with respect to the track segment.
         if (std::stod(redis.get("/carstate/car" + std::to_string(i) + "/pos_toStart").value()) != s->cars[i]->_trkPos.toStart) {
@@ -68,18 +68,18 @@ void SaveState(tSituation *s)
 void LoadState (tRmInfo *ReInfo) {
     tSituation *s = ReInfo->s;
     // If the local values are different from the ones in ETCD, they are updated accordingly.
-    double deltaTime = std::stod(redis.get("/state/deltaTime").value());
+    //double deltaTime = std::stod(redis.get("/state/deltaTime").value());
     //if (deltaTime != s->deltaTime) {
     //    s->deltaTime = deltaTime;
     //}
-    double currentTime = std::stod(redis.get("/state/currentTime").value());
-    if (currentTime != s->currentTime) {
-        s->currentTime = currentTime;
-    }
-    int raceState = std::stoi(redis.get("/state/raceState").value());
-    if (raceState != s->_raceState) {
-        s->_raceState = raceState;
-    }
+    //double currentTime = std::stod(redis.get("/state/currentTime").value());
+    //if (currentTime != s->currentTime) {
+    //    s->currentTime = currentTime;
+    //}
+    //int raceState = std::stoi(redis.get("/state/raceState").value());
+    //if (raceState != s->_raceState) {
+    //    s->_raceState = raceState;
+    //}
 
     // For each car in the race, get the data related to the position with respect to the track segment and the global position of the car.
     for (int i = 0; i < s->_ncars; i++) {
@@ -164,8 +164,8 @@ void StartStateManager(tRmInfo* ReInfo)
 
         // Initialize game state values set multiple times, to allow for later comparisons.
         //redis.set("/state/deltaTime", std::to_string(s->deltaTime));
-        redis.set("/state/currentTime", std::to_string(s->currentTime));
-        redis.set("/state/raceState", std::to_string(s->_raceState));
+        //redis.set("/state/currentTime", std::to_string(s->currentTime));
+        //redis.set("/state/raceState", std::to_string(s->_raceState));
 
         // Initialize car state values, to allow for later comparisons.
         for (int i = 0; i < s->_ncars; i++) {
@@ -195,14 +195,14 @@ void StartStateManager(tRmInfo* ReInfo)
         {
             // If the race time on ETCD is greater than the one in local, this means that the local state is obsolete 
             // and needs update. Otherwise, the state is updated and the GE proceeds with saving it in ETCD.
-            if (s->currentTime < std::stod(redis.get("/state/currentTime").value()))
-            {
-                LoadState(ReInfo);
-            }
-            else 
-            {
-                SaveState(ReInfo->s);
-            }
+            //if (s->currentTime < std::stod(redis.get("/state/currentTime").value()))
+            //{
+            //    LoadState(ReInfo);
+            //}
+            //else 
+            //{
+            //    SaveState(ReInfo->s);
+            //}
             std::this_thread::sleep_for(std::chrono::milliseconds(SNAPSHOT_FREQUENCY));
         }
     }

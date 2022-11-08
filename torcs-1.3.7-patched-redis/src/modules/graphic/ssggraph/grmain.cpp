@@ -16,7 +16,7 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-
+#include <sw/redis++/redis++.h>
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -46,6 +46,10 @@
 #include "grtrackmap.h"
 #include "grcarlight.h"
 #include <glfeatures.h>
+
+using namespace sw::redis;
+
+extern Redis redis;
 
 int maxTextureUnits = 0;
 static double OldTime;
@@ -350,8 +354,8 @@ refresh(tSituation *s)
     for (i = 0; i < GR_NB_MAX_SCREEN; i++) {
 	grScreens[i]->update(s, grFps);
     }
-
-    grUpdateSmoke(s->currentTime);
+	double currentTime = std::stod(redis.get("/state/currentTime").value());
+    grUpdateSmoke(currentTime);
 
     STOP_PROFILE("refresh");
     return 0;

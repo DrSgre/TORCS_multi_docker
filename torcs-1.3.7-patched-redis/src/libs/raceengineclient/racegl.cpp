@@ -23,6 +23,8 @@
     @version	$Id: racegl.cpp,v 1.7.2.4 2013/09/01 10:24:23 berniw Exp $
 */
 
+#include <sw/redis++/redis++.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
@@ -47,6 +49,10 @@ static int	reBigMsgId;
 static float bgcolor[4] = {0.0, 0.0, 0.0, 0.0};
 static float white[4]   = {1.0, 1.0, 1.0, 1.0};
 static float red[4]     = {1.0, 0.0, 0.0, 1.0};
+
+using namespace sw::redis;
+
+extern Redis redis;
 
 static void
 reDisplay(void)
@@ -82,8 +88,9 @@ ReBoardInfo(void * /* vboard */)
 static void
 reSkipPreStart(void * /* dummy */)
 {
-    if (ReInfo->s->currentTime < -1.0) {
-		ReInfo->s->currentTime = -1.0;
+	double currentTime = std::stod(redis.get("/state/currentTime").value());
+    if (currentTime < -1.0) {
+		currentTime = -1.0;
 		ReInfo->_reLastTime = -1.0;
     }
 }
