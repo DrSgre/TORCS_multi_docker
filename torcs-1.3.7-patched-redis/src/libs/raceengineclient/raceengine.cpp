@@ -256,7 +256,7 @@ ReManage(tCarElt *car)
 			}
 		}
 	}
-	
+	int raceState = std::stoi(redis.get("/state/raceState").value());
 	/* Start Line Crossing */
 	if (info->prevTrkPos.seg != car->_trkPos.seg) {
 		if ((info->prevTrkPos.seg->raceInfo & TR_LAST) && (car->_trkPos.seg->raceInfo & TR_START)) {
@@ -325,9 +325,10 @@ ReManage(tCarElt *car)
 					info->topSpd = car->_speed_x;
 					info->botSpd = car->_speed_x;
 					car->_currentMinSpeedForLap = car->_speed_x;
-					if ((car->_remainingLaps < 0) || (s->_raceState == RM_RACE_FINISHING)) {
+					if ((car->_remainingLaps < 0) || (raceState == RM_RACE_FINISHING)) {
 						car->_state |= RM_CAR_STATE_FINISH;
-						s->_raceState = RM_RACE_FINISHING;
+						//s->_raceState = RM_RACE_FINISHING;
+						redis.set("/state/raceState", std::to_string(RM_RACE_FINISHING));
 						if (ReInfo->s->_raceType == RM_TYPE_RACE) {
 							if (car->_pos == 1) {
 								snprintf(buf, BUFSIZE, "Winner %s", car->_name);
@@ -416,7 +417,8 @@ static void ReSortCars(void)
 	}
 
 	if (allfinish) {
-		s->_raceState = RM_RACE_ENDED;
+		//s->_raceState = RM_RACE_ENDED;
+		redis.set("/state/raceState", std::to_string(RM_RACE_ENDED));
 	}
 
 	for  (i = 0; i < s->_ncars; i++)
@@ -725,11 +727,14 @@ ReOneStep(double deltaTimeIncrement)
 	//s->currentTime += deltaTimeIncrement; /* Simulated time */
 	redis.set("/state/currentTime", std::to_string(currentTime+deltaTimeIncrement));
 	currentTime = std::stod(redis.get("/state/currentTime").value());
+	int raceState = std::stoi(redis.get("/state/raceState").value());
 	if (currentTime < 0) {
 		/* no simu yet */
-		ReInfo->s->_raceState = RM_RACE_PRESTART;
-	} else if (ReInfo->s->_raceState == RM_RACE_PRESTART) {
-		ReInfo->s->_raceState = RM_RACE_RUNNING;
+		//ReInfo->s->_raceState = RM_RACE_PRESTART;
+		redis.set("/state/raceState", std::to_string(RM_RACE_PRESTART));
+	} else if (raceState == RM_RACE_PRESTART) {
+		//ReInfo->s->_raceState = RM_RACE_RUNNING;
+		redis.set("/state/raceState", std::to_string(RM_RACE_RUNNING));
 		currentTime = 0.0; /* resynchronize */
 		ReInfo->_reLastTime = 0.0;
 	}

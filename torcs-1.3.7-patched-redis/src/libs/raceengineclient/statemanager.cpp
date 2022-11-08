@@ -185,9 +185,9 @@ void StartStateManager(tRmInfo* ReInfo)
     }
 
     // The game state update loop is started and proceeds with a fixed frequency until the race has ended.
-    while(s->_raceState != RM_RACE_ENDED) {
+    while(/*s->_raceState != RM_RACE_ENDED*/true) {
         // If the race is paused we wait without perfodeling requests.
-        if (s->_raceState == RM_RACE_PAUSED)
+        if (/*s->_raceState == RM_RACE_PAUSED*/true)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(SNAPSHOT_FREQUENCY));
         }
