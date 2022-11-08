@@ -13,9 +13,9 @@ extern Redis redis;
 void SaveState(tSituation *s)
 {
     // If the ETCD values are different from the local ones, they are updated accordingly.
-    if (std::stod(redis.get("/state/deltaTime").value()) != s->deltaTime) {
-        redis.set("/state/deltaTime", std::to_string(s->deltaTime));
-    }
+    //if (std::stod(redis.get("/state/deltaTime").value()) != s->deltaTime) {
+    //    redis.set("/state/deltaTime", std::to_string(s->deltaTime));
+    //}
     if (std::stod(redis.get("/state/currentTime").value()) != s->currentTime) {
         redis.set("/state/currentTime", std::to_string(s->currentTime));
     }
@@ -69,9 +69,9 @@ void LoadState (tRmInfo *ReInfo) {
     tSituation *s = ReInfo->s;
     // If the local values are different from the ones in ETCD, they are updated accordingly.
     double deltaTime = std::stod(redis.get("/state/deltaTime").value());
-    if (deltaTime != s->deltaTime) {
-        s->deltaTime = deltaTime;
-    }
+    //if (deltaTime != s->deltaTime) {
+    //    s->deltaTime = deltaTime;
+    //}
     double currentTime = std::stod(redis.get("/state/currentTime").value());
     if (currentTime != s->currentTime) {
         s->currentTime = currentTime;
@@ -163,7 +163,7 @@ void StartStateManager(tRmInfo* ReInfo)
         redis.set("/state/maxDammage", std::to_string(s->_maxDammage));
 
         // Initialize game state values set multiple times, to allow for later comparisons.
-        redis.set("/state/deltaTime", std::to_string(s->deltaTime));
+        //redis.set("/state/deltaTime", std::to_string(s->deltaTime));
         redis.set("/state/currentTime", std::to_string(s->currentTime));
         redis.set("/state/raceState", std::to_string(s->_raceState));
 

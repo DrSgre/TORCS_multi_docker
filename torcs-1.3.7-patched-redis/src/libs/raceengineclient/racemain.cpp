@@ -23,6 +23,7 @@
     @version	$Id: racemain.cpp,v 1.13.2.11 2014/05/22 17:21:38 berniw Exp $
 */
 
+#include <sw/redis++/redis++.h>
 #include <thread>
 
 #include <stdlib.h>
@@ -46,6 +47,9 @@
 #include "racemain.h"
 #include "statemanager.h"
 
+using namespace sw::redis;
+
+extern Redis redis;
 extern void musicmenu(int, bool);
 
 /***************************************************************/
@@ -318,7 +322,8 @@ static int reRaceRealStart(void)
 	ReInfo->_reTimeMult = 1.0;
 	ReInfo->_reLastTime = -1.0;
 	ReInfo->s->currentTime = -2.0;
-	ReInfo->s->deltaTime = RCM_MAX_DT_SIMU;
+	//ReInfo->s->deltaTime = RCM_MAX_DT_SIMU;
+	redis.set("/state/deltaTime", std::to_string(RCM_MAX_DT_SIMU));
 	ReInfo->s->_raceState = RM_RACE_STARTING;
 
 	if ((ReInfo->_displayMode != RM_DISP_MODE_CONSOLE) &&  ReInfo->_reGraphicItf.initview != 0) {

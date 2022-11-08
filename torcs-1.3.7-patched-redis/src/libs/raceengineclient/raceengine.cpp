@@ -60,7 +60,7 @@ static double	bigMsgDisp;
 static int refresh_count = 10;
 static int count_limit = 10;
 
-auto redis = Redis("tcp://172.20.0.2:6379");
+Redis redis = Redis("tcp://172.20.0.2:6379");
 
 tRmInfo	*ReInfo = 0;
 int RESTART = 0;
@@ -736,7 +736,8 @@ ReOneStep(double deltaTimeIncrement)
 
 	START_PROFILE("rbDrive*");
 	if ((s->currentTime - ReInfo->_reLastTime) >= RCM_MAX_DT_ROBOTS) {
-		s->deltaTime = s->currentTime - ReInfo->_reLastTime;
+		//s->deltaTime = s->currentTime - ReInfo->_reLastTime;
+		redis.set("/state/deltaTime", std::to_string(s->currentTime - ReInfo->_reLastTime));
 		for (i = 0; i < s->_ncars; i++) {
 			if ((s->cars[i]->_state & RM_CAR_STATE_NO_SIMU) == 0) {
 				robot = s->cars[i]->robot;
