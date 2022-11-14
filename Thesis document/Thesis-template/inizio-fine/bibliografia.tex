@@ -1,0 +1,19 @@
+% !TEX encoding = UTF-8
+% !TEX TS-program = pdflatex
+% !TEX root = ../tesi.tex
+
+%**************************************************************
+% Bibliografia
+%**************************************************************
+
+\cleardoublepage
+\chapter{Bibliografy}
+
+\nocite{*}
+% Stampa i riferimenti bibliografici
+\printbibliography[heading=subbibliography,title={
+	Bibliographical references},type=book,resetnumbers=true]
+\label{biblio}
+% Stampa i siti web consultati
+\printbibliography[heading=subbibliography,title={Web references},type=online,resetnumbers=true]
+

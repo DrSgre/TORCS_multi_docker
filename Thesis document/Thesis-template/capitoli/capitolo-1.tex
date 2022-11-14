@@ -1,0 +1,30 @@
+% !TEX encoding = UTF-8
+% !TEX TS-program = pdflatex
+% !TEX root = ../tesi.tex
+
+%**************************************************************
+\chapter{Introduction}
+\label{cap:introduction}
+\intro{This chapter introduces the concept of \textbf{Game Engine}, discusses the main problems of \textbf{Legacy Game Engines} with respect to \textbf{Distributed Game Engines}, and presents the main purpose of our research work.}
+
+\section{Background \& Problems}
+Nowadays, \textit{Game Engines} have become a core element in the development of most video game software [ref]. They are often identified as a suite of tools, that is able to provide core and important functionalities for managing basic features of video games, such as: image rendering, physics management, animation and many more [ref]. \\
+These type of features, while still being paramount for the execution of a video game, are often expensive to implement from scratch for each new software being developed. Furthermore, their nature and value can often be reused or adapted to different projects, making the development process much more efficient. \\ \\
+On a more technical level, the Game Engines are comprised of a tool suite and a run-time component [ref Gregory]. The tool suite allows creators to merge together various kinds of multimedia and audiovisual assets, while the run-time is a layered software that takes care of background operations (e.g. resource management, interaction with the hardware, ...) and is also transferred into the game executables, which as important consequences. In fact, even if multiple Game Engines present a certain degree of modularization, with clear separation of the provided functionalities in different modules, they still designed with a monolithic structure. \\ \\
+This type of Game Engine, which we call \textit{Legacy Game Engine}, is presented with the strong requirement of high performance and low delays for the user interfacing with the image rendered on screen. This is particularly problematic in contexts where the available resources are limited or network latency is present. \\
+Furthermore, due to their monolithic nature, even small changes can require extensive refactoring of their whole codebase and their interfacing with the hardware can introduce problematic platform dependency, which hinders portability. \\ \\
+In an effort to find a solution to these problems, research has been conducted on more modular and decentralized Game Engines [ref], which we will call \textit{Distributed Game Engines}. This type of Game Engines can be implemented with many different approaches [ref], but are generally hosted on multiple physical or virtual machines. In particular, this structure decouples the various GE modules (e.g. rendering, physics, IA, ...) and hosts them in different machines, which communicate with each other in order to provide the features of a full Game Engine. The aim of this type of architecture is to provide the user with a low delay full-functioning Game Engine, without the limitations of a monolithic structure and with more flexible resource allocation for the single functionalities. \\ \\
+This paradigm has proven to be quite successful, especially in the context of \textit{Cloud Computing}, allowing the offloading of the most computation-intensive operations to dedicated hosting services, thus overcoming many limitations of local hardware. However, when distributing the components of a software into a network environment, additional elements such as network latency are introduced into the picture. As such, when designing technical solutions, it is important reason on the impact on performance of positive and negative side effects. \\ \\
+In this context, even if some previous works have defined the requirements for such architecture [ref], little research has been conducted on a practical implementation, considering its possible problems and technological tools to implement it.
+
+\section{Purpose \& Research question}
+In this work, we verify the possibility of turning a Legacy Game Engine into a Distributed Game Engine, through modularization and containerization of its main components. We propose a Docker-based architecture where the Game Engine modules, such as: graphic engine, physics engine, AI, music player, ...; are connected and communicate in a network environment. \\
+Additionally, we also introduce original functionalities fitting for a peer-to-peer distributed system, such as game image remote streaming and game state synchronization, through dedicated middlewares. \\ \\
+Considering the requirement of distributing Game Engine data between various virtual containers, we also compare possible distributed database solutions (e.g. ETCD, Redis), understanding their positive and negative aspects, with the aim of identifying the most fitting solution for our purpose. \\ \\
+In order to provide a more practical approach to the design of our architecture, we also consider realistic problems of distributed network environments (e.g. network latency, network traffic, synchronization, ...) and perform dedicated experiments to quantify their impact on the system performance and functionalities. \\ \\
+To sum up, the main research questions this work aims to answer are as follows:
+\begin{itemize}
+	\item is it possible to decouple and containerize Game Engine modules or libraries, while maintaining the original system functionalities?
+	\item what are the most fitting and performing options for distributing Game Engine data across multiple components in a network environment?
+	\item what are the effects of network latency and traffic on the performance of a Distributed Game Engine?
+\end{itemize}

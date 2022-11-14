@@ -1,0 +1,41 @@
+% !TEX encoding = UTF-8
+% !TEX TS-program = pdflatex
+% !TEX root = ../tesi.tex
+%**************************************************************
+\chapter{Software development}
+\label{cap:development}
+%**************************************************************
+
+\intro{This chapter discusses the development done on the initial TORCS codebase, from the starting point introduced in the previous chapter. The discussion includes the \textbf{containerization} of the main TORCS system components, the introduction of \textbf{additional software} (e.g. ETCD) and the development of \textbf{new components} (e.g. the state management middleware).}\\
+
+\section{Codebase definition}
+\intro{In this section we discuss some TORCS related projects found on GitHub, whose ideas provided an useful development basis or inspiration for our work.}
+
+\subsection{Patched TORCS 1.3.7}
+\intro{General description of this patched version of TORCS, which includes the \textbf{SCR client-server architecture} and the \textbf{screenpipe video streaming}. Here we can also discuss the reasons for choosing this project as starting point for the development of our work.}
+
+\subsection{PyTorcs-docker}
+\intro{General description of the PyTorcs-docker project, including its development of the original SCR client-server architecture, the usage of nvidia-docker and of the SnakeOil library. We also disccuss the reasons for not choosing this project as a starting point, which may be summed up as:
+	\begin{itemize}
+		\item this project had an already clear development direction and removed multiple original TORCS functionalities for that purpose;
+		\item this project acted as a Python wrapper of the original TORCS code, introducing a not-needed layer of complexity for our work;
+		\item while providing interesting features, nvidia-docker is not compatible with docker-compose, which could impose techical limitations for our project development.
+\end{itemize}}
+
+\section{Containerization of TORCS}
+\intro{In this section we discuss the initial transition of TORCS from a local Game Engine, towards its implementation with Docker containers, starting from its patched version. This includes the \textbf{SCR client-server configuration} with two different containers and references to \textbf{X11} for the local display of the game image coming from the container.}
+
+\section{Implementation and improvement of ETCD}
+\intro{In this section we discuss the \textbf{implementation} of ETCD as a Docker container, its \textbf{configurations} and the \textbf{improvements} introduced in order to adapt it for the purpose of the current project. Despite being triggered by the results of the experiments we performed, such experiments are only briefly referenced in this section, as their are discussed in-depth in later sections.}
+
+\section{Game image streaming}
+\intro{In this section we discuss the initial implementation of the \textbf{screenpipe} game image streaming, the corrections introduced in order for it to work as expected and the improvements we introduced. These improvements will reference mainly the \textbf{introduction of ETCD} and the \textbf{refactoring}, which removed the need for IPC shared memory and the data serialization.}
+
+\section{ETCD state-action communication}
+\intro{In this section we discuss the introduction of ETCD as an alternative to socket-based communication for the interaction between client and server in the \textbf{SCR configuration}. More specifically, we discuss how it was possible to allow for the exchange of \textbf{states and actions} between the client and the server using \textbf{ETCD keys}.}
+
+\section{Music Player library}
+\intro{In this section we discuss the study behind the possibility of decoupling some of the TORCS libraries, which lead to the decision of focusing on the \textbf{Music Player library}, and how this operation was carried out.}
+
+\section{State Manager Middleware}
+\intro{In this section we discuss the development of the State Manager Middleware, referencing the works and ideas mentioned in the \textbf{Related Works} section of chapter 1, and providing detailed technical information about the structure of the developed component.}
