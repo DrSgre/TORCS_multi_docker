@@ -30,6 +30,7 @@ In order to run the Docker images provided in the `TORCS-docker-1.3.7` directory
 * *client*: contains the ETCD version of the scr client to be connected to the main TORCS application, after either a "Quick race" or "Practice" has been started.
 * *watcher*: contains the ETCD version of the screenpipe client, which is able to connect to the main TORCS application, obtain the game image and render it in a dedicated window.
 <a/>
+
 For the *Redis version*:
 * *app-redis*: contains the main TORCS application, the musicplayer and the Redis container image. These should be the first images to be initialized.
 * *client-redis*: contains the Redis version of the scr client to be connected to the main TORCS application, after either a "Quick race" or "Practice" has been started.
