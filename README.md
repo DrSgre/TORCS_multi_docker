@@ -1,9 +1,15 @@
 # TORCS_multi_docker
 ## Repository structure
 This repository contains the source code of a project aimed toward the modularization of the TORCS racing game simulator. The content of the repository is organized as follows:
-* *torcs-1.3.7-patched*: contains the patched version of TORCS with scr_server and screenpipe to stream the game image.
-* *scr-client-cpp*: contains the scr client used to connect and play TORCS in "Quick game" or "Practice" modes.
+* *Demo video*: contains the video demonstration of the thesis project.
+* *Experments data*: contains the files and data related to the experiments conducted on the system.
 * *TORCS-docker-1.3.7*: contains the docker-compose.yml and Dockerfile of the 4 containers used for the project (app-etcd, watcher, client).
+* *Thesis document*: contains the LaTeX project of the thesis document.
+* *musicplayer*: contains the decoupled TORCS Music Player library.
+* *scr-client-cpp-redis*: contains the Redis version of the scr client used to connect and play TORCS in "Quick game" or "Practice" modes.
+* *scr-client-cpp*: contains the ETCD version of the scr client used to connect and play TORCS in "Quick game" or "Practice" modes.
+* *torcs-1.3.7-patched-redis*: contains the patched version of TORCS with scr_server and screenpipe to stream the game image, based on Redis.
+* *torcs-1.3.7-patched*: contains the patched version of TORCS with scr_server and screenpipe to stream the game image, based on ETCD.
 * *etcd*: contains the ETCD source, updated in order not to store WAL files locally (not needed for the purposes of this project).
 * *etcd_original*: contains the original version of the ETCD source, used for comparison with the updated version.
 
