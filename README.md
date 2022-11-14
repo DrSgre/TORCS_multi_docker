@@ -15,7 +15,9 @@ This repository contains the source code of a project aimed toward the modulariz
 
 Representation of the current state of the modularization:
 <br />
-<img src="https://user-images.githubusercontent.com/16836365/188315972-fe3a0394-eaa0-4339-94b0-4c0e99416fef.jpg" alt="drawing" width="60%"/>
+https://user-images.githubusercontent.com/16836365/201628120-8f1dbe37-0de2-4b09-95e0-0fa45781f298.mp4
+<br />
+The Redis version presents the same architecture, with Redis in place of ETCD.
 
 ## Compatible operating systems
 As of now, the application has been tested to be working only on Docker instances run in a Linux environment.
