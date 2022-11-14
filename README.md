@@ -3,7 +3,7 @@
 This repository contains the source code of a project aimed toward the modularization of the TORCS racing game simulator. The content of the repository is organized as follows:
 * *Demo video*: contains the video demonstration of the thesis project.
 * *Experments data*: contains the files and data related to the experiments conducted on the system.
-* *TORCS-docker-1.3.7*: contains the docker-compose.yml and Dockerfile of the 4 containers used for the project (app-etcd, watcher, client).
+* *TORCS-docker-1.3.7*: contains the docker-compose.yml and Dockerfile of the containers used for the project, both the ETCD and the Redis versions.
 * *Thesis document*: contains the LaTeX project of the thesis document.
 * *musicplayer*: contains the decoupled TORCS Music Player library.
 * *scr-client-cpp-redis*: contains the Redis version of the scr client used to connect and play TORCS in "Quick game" or "Practice" modes.
@@ -25,7 +25,11 @@ In order to allow the Docker containers to access the local display, the followi
 `sudo xhost local:root`
 
 ## Run the Docker images
-In order to run the Docker images provided in the `TORCS-docker-1.3.7` directory, one should look at the nested folders and run the command `docker-compose up` in order to launch the related containers. In particular:
-* *app-etcd*: contains the main TORCS application and the ETCD container image. These should be the first images to be initialized.
-* *client*: contains the scr client to be connected to the main TORCS application, after either a "Quick race" or "Practice" has been started.
-* *watcher*: contains the screenpipe client, which is able to connect to the main TORCS application, obtain the game image and (very roughly) render it in a dedicated window.
+In order to run the Docker images provided in the `TORCS-docker-1.3.7` directory, one should look at the nested folders and run the command `docker-compose up` in order to launch the related containers. In particular, for the *ETCD version*:
+* *app-etcd*: contains the main TORCS application, the musicplayer and the ETCD container image. These should be the first images to be initialized.
+* *client*: contains the ETCD version of the scr client to be connected to the main TORCS application, after either a "Quick race" or "Practice" has been started.
+* *watcher*: contains the ETCD version of the screenpipe client, which is able to connect to the main TORCS application, obtain the game image and render it in a dedicated window.
+For the *Redis version*:
+* *app-redis*: contains the main TORCS application, the musicplayer and the Redis container image. These should be the first images to be initialized.
+* *client-redis*: contains the Redis version of the scr client to be connected to the main TORCS application, after either a "Quick race" or "Practice" has been started.
+* *watcher-redis*: contains the Redis version of the screenpipe client, which is able to connect to the main TORCS application, obtain the game image and  render it in a dedicated window.
