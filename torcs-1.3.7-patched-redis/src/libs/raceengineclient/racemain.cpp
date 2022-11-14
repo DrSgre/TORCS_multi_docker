@@ -23,7 +23,6 @@
     @version	$Id: racemain.cpp,v 1.13.2.11 2014/05/22 17:21:38 berniw Exp $
 */
 
-#include <sw/redis++/redis++.h>
 #include <thread>
 
 #include <stdlib.h>
@@ -47,9 +46,6 @@
 #include "racemain.h"
 #include "statemanager.h"
 
-using namespace sw::redis;
-
-Redis redis_client = Redis("tcp://172.20.0.2:6379");
 extern void musicmenu(int, bool);
 
 /***************************************************************/
@@ -223,8 +219,8 @@ int RePreRace(void)
 	} else if (!strcmp(raceType, RM_VAL_PRACTICE)) {
 		ReInfo->s->_raceType = RM_TYPE_PRACTICE;
 	}
-	redis_client.set("/state/raceState", std::to_string(0));
-	//ReInfo->s->_raceState = 0;
+
+	ReInfo->s->_raceState = 0;
 
 	/* Cleanup results */
 	snprintf(path, BUFSIZE, "%s/%s/%s", ReInfo->track->name, RE_SECT_RESULTS, raceName);
@@ -321,12 +317,9 @@ static int reRaceRealStart(void)
 
 	ReInfo->_reTimeMult = 1.0;
 	ReInfo->_reLastTime = -1.0;
-	//ReInfo->s->currentTime = -2.0;
-	redis_client.set("/state/currentTime", std::to_string(-2.0));
-	//ReInfo->s->deltaTime = RCM_MAX_DT_SIMU;
-	redis_client.set("/state/deltaTime", std::to_string(RCM_MAX_DT_SIMU));
-	//ReInfo->s->_raceState = RM_RACE_STARTING;
-	redis_client.set("/state/raceState", std::to_string(RM_RACE_STARTING));
+	ReInfo->s->currentTime = -2.0;
+	ReInfo->s->deltaTime = RCM_MAX_DT_SIMU;
+	ReInfo->s->_raceState = RM_RACE_STARTING;
 
 	if ((ReInfo->_displayMode != RM_DISP_MODE_CONSOLE) &&  ReInfo->_reGraphicItf.initview != 0) {
 		GfScrGetSize(&sw, &sh, &vw, &vh);
@@ -341,8 +334,8 @@ static int reRaceRealStart(void)
 		GfuiScreenActivate(ReInfo->_reGameScreen);
 	}
 
-	//std::thread statemanager(StartStateManager, ReInfo);
-	//statemanager.detach();
+	std::thread statemanager(StartStateManager, ReInfo);
+	statemanager.detach();
 	return RM_SYNC | RM_NEXT_STEP;
 }
 

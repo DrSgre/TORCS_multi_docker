@@ -23,8 +23,6 @@
     @version	$Id: racegl.cpp,v 1.7.2.4 2013/09/01 10:24:23 berniw Exp $
 */
 
-#include <sw/redis++/redis++.h>
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
@@ -50,10 +48,6 @@ static float bgcolor[4] = {0.0, 0.0, 0.0, 0.0};
 static float white[4]   = {1.0, 1.0, 1.0, 1.0};
 static float red[4]     = {1.0, 0.0, 0.0, 1.0};
 
-using namespace sw::redis;
-
-extern Redis redis_client;
-
 static void
 reDisplay(void)
 {
@@ -64,8 +58,8 @@ static void
 reScreenActivate(void * /* dummy */)
 {
     glutDisplayFunc(reDisplay);
-	int raceState = std::stoi(redis_client.get("/state/raceState").value());
-    if ((raceState & RM_RACE_PAUSED) == 0) {
+
+    if ((ReInfo->s->_raceState & RM_RACE_PAUSED) == 0) {
 	ReStart(); 			/* resynchro */
     }
     glutPostRedisplay();
@@ -74,15 +68,12 @@ reScreenActivate(void * /* dummy */)
 static void
 ReBoardInfo(void * /* vboard */)
 {
-	int raceState = std::stoi(redis_client.get("/state/raceState").value());
-    if (raceState & RM_RACE_PAUSED) {
-		//ReInfo->s->_raceState &= ~RM_RACE_PAUSED;
-		redis_client.set("/state/raceState", std::to_string(~RM_RACE_PAUSED));
+    if (ReInfo->s->_raceState & RM_RACE_PAUSED) {
+		ReInfo->s->_raceState &= ~RM_RACE_PAUSED;
 		ReStart();
 		GfuiVisibilitySet(reScreenHandle, rePauseId, 0);
     } else {
-		//ReInfo->s->_raceState |= RM_RACE_PAUSED;
-		redis_client.set("/state/raceState", std::to_string(RM_RACE_PAUSED));
+		ReInfo->s->_raceState |= RM_RACE_PAUSED;
 		ReStop();
 		GfuiVisibilitySet(reScreenHandle, rePauseId, 1);
     }
@@ -91,9 +82,8 @@ ReBoardInfo(void * /* vboard */)
 static void
 reSkipPreStart(void * /* dummy */)
 {
-	double currentTime = std::stod(redis_client.get("/state/currentTime").value());
-    if (currentTime < -1.0) {
-		currentTime = -1.0;
+    if (ReInfo->s->currentTime < -1.0) {
+		ReInfo->s->currentTime = -1.0;
 		ReInfo->_reLastTime = -1.0;
     }
 }

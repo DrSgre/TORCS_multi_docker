@@ -70,7 +70,7 @@ RUN make install
 
 WORKDIR /tmp
 
-ARG thb=thb
+ARG tvd=tvd
 
 RUN wget -O TORCS_multi_docker.zip https://github.com/DrSgre/TORCS_multi_docker/archive/master.zip
 

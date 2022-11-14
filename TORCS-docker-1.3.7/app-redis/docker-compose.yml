@@ -7,8 +7,8 @@ networks:
       config:
         - subnet: "172.20.0.0/16"
 services:
-  Redis:
-    image: 'redis:latest'
+  redis:
+    build: ./redis
     expose:
       - "2379"
       - "2380"
@@ -44,7 +44,7 @@ services:
       net-torcs:
         ipv4_address: 172.20.0.3
     depends_on:
-      - "Redis"
+      - "redis"
       - "music"
     cap_add:
       - NET_ADMIN

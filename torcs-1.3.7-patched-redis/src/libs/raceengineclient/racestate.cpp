@@ -24,7 +24,7 @@
 */
 
 /* The Race Engine State Automaton */
-#include <sw/redis++/redis++.h>
+
 #include <iostream>
 
 #include <stdlib.h>
@@ -42,10 +42,6 @@
 
 #include "racestate.h"
 
-using namespace sw::redis;
-
-extern Redis redis_client;
-
 static void *mainMenu;
 
 /* State Automaton Init */
@@ -62,7 +58,7 @@ void
 ReStateManage(void)
 {
 	int mode = RM_SYNC | RM_NEXT_STEP;
-	int raceState;
+
 	do {
 		switch (ReInfo->_reState) {
 			case RE_STATE_CONFIG:
@@ -101,8 +97,7 @@ ReStateManage(void)
 
 			case RE_STATE_RACE:
 				mode = ReUpdate();
-				raceState = std::stoi(redis_client.get("/state/raceState").value());
-				if (raceState == RM_RACE_ENDED) {
+				if (ReInfo->s->_raceState == RM_RACE_ENDED) {
 					/* race finished */
 					ReInfo->_reState = RE_STATE_RACE_END;
 				} else if (mode & RM_END_RACE) {

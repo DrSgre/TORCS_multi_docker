@@ -16,7 +16,7 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#include <sw/redis++/redis++.h>
+
 #include <iostream>
 
 #include <chrono>
@@ -35,10 +35,6 @@
 #include <tgf.h>
 #include <robottools.h>
 #include "sim.h"
-
-using namespace sw::redis;
-
-extern Redis redis_client;
 
 tCar *SimCarTable = 0;
 tdble SimDeltaTime;
@@ -357,8 +353,8 @@ SimUpdate(tSituation *s, double deltaTime, int telemetry)
 				continue;
 			}
 		}
-		int raceState = std::stoi(redis_client.get("/state/raceState").value());
-		if (raceState & RM_RACE_PRESTART) {
+	
+		if (s->_raceState & RM_RACE_PRESTART) {
 			car->ctrl->gear = 0;
 		}
 	
@@ -372,7 +368,7 @@ SimUpdate(tSituation *s, double deltaTime, int telemetry)
 		SimEngineUpdateTq(car);
 		CHECK(car);
 	
-		if (!(raceState & RM_RACE_PRESTART)) {
+		if (!(s->_raceState & RM_RACE_PRESTART)) {
 	
 			SimCarUpdateWheelPos(car);
 			CHECK(car);

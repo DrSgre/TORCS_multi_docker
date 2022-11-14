@@ -16,7 +16,7 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#include <sw/redis++/redis++.h>
+
 #include <iostream>
 
 #include <math.h>
@@ -31,10 +31,6 @@
 #include "sound_defines.h"
 #include "SoundInterface.h"
 #include "CarSoundData.h"
-
-using namespace sw::redis;
-
-extern Redis redis;
 
 static int soundInitialized = 0;
 static double lastUpdated;
@@ -213,11 +209,10 @@ grRefreshSound(tSituation *s, cGrCamera	*camera)
 
 	// Update sound at most 50 times a second.
 	const double UPDATE_DT = 0.02;
-	double currentTime = std::stod(redis.get("/state/currentTime").value());
-	if (currentTime - lastUpdated < UPDATE_DT) {
+	if (s->currentTime - lastUpdated < UPDATE_DT) {
 		return 0.0f;
 	}
-	lastUpdated = currentTime;
+	lastUpdated = s->currentTime;
 
     tCarElt	*car;//= s->cars[s->current];
 

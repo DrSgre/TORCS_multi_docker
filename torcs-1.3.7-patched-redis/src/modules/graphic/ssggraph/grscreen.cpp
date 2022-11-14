@@ -22,7 +22,7 @@
     @author	<a href=mailto:eric.espie@torcs.org>Eric Espie</a>
     @version	$Id: grscreen.cpp,v 1.22.2.5 2012/06/09 11:44:46 berniw Exp $
 */
-#include <sw/redis++/redis++.h>
+
 #include <iostream>
 
 #include <plib/ssg.h>
@@ -39,10 +39,6 @@
 #include "grcarlight.h"
 
 #include "grscreen.h"
-
-using namespace sw::redis;
-
-extern Redis redis;
 
 cGrScreen::cGrScreen(int myid)
 {
@@ -291,9 +287,9 @@ void cGrScreen::camDraw(tSituation *s)
 	/*sort the cars by distance for transparent windows */
 	ThedispCam = dispCam;
 	qsort(cars, s->_ncars, sizeof(tCarElt*), comparCars);
-	double currentTime = std::stod(redis.get("/state/currentTime").value());
-	for (i = 0; i < s->_ncars; i++) {	
-		grDrawCar(cars[i], curCar, dispCam->getDrawCurrent(), dispCam->getDrawDriver(), currentTime, dispCam);
+	
+	for (i = 0; i < s->_ncars; i++) {
+		grDrawCar(cars[i], curCar, dispCam->getDrawCurrent(), dispCam->getDrawDriver(), s->currentTime, dispCam);
 	} 
 	STOP_PROFILE("grDrawCar*");
 	

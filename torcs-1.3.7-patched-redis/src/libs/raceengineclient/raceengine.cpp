@@ -60,7 +60,7 @@ static double	bigMsgDisp;
 static int refresh_count = 10;
 static int count_limit = 10;
 
-Redis redis = Redis("tcp://172.20.0.2:6379");
+auto redis = Redis("tcp://172.20.0.2:6379");
 
 tRmInfo	*ReInfo = 0;
 int RESTART = 0;
@@ -74,7 +74,6 @@ ReUpdtPitTime(tCarElt *car)
 	tSituation *s = ReInfo->s;
 	tReCarInfo *info = &(ReInfo->_reCarInfo[car->index]);
 	int i;
-	double currentTime = std::stod(redis.get("/state/currentTime").value());
 
 	switch (car->_pitStopType) {
 		case RM_PIT_REPAIR:
@@ -86,7 +85,7 @@ ReUpdtPitTime(tCarElt *car)
 				// In case of the race no modifications are allowed, so completely reload the structure
 				RtInitCarPitSetup(car->_carHandle, &(car->pitcmd.setup), false);
 			}
-			car->_scheduledEventTime = currentTime + info->totalPitTime;
+			car->_scheduledEventTime = s->currentTime + info->totalPitTime;
 			car->_penaltyTime = 0.0f;
 			ReInfo->_reSimItf.reconfig(car);
 			for (i=0; i<4; i++) {
@@ -98,7 +97,7 @@ ReUpdtPitTime(tCarElt *car)
 			break;
 		case RM_PIT_STOPANDGO:
 			info->totalPitTime = car->_penaltyTime;
-			car->_scheduledEventTime = currentTime + info->totalPitTime;
+			car->_scheduledEventTime = s->currentTime + info->totalPitTime;
 			car->_penaltyTime = 0.0f;
 			break;
 	}
@@ -155,7 +154,7 @@ ReManage(tCarElt *car)
 	tSituation *s = ReInfo->s;
 	const int BUFSIZE = 1024;
 	char buf[BUFSIZE];
-	double currentTime = std::stod(redis.get("/state/currentTime").value());
+
 	tReCarInfo *info = &(ReInfo->_reCarInfo[car->index]);
 	
 	if (car->_speed_x > car->_topSpeed) {
@@ -183,15 +182,16 @@ ReManage(tCarElt *car)
 			}
 			memcpy(car->ctrl.msgColor, color, sizeof(car->ctrl.msgColor));
 		}
+		
 		if (car->_state & RM_CAR_STATE_PIT) {
 			car->ctrl.raceCmd &= ~RM_CMD_PIT_ASKED; // clear the flag.
-			if (car->_scheduledEventTime < currentTime) {
+			if (car->_scheduledEventTime < s->currentTime) {
 				car->_state &= ~RM_CAR_STATE_PIT;
 				car->_pit->pitCarIndex = TR_PIT_STATE_FREE;
 				snprintf(buf, BUFSIZE, "%s pit stop %.1fs", car->_name, info->totalPitTime);
 				ReRaceMsgSet(buf, 5);
 			} else {
-				snprintf(car->ctrl.msg[2], 32, "in pits %.1fs", currentTime - info->startPitTime);
+				snprintf(car->ctrl.msg[2], 32, "in pits %.1fs", s->currentTime - info->startPitTime);
 			}
 		} else if ((car->ctrl.raceCmd & RM_CMD_PIT_ASKED) &&
 					car->_pit->pitCarIndex == TR_PIT_STATE_FREE &&	
@@ -242,7 +242,7 @@ ReManage(tCarElt *car)
 							break;
 						}
 					}
-					info->startPitTime = currentTime;
+					info->startPitTime = s->currentTime;
 					snprintf(buf, BUFSIZE, "%s in pits", car->_name);
 					ReRaceMsgSet(buf, 5);
 					if (car->robot->rbPitCmd(car->robot->index, car, s) == ROB_PIT_MENU) {
@@ -256,7 +256,7 @@ ReManage(tCarElt *car)
 			}
 		}
 	}
-	int raceState = std::stoi(redis.get("/state/raceState").value());
+	
 	/* Start Line Crossing */
 	if (info->prevTrkPos.seg != car->_trkPos.seg) {
 		if ((info->prevTrkPos.seg->raceInfo & TR_LAST) && (car->_trkPos.seg->raceInfo & TR_START)) {
@@ -265,7 +265,7 @@ ReManage(tCarElt *car)
 					car->_laps++;
 					car->_remainingLaps--;
 					if (car->_laps > 1) {
-						car->_lastLapTime = currentTime - info->sTime;
+						car->_lastLapTime = s->currentTime - info->sTime;
 						car->_curTime += car->_lastLapTime;
 						if (car->_bestLapTime != 0) {
 							car->_deltaBestLapTime = car->_lastLapTime - car->_bestLapTime;
@@ -289,10 +289,10 @@ ReManage(tCarElt *car)
 							car->_timeBehindPrev = 0;
 
 							if (ReInfo->_displayMode == RM_DISP_MODE_CONSOLE) {
-								printf("Sim Time: %8.2f [s], Leader Laps: %4d, Leader Distance: %8.3f [km]\n", currentTime, car->_laps - 1, car->_distRaced/1000.0f);
+								printf("Sim Time: %8.2f [s], Leader Laps: %4d, Leader Distance: %8.3f [km]\n", s->currentTime, car->_laps - 1, car->_distRaced/1000.0f);
 							}
 						}
-						info->sTime = currentTime;
+						info->sTime = s->currentTime;
 						switch (ReInfo->s->_raceType) {
 							case RM_TYPE_PRACTICE:
 								if (ReInfo->_displayMode == RM_DISP_MODE_NONE) {
@@ -325,10 +325,9 @@ ReManage(tCarElt *car)
 					info->topSpd = car->_speed_x;
 					info->botSpd = car->_speed_x;
 					car->_currentMinSpeedForLap = car->_speed_x;
-					if ((car->_remainingLaps < 0) || (raceState == RM_RACE_FINISHING)) {
+					if ((car->_remainingLaps < 0) || (s->_raceState == RM_RACE_FINISHING)) {
 						car->_state |= RM_CAR_STATE_FINISH;
-						//s->_raceState = RM_RACE_FINISHING;
-						redis.set("/state/raceState", std::to_string(RM_RACE_FINISHING));
+						s->_raceState = RM_RACE_FINISHING;
 						if (ReInfo->s->_raceType == RM_TYPE_RACE) {
 							if (car->_pos == 1) {
 								snprintf(buf, BUFSIZE, "Winner %s", car->_name);
@@ -375,7 +374,7 @@ ReManage(tCarElt *car)
 	ReRaceRules(car);
 	
 	info->prevTrkPos = car->_trkPos;
-	car->_curLapTime = currentTime - info->sTime;
+	car->_curLapTime = s->currentTime - info->sTime;
 	car->_distFromStartLine = car->_trkPos.seg->lgfromstart +
 	(car->_trkPos.seg->type == TR_STR ? car->_trkPos.toStart : car->_trkPos.toStart * car->_trkPos.seg->radius);
 	car->_distRaced = (car->_laps - (info->lapFlag + 1)) * ReInfo->track->length + car->_distFromStartLine;
@@ -417,8 +416,7 @@ static void ReSortCars(void)
 	}
 
 	if (allfinish) {
-		//s->_raceState = RM_RACE_ENDED;
-		redis.set("/state/raceState", std::to_string(RM_RACE_ENDED));
+		s->_raceState = RM_RACE_ENDED;
 	}
 
 	for  (i = 0; i < s->_ncars; i++)
@@ -661,7 +659,7 @@ int count=0;
 unsigned char image[resize_width*resize_height * 3];
 unsigned char data[image_width*image_height*3];
 uint8_t* pdata = data;
-bool streamActive = false;
+bool streamActive = true;
 
 // Setup opencv
 IplImage* screenRGB=cvCreateImage(cvSize(image_width,image_height),IPL_DEPTH_8U,3);
@@ -671,7 +669,7 @@ static void
 ReOneStep(double deltaTimeIncrement)
 {
 	count++;
-	if (count>50) // 10FPS
+	if (count>10) // 10FPS
 	{
 		count=1;
 
@@ -712,44 +710,40 @@ ReOneStep(double deltaTimeIncrement)
     int i;
 	tRobotItf *robot;
 	tSituation *s = ReInfo->s;
-	double currentTime = std::stod(redis.get("/state/currentTime").value());
+
 	if ((ReInfo->_displayMode != RM_DISP_MODE_NONE) && (ReInfo->_displayMode != RM_DISP_MODE_CONSOLE)) {
-		if (floor(currentTime) == -2.0) {
+		if (floor(s->currentTime) == -2.0) {
 			ReRaceBigMsgSet("Ready", 1.0);
-		} else if (floor(currentTime) == -1.0) {
+		} else if (floor(s->currentTime) == -1.0) {
 			ReRaceBigMsgSet("Set", 1.0);
-		} else if (floor(currentTime) == 0.0) {
+		} else if (floor(s->currentTime) == 0.0) {
 			ReRaceBigMsgSet("Go", 1.0);
 		}
 	}
 
 	ReInfo->_reCurTime += deltaTimeIncrement * ReInfo->_reTimeMult; /* "Real" time */
-	//s->currentTime += deltaTimeIncrement; /* Simulated time */
-	redis.set("/state/currentTime", std::to_string(currentTime+deltaTimeIncrement));
-	currentTime = std::stod(redis.get("/state/currentTime").value());
-	int raceState = std::stoi(redis.get("/state/raceState").value());
-	if (currentTime < 0) {
+	s->currentTime += deltaTimeIncrement; /* Simulated time */
+
+	
+	if (s->currentTime < 0) {
 		/* no simu yet */
-		//ReInfo->s->_raceState = RM_RACE_PRESTART;
-		redis.set("/state/raceState", std::to_string(RM_RACE_PRESTART));
-	} else if (raceState == RM_RACE_PRESTART) {
-		//ReInfo->s->_raceState = RM_RACE_RUNNING;
-		redis.set("/state/raceState", std::to_string(RM_RACE_RUNNING));
-		currentTime = 0.0; /* resynchronize */
+		ReInfo->s->_raceState = RM_RACE_PRESTART;
+	} else if (ReInfo->s->_raceState == RM_RACE_PRESTART) {
+		ReInfo->s->_raceState = RM_RACE_RUNNING;
+		s->currentTime = 0.0; /* resynchronize */
 		ReInfo->_reLastTime = 0.0;
 	}
 
 	START_PROFILE("rbDrive*");
-	if ((currentTime - ReInfo->_reLastTime) >= RCM_MAX_DT_ROBOTS) {
-		//s->deltaTime = s->currentTime - ReInfo->_reLastTime;
-		redis.set("/state/deltaTime", std::to_string(currentTime - ReInfo->_reLastTime));
+	if ((s->currentTime - ReInfo->_reLastTime) >= RCM_MAX_DT_ROBOTS) {
+		s->deltaTime = s->currentTime - ReInfo->_reLastTime;
 		for (i = 0; i < s->_ncars; i++) {
 			if ((s->cars[i]->_state & RM_CAR_STATE_NO_SIMU) == 0) {
 				robot = s->cars[i]->robot;
 				robot->rbDrive(robot->index, s->cars[i], s);
 			}
 		}
-		ReInfo->_reLastTime = currentTime;
+		ReInfo->_reLastTime = s->currentTime;
 	}
 	STOP_PROFILE("rbDrive*");
 

@@ -17,8 +17,6 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <sw/redis++/redis++.h>
-
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,10 +42,6 @@
 #include "grmain.h"
 #include "grutil.h"
 #include <tgfclient.h>
-
-using namespace sw::redis;
-
-extern Redis redis;
 
 float
 cGrCamera::getDist2 (tCarElt *car)
@@ -943,18 +937,18 @@ class cGrCarCamRoadFly : public cGrPerspCamera
 	float dt;
 
 	//curCam = car->_trkPos.seg->cam;
-	double currentTime = std::stod(redis.get("/state/currentTime").value());
+
 	if (currenttime == 0.0) {
-	    currenttime = currentTime;
+	    currenttime = s->currentTime;
 	}
 	
-	if (currenttime == currentTime) {
+	if (currenttime == s->currentTime) {
             return;
         }
 
         bool reset_camera = false;
-        dt = currentTime - currenttime;
-        currenttime = currentTime;
+        dt = s->currentTime - currenttime;
+        currenttime = s->currentTime;
         if (fabs(dt) > 1.0f) { 
             dt = 0.1f; // avoid overflow
             reset_camera = true;
@@ -1172,9 +1166,8 @@ class cGrCarCamRoadZoomTVD : public cGrCarCamRoadZoom
 	int	i, j;
 	int	curCar;
 	double	curPrio;
-	double currentTime = std::stod(redis.get("/state/currentTime").value());
-	double	deltaEventTime = currentTime - lastEventTime;
-	double	deltaViewTime = currentTime - lastViewTime;
+	double	deltaEventTime = s->currentTime - lastEventTime;
+	double	deltaViewTime = s->currentTime - lastViewTime;
 	int	event = 0;
 
 	if (current == -1) {
@@ -1279,8 +1272,8 @@ class cGrCarCamRoadZoomTVD : public cGrCarCamRoadZoom
 		    }
 		}
 		if (last_current != current) {
-		    lastEventTime = currentTime;
-		    lastViewTime = currentTime;
+		    lastEventTime = s->currentTime;
+		    lastViewTime = s->currentTime;
 
 		    for (i = 0; i < grNbCars; i++) {
 			s->cars[i]->priv.collision = 0;

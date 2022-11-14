@@ -16,7 +16,6 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#include <sw/redis++/redis++.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -38,10 +37,6 @@
 #include <tgfclient.h>
 
 #include "grboard.h"
-
-using namespace sw::redis;
-
-extern Redis redis;
 
 static float grWhite[4] = {1.0, 1.0, 1.0, 1.0};
 static float grRed[4] = {1.0, 0.0, 0.0, 1.0};
@@ -336,9 +331,9 @@ cGrBoard::grDispCarBoard1(tCarElt *car, tSituation *s)
 	snprintf(buf, BUFSIZE, "%d / %d", car->_laps, s->_totLaps);
 	GfuiPrintString(buf, clr, GFUI_FONT_SMALL_C, x2, y, GFUI_ALIGN_HR_VB);
 	y -= dy;
-	double currentTime = std::stod(redis.get("/state/currentTime").value());
+	
 	GfuiPrintString("Total:", clr, GFUI_FONT_SMALL_C, x, y, GFUI_ALIGN_HL_VB);
-	grWriteTime(clr, GFUI_FONT_SMALL_C, x2, y, currentTime, 0);
+	grWriteTime(clr, GFUI_FONT_SMALL_C, x2, y, s->currentTime, 0);
 	y -= dy;
 	
 	GfuiPrintString("Curr:", clr, GFUI_FONT_SMALL_C, x, y, GFUI_ALIGN_HL_VB);
