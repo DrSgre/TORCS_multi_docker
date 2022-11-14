@@ -1,0 +1,19 @@
+-- Local no ETCD --
+screenpipe = 101% CPU - ~6.0% RAM increasing
+IPC_command = 5.3% CPU - ~6.0% RAM increasing
+Xorg = 4-6% CPU - 0.5% RAM
+Data on executable is too low to be computed. The rendered data, despite being with 2.22 fps, is rendered with a latency of MANY seconds about 5 sec for EACH frame (increasing perceived latency as times goes on).
+
+-- Local original ETCD --
+screenpipe = 150% CPU (2 processes) - 0.7% RAM
+IPC_command = 105% CPU - 1.2% RAM
+ETCD = 25-30% CPU - 30% RAM (increasing with a reduction in performance and fps)
+Xorg = 4% CPU - 0.5% RAM
+ETCD in a local environment seems to endure quite a bit, probably because the storage is able to handle the increasing size of the ETCD DB with no problems. The data is rendered with about 0.70 fps.
+
+-- Local updated ETCD --
+screenpipe = 145% CPU (2 processes) - 0.7% RAM
+IPC_command = 105% CPU - 1.4% RAM
+ETCD = 15-20% CPU - 30% RAM (increasing with a reduction in performance and fps)
+Xorg = 4% CPU - 0.6% RAM
+Despite the management of the DB size, the RAM seems to still keep on increasing. The data is rendered with about 0.74 fps.

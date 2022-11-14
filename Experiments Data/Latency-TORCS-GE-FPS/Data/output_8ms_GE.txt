@@ -1,0 +1,216 @@
+Current FPS: 7.843299 with -3845ms of operational time
+Current RE FPS: 104 with -3845ms of operational time
+Current FPS: 6.309233 with 53ms of operational time
+Current RE FPS: 118 with 53ms of operational time
+Current FPS: 7.969025 with 59ms of operational time
+Current RE FPS: 117 with 59ms of operational time
+Current FPS: 6.598197 with 44ms of operational time
+Current RE FPS: 119 with 44ms of operational time
+Current FPS: 7.646488 with 62ms of operational time
+Current RE FPS: 117 with 62ms of operational time
+Current FPS: 6.572176 with 49ms of operational time
+Current RE FPS: 119 with 49ms of operational time
+Current FPS: 7.668265 with 59ms of operational time
+Current RE FPS: 117 with 59ms of operational time
+Current FPS: 6.299002 with 55ms of operational time
+Current RE FPS: 118 with 55ms of operational time
+Current FPS: 7.984527 with 57ms of operational time
+Current RE FPS: 117 with 57ms of operational time
+Current FPS: 6.561925 with 50ms of operational time
+Current RE FPS: 119 with 50ms of operational time
+Current FPS: 7.680631 with 57ms of operational time
+Current RE FPS: 118 with 57ms of operational time
+Current FPS: 6.549493 with 52ms of operational time
+Current RE FPS: 118 with 52ms of operational time
+Current FPS: 7.672904 with 58ms of operational time
+Current RE FPS: 117 with 58ms of operational time
+Current FPS: 6.320063 with 51ms of operational time
+Current RE FPS: 119 with 51ms of operational time
+Current FPS: 7.359923 with 62ms of operational time
+Current RE FPS: 118 with 62ms of operational time
+Current FPS: 7.696799 with 55ms of operational time
+Current RE FPS: 118 with 55ms of operational time
+Current FPS: 6.575129 with 48ms of operational time
+Current RE FPS: 119 with 48ms of operational time
+Current FPS: 7.704916 with 54ms of operational time
+Current RE FPS: 118 with 54ms of operational time
+Current FPS: 6.584976 with 47ms of operational time
+Current RE FPS: 119 with 47ms of operational time
+Current FPS: 7.703685 with 54ms of operational time
+Current RE FPS: 118 with 54ms of operational time
+Current FPS: 6.591437 with 45ms of operational time
+Current RE FPS: 119 with 45ms of operational time
+Current FPS: 7.742087 with 49ms of operational time
+Current RE FPS: 119 with 49ms of operational time
+Current FPS: 6.607476 with 43ms of operational time
+Current RE FPS: 119 with 43ms of operational time
+Current FPS: 7.757373 with 47ms of operational time
+Current RE FPS: 119 with 47ms of operational time
+Current FPS: 6.665809 with 42ms of operational time
+Current RE FPS: 119 with 42ms of operational time
+Current FPS: 7.748665 with 48ms of operational time
+Current RE FPS: 119 with 48ms of operational time
+Current FPS: 6.886761 with 40ms of operational time
+Current RE FPS: 120 with 40ms of operational time
+Current FPS: 6.825532 with 41ms of operational time
+Current RE FPS: 119 with 41ms of operational time
+Current FPS: 7.536860 with 45ms of operational time
+Current RE FPS: 119 with 45ms of operational time
+Current FPS: 6.812063 with 43ms of operational time
+Current RE FPS: 119 with 43ms of operational time
+Current FPS: 7.529809 with 46ms of operational time
+Current RE FPS: 119 with 46ms of operational time
+Current FPS: 6.829781 with 40ms of operational time
+Current RE FPS: 120 with 40ms of operational time
+Current FPS: 7.567345 with 41ms of operational time
+Current RE FPS: 120 with 41ms of operational time
+Current FPS: 6.836365 with 39ms of operational time
+Current RE FPS: 120 with 39ms of operational time
+Current FPS: 7.561879 with 41ms of operational time
+Current RE FPS: 120 with 41ms of operational time
+Current FPS: 6.850469 with 37ms of operational time
+Current RE FPS: 120 with 37ms of operational time
+Current FPS: 7.644340 with 38ms of operational time
+Current RE FPS: 120 with 38ms of operational time
+Current FPS: 6.799516 with 37ms of operational time
+Current RE FPS: 120 with 37ms of operational time
+Current FPS: 7.658719 with 36ms of operational time
+Current RE FPS: 120 with 36ms of operational time
+Current FPS: 6.804567 with 36ms of operational time
+Current RE FPS: 120 with 36ms of operational time
+Current FPS: 7.589088 with 38ms of operational time
+Current RE FPS: 120 with 38ms of operational time
+Current FPS: 6.867418 with 35ms of operational time
+Current RE FPS: 120 with 35ms of operational time
+Current FPS: 7.671057 with 34ms of operational time
+Current RE FPS: 120 with 34ms of operational time
+Current FPS: 6.817555 with 34ms of operational time
+Current RE FPS: 120 with 34ms of operational time
+Current FPS: 7.665500 with 35ms of operational time
+Current RE FPS: 120 with 35ms of operational time
+Current FPS: 6.817164 with 34ms of operational time
+Current RE FPS: 120 with 34ms of operational time
+Current FPS: 7.575048 with 40ms of operational time
+Current RE FPS: 120 with 40ms of operational time
+Current FPS: 6.858603 with 36ms of operational time
+Current RE FPS: 120 with 36ms of operational time
+Current FPS: 7.672140 with 34ms of operational time
+Current RE FPS: 120 with 34ms of operational time
+Current FPS: 6.808106 with 36ms of operational time
+Current RE FPS: 120 with 36ms of operational time
+Current FPS: 7.585995 with 38ms of operational time
+Current RE FPS: 120 with 38ms of operational time
+Current FPS: 6.846622 with 38ms of operational time
+Current RE FPS: 120 with 38ms of operational time
+Current FPS: 7.587873 with 38ms of operational time
+Current RE FPS: 120 with 38ms of operational time
+Current FPS: 6.861084 with 36ms of operational time
+Current RE FPS: 120 with 36ms of operational time
+Current FPS: 7.586995 with 38ms of operational time
+Current RE FPS: 120 with 38ms of operational time
+Current FPS: 6.820504 with 42ms of operational time
+Current RE FPS: 119 with 42ms of operational time
+Current FPS: 7.567932 with 41ms of operational time
+Current RE FPS: 120 with 41ms of operational time
+Current FPS: 6.823217 with 41ms of operational time
+Current RE FPS: 119 with 41ms of operational time
+Current FPS: 7.532856 with 46ms of operational time
+Current RE FPS: 119 with 46ms of operational time
+Current FPS: 6.791732 with 46ms of operational time
+Current RE FPS: 119 with 46ms of operational time
+Current FPS: 7.219427 with 52ms of operational time
+Current RE FPS: 119 with 52ms of operational time
+Current FPS: 7.673068 with 50ms of operational time
+Current RE FPS: 118 with 50ms of operational time
+Current FPS: 6.922947 with 43ms of operational time
+Current RE FPS: 119 with 43ms of operational time
+Current FPS: 6.780357 with 48ms of operational time
+Current RE FPS: 119 with 48ms of operational time
+Current FPS: 7.462150 with 48ms of operational time
+Current RE FPS: 119 with 48ms of operational time
+Current FPS: 6.847553 with 46ms of operational time
+Current RE FPS: 119 with 46ms of operational time
+Current FPS: 7.543092 with 44ms of operational time
+Current RE FPS: 119 with 44ms of operational time
+Current FPS: 6.774072 with 49ms of operational time
+Current RE FPS: 119 with 49ms of operational time
+Current FPS: 7.535575 with 45ms of operational time
+Current RE FPS: 119 with 45ms of operational time
+Current FPS: 6.793063 with 46ms of operational time
+Current RE FPS: 119 with 46ms of operational time
+Current FPS: 7.555552 with 42ms of operational time
+Current RE FPS: 119 with 42ms of operational time
+Current FPS: 6.819169 with 42ms of operational time
+Current RE FPS: 119 with 42ms of operational time
+Current FPS: 7.581738 with 39ms of operational time
+Current RE FPS: 120 with 39ms of operational time
+Current FPS: 6.854400 with 37ms of operational time
+Current RE FPS: 120 with 37ms of operational time
+Current FPS: 7.639981 with 39ms of operational time
+Current RE FPS: 120 with 39ms of operational time
+Current FPS: 6.791995 with 38ms of operational time
+Current RE FPS: 120 with 38ms of operational time
+Current FPS: 7.666691 with 35ms of operational time
+Current RE FPS: 120 with 35ms of operational time
+Current FPS: 6.820412 with 34ms of operational time
+Current RE FPS: 120 with 34ms of operational time
+Current FPS: 7.927085 with 33ms of operational time
+Current RE FPS: 120 with 33ms of operational time
+Current FPS: 6.593387 with 37ms of operational time
+Current RE FPS: 120 with 37ms of operational time
+Current FPS: 7.677056 with 34ms of operational time
+Current RE FPS: 120 with 34ms of operational time
+Current FPS: 6.805969 with 36ms of operational time
+Current RE FPS: 120 with 36ms of operational time
+Current FPS: 7.667359 with 35ms of operational time
+Current RE FPS: 120 with 35ms of operational time
+Current FPS: 6.816493 with 34ms of operational time
+Current RE FPS: 120 with 34ms of operational time
+Current FPS: 7.669814 with 35ms of operational time
+Current RE FPS: 120 with 35ms of operational time
+Current FPS: 6.836331 with 31ms of operational time
+Current RE FPS: 121 with 31ms of operational time
+Current FPS: 7.702477 with 30ms of operational time
+Current RE FPS: 121 with 30ms of operational time
+Current FPS: 6.826251 with 33ms of operational time
+Current RE FPS: 120 with 33ms of operational time
+Current FPS: 7.702477 with 30ms of operational time
+Current RE FPS: 121 with 30ms of operational time
+Current FPS: 6.851313 with 29ms of operational time
+Current RE FPS: 121 with 29ms of operational time
+Current FPS: 7.706595 with 30ms of operational time
+Current RE FPS: 121 with 30ms of operational time
+Current FPS: 6.844633 with 30ms of operational time
+Current RE FPS: 121 with 30ms of operational time
+Current FPS: 7.705571 with 30ms of operational time
+Current RE FPS: 121 with 30ms of operational time
+Current FPS: 6.813865 with 35ms of operational time
+Current RE FPS: 120 with 35ms of operational time
+Current FPS: 7.685590 with 32ms of operational time
+Current RE FPS: 121 with 32ms of operational time
+Current FPS: 6.839097 with 31ms of operational time
+Current RE FPS: 121 with 31ms of operational time
+Current FPS: 7.609012 with 35ms of operational time
+Current RE FPS: 120 with 35ms of operational time
+Current FPS: 6.859482 with 36ms of operational time
+Current RE FPS: 120 with 36ms of operational time
+Current FPS: 7.278802 with 43ms of operational time
+Current RE FPS: 120 with 43ms of operational time
+Current FPS: 6.989914 with 57ms of operational time
+Current RE FPS: 117 with 57ms of operational time
+Current FPS: 7.102966 with 62ms of operational time
+Current RE FPS: 118 with 62ms of operational time
+Current FPS: 6.984209 with 66ms of operational time
+Current RE FPS: 116 with 66ms of operational time
+Current FPS: 6.663789 with 80ms of operational time
+Current RE FPS: 116 with 80ms of operational time
+Current FPS: 7.901017 with 84ms of operational time
+Current RE FPS: 114 with 84ms of operational time
+Current FPS: 4.883317 with 76ms of operational time
+Current RE FPS: 117 with 76ms of operational time
+Current FPS: 4.671067 with 84ms of operational time
+Current RE FPS: 116 with 84ms of operational time
+Current FPS: 5.649972 with 78ms of operational time
+Current RE FPS: 117 with 78ms of operational time
+Current FPS: 6.956011 with 93ms of operational time
+Current RE FPS: 115 with 93ms of operational time
