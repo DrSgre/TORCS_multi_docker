@@ -72,5 +72,11 @@ ARG LD_LIBRARY_PATH=/usr/local/lib/libhiredis.so
 
 RUN ldconfig
 
-CMD tail -f /dev/null
+RUN apt-get install -y libopencv-dev python3-opencv
+
+RUN ln -s /usr/include/opencv4/opencv2 /usr/include/opencv2
+
+RUN g++ screenpipe_client.cpp -o screenpipe_client -I /usr/include/opencv -I /usr/include/opencv2 -L /usr/lib -lopencv_calib3d -lopencv_imgproc -lopencv_core -lopencv_ml -lopencv_features2d -lopencv_objdetect -lopencv_flann -lopencv_video -lopencv_highgui -lcpprest -lredis++ -lhiredis -pthread
+
+CMD ./screenpipe_client
 

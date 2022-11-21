@@ -28,7 +28,7 @@ RUN apt-get install -y libgrpc-dev \
 
 WORKDIR /tmp
 
-ARG tb=tb
+ARG ta=ta
 
 RUN wget -O TORCS_multi_docker.zip https://github.com/DrSgre/TORCS_multi_docker/archive/master.zip
 
@@ -54,5 +54,11 @@ RUN ["chmod", "755", "./screenpipe_client"]
 
 RUN export NO_AT_BRIDGE=1
 
-CMD tail -f /dev/null
+RUN apt-get install -y libopencv-dev python3-opencv
+
+RUN ln -s /usr/include/opencv4/opencv2 /usr/include/opencv2
+
+RUN g++ screenpipe_client.cpp -o screenpipe_client -I /usr/include/opencv -I /usr/include/opencv2 -L /usr/lib -lopencv_calib3d -lopencv_imgproc -lopencv_core -lopencv_ml -lopencv_features2d -lopencv_objdetect -lopencv_flann -lopencv_video -lopencv_highgui -lcpprest -letcd-cpp-api
+
+CMD ./screenpipe_client
 

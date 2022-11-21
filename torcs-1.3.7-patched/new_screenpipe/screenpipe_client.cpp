@@ -28,10 +28,6 @@ using namespace cv;
 #define resize_width 640
 #define resize_height 480
 
-static auto start = std::chrono::system_clock::now();
-static double total_time = 0;
-static int count_time = 0;
-
 //ETCD setup
 etcd::Client etcd_client("http://etcd:2379");
 int key;
@@ -48,7 +44,7 @@ void watch_for_changes()
 
             std::vector<uchar> image_vector(output_string.begin(), output_string.end());
 
-            auto p_img = cv::Mat(480, 640, CV_8UC3, image_vector.data());
+            cv::Mat p_img = cv::Mat(480, 640, CV_8UC3, image_vector.data());
             cv::imshow("Image from TORCS", p_img);
             key = cvWaitKey(1);
         }
@@ -60,7 +56,7 @@ void watch_for_changes()
     });
 }
 
-int main(int argc, char const *argv[])
+int main()
 {
     cvNamedWindow("Image from TORCS",1);
     watch_for_changes();
