@@ -6,7 +6,6 @@ networks:
 
 services:
   watcher:
-    image: my-watcher:latest
     build: .
     privileged: true
     environment:

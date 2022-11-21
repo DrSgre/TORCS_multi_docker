@@ -34,7 +34,6 @@ static int count_time = 0;
 
 //ETCD setup
 etcd::Client etcd_client("http://etcd:2379");
-unsigned char image[resize_width*resize_height * 3];
 int key;
 
 

@@ -20,7 +20,6 @@ services:
       - NET_ADMIN
     
   music:
-    image: my-music:latest
     build: ./musicplayer
     privileged: true
     ports:
@@ -30,7 +29,6 @@ services:
         ipv4_address: 172.20.0.4
   
   app:
-    image: my-app:latest
     build: ./app
     privileged: true
     environment:

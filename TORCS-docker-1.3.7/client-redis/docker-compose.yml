@@ -6,7 +6,6 @@ networks:
 
 services:
   client:
-    image: my-client:latest
     build: .
     privileged: true
     environment:

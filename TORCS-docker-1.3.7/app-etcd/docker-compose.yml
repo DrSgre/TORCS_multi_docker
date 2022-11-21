@@ -7,8 +7,7 @@ networks:
       config:
         - subnet: "172.20.0.0/16"
 services:
-  Etcd:
-    image: 'my-etcd:latest'
+  etcd:
     build: ./etcd
     tmpfs:
       - /ff:exec,mode=777
@@ -29,7 +28,6 @@ services:
       - NET_ADMIN
     
   music:
-    image: my-music:latest
     build: ./musicplayer
     privileged: true
     ports:
@@ -39,7 +37,6 @@ services:
         ipv4_address: 172.20.0.4
   
   app:
-    image: my-app:latest
     build: ./app
     privileged: true
     environment:
@@ -53,7 +50,7 @@ services:
       net-torcs:
         ipv4_address: 172.20.0.3
     depends_on:
-      - "Etcd"
+      - "etcd"
       - "music"
     cap_add:
       - NET_ADMIN
