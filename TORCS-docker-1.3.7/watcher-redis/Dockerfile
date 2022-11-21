@@ -68,5 +68,9 @@ RUN ["chmod", "755", "./screenpipe_client"]
 
 RUN export NO_AT_BRIDGE=1
 
+ARG LD_LIBRARY_PATH=/usr/local/lib/libhiredis.so
+
+RUN ldconfig
+
 CMD tail -f /dev/null
 
