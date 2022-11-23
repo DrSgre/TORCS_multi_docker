@@ -119,6 +119,7 @@ tSockAddrIn clientAddress[NBBOTS], serverAddress[NBBOTS];
 
 // Redis setup
 auto redis = Redis("tcp://172.20.0.2:6379");
+static ofstream OutputFile("output.txt");
 static tdble oldAccel[NBBOTS];
 static tdble oldBrake[NBBOTS];
 static tdble oldSteer[NBBOTS];
@@ -543,7 +544,11 @@ if (RESTARTING[index]==0)
     string actionPoint = "/driver_action/" + std::to_string(UDP_LISTEN_PORT+index);
 
     redis.set(statePoint, line);
-
+    auto end = std::chrono::system_clock::now();
+    std::chrono::duration<double> elapsed_seconds = end-start;
+    OutputFile << "Current RTT time: " << elapsed_seconds.count() << "s\n";
+    start = end;
+	
     // Set timeout for client answer
     FD_ZERO(&readSet);
     FD_SET(listenSocket[index], &readSet);
