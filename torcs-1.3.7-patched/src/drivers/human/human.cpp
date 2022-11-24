@@ -464,6 +464,7 @@ static void common_drive(int index, tCarElt* car, tSituation *s)
 	const int BUFSIZE = 1024;
 	char sstring[BUFSIZE];
 
+
 	static int firstTime = 1;
 
 	if (firstTime) {
@@ -587,7 +588,7 @@ static void common_drive(int index, tCarElt* car, tSituation *s)
 				HCtx[idx]->prevLeftSteer = leftSteer = 0;
 			} else {
 				ax0 = 2 * ax0 - 1;
-				leftSteer = HCtx[idx]->prevLeftSteer + ax0 * cmd[CMD_LEFTSTEER].sens * s->deltaTime / (1.0 + cmd[CMD_LEFTSTEER].spdSens * car->pub.speed / 10.0);
+				leftSteer = HCtx[idx]->prevLeftSteer + ax0 * cmd[CMD_LEFTSTEER].sens * std::stod(etcd_client.get("/test/situation/deltaTime").get().value().as_string()) / (1.0 + cmd[CMD_LEFTSTEER].spdSens * car->pub.speed / 10.0);
 				if (leftSteer > 1.0) leftSteer = 1.0;
 				if (leftSteer < 0.0) leftSteer = 0.0;
 				HCtx[idx]->prevLeftSteer = leftSteer;
@@ -635,7 +636,7 @@ static void common_drive(int index, tCarElt* car, tSituation *s)
 				HCtx[idx]->prevRightSteer = rightSteer = 0;
 			} else {
 				ax0 = 2 * ax0 - 1;
-				rightSteer = HCtx[idx]->prevRightSteer - ax0 * cmd[CMD_RIGHTSTEER].sens * s->deltaTime / (1.0 + cmd[CMD_RIGHTSTEER].spdSens * car->pub.speed / 10.0);
+				rightSteer = HCtx[idx]->prevRightSteer - ax0 * cmd[CMD_RIGHTSTEER].sens * std::stod(etcd_client.get("/test/situation/deltaTime").get().value().as_string()) / (1.0 + cmd[CMD_RIGHTSTEER].spdSens * car->pub.speed / 10.0);
 				if (rightSteer > 0.0) rightSteer = 0.0;
 				if (rightSteer < -1.0) rightSteer = -1.0;
 				HCtx[idx]->prevRightSteer = rightSteer;

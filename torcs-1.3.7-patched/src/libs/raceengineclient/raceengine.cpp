@@ -55,11 +55,6 @@ using namespace cv;
 static double	msgDisp;
 static double	bigMsgDisp;
 
-static int refresh_count = 10;
-static int count_limit = 10;
-
-extern etcd::Client etcd_client;
-
 tRmInfo	*ReInfo = 0;
 int RESTART = 0;
 
@@ -154,7 +149,7 @@ ReManage(tCarElt *car)
 	tSituation *s = ReInfo->s;
 	const int BUFSIZE = 1024;
 	char buf[BUFSIZE];
-
+	
 	tReCarInfo *info = &(ReInfo->_reCarInfo[car->index]);
 	
 	if (car->_speed_x > car->_topSpeed) {
@@ -416,7 +411,7 @@ static void ReSortCars(void)
 	}
 
 	if (allfinish) {
-		s->_raceState = RM_RACE_ENDED;
+		ReInfo->s->_raceState = RM_RACE_ENDED;
 	}
 
 	for  (i = 0; i < s->_ncars; i++)
@@ -659,15 +654,16 @@ int count=0;
 unsigned char image[resize_width*resize_height * 3];
 unsigned char data[image_width*image_height*3];
 uint8_t* pdata = data;
-bool streamActive = true;
 
 // Setup opencv
 IplImage* screenRGB=cvCreateImage(cvSize(image_width,image_height),IPL_DEPTH_8U,3);
 IplImage* resizeRGB=cvCreateImage(cvSize(resize_width,resize_height),IPL_DEPTH_8U,3);
+bool streamActive = false;
 
 static void
 ReOneStep(double deltaTimeIncrement)
 {
+
 	count++;
 	if (count>50) // 10FPS
 	{
@@ -704,7 +700,7 @@ ReOneStep(double deltaTimeIncrement)
 
 			pplx::task<etcd::Response> response_task = etcd_client.set("/test/shared/image", image_string);
 		}
-	}       
+	}        
 
     int i;
 	tRobotItf *robot;
@@ -723,7 +719,6 @@ ReOneStep(double deltaTimeIncrement)
 	ReInfo->_reCurTime += deltaTimeIncrement * ReInfo->_reTimeMult; /* "Real" time */
 	s->currentTime += deltaTimeIncrement; /* Simulated time */
 
-	
 	if (s->currentTime < 0) {
 		/* no simu yet */
 		ReInfo->s->_raceState = RM_RACE_PRESTART;
@@ -735,7 +730,7 @@ ReOneStep(double deltaTimeIncrement)
 
 	START_PROFILE("rbDrive*");
 	if ((s->currentTime - ReInfo->_reLastTime) >= RCM_MAX_DT_ROBOTS) {
-		s->deltaTime = s->currentTime - ReInfo->_reLastTime;
+		etcd_client.set("/test/situation/deltaTime", std::to_string(s->currentTime - ReInfo->_reLastTime));
 		for (i = 0; i < s->_ncars; i++) {
 			if ((s->cars[i]->_state & RM_CAR_STATE_NO_SIMU) == 0) {
 				robot = s->cars[i]->robot;
@@ -798,12 +793,6 @@ reCapture(void)
 	free(img);
 }
 
-int counter = 0;
-int delay = 10;
-int averageTimes = 0;
-int averageCounter = 0;
-int averaging;
-int lastCounter = 0;
 
 int
 ReUpdate(void)
@@ -826,11 +815,7 @@ ReUpdate(void)
 				ReOneStep(RCM_MAX_DT_SIMU);
 			}
 			STOP_PROFILE("ReOneStep*");
-			//averageCounter += 1;
-			//averageTimes += counter - lastCounter;
-			//lastCounter = counter;
-			//averaging = averageTimes/averageCounter;
-			//std::cout << "Delay called an average of: " + std::to_string(averaging) + " times per loop." << std::endl;
+
 			if (i > MAXSTEPS) {
 				// Cannot keep up with time warp, reset time to avoid lag when running slower again
 				ReInfo->_reCurTime = GfTimeClock();
@@ -876,6 +861,7 @@ ReUpdate(void)
 
 	}
 	STOP_PROFILE("ReUpdate");
+
 	return mode;
 }
 
