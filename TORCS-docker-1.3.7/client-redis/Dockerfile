@@ -65,5 +65,5 @@ RUN apt-get install -y libcpprest-dev
 
 RUN make clean && make
 
-CMD ./client host:172.20.0.3 port:3001
+CMD ./client host:172.20.0.6 port:3001
 
