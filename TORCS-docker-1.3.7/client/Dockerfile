@@ -10,16 +10,6 @@ RUN apt-get update && apt-get install -y \
     xterm \
     make
 
-RUN apt-get install -y alsa-utils
-
-WORKDIR /tmp
-
-ARG tf=tf
-
-RUN git clone --recursive https://github.com/DrSgre/TORCS_multi_docker
-
-WORKDIR TORCS_multi_docker/scr-client-cpp
-
 RUN apt-get install -y \
     libboost-all-dev \
     libssl-dev \
@@ -33,7 +23,13 @@ RUN apt-get install -y \
     unzip \
     cmake
 
+RUN apt-get install -y alsa-utils
+
 WORKDIR /tmp
+
+RUN wget -O TORCS_multi_docker.zip https://github.com/DrSgre/TORCS_multi_docker/archive/cluster_tests.zip
+
+RUN unzip TORCS_multi_docker.zip
 
 RUN wget -O etcd-cpp-apiv3.zip https://github.com/etcd-cpp-apiv3/etcd-cpp-apiv3/archive/master.zip
 
@@ -51,7 +47,7 @@ RUN cmake ..
 
 RUN make -j$(nproc) && make install  
 
-WORKDIR /tmp/TORCS_multi_docker/scr-client-cpp
+WORKDIR /tmp/TORCS_multi_docker-cluster_tests/scr-client-cpp
 
 RUN make clean && make
 
