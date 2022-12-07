@@ -60,7 +60,7 @@ static double	bigMsgDisp;
 static int refresh_count = 10;
 static int count_limit = 10;
 
-auto redis = Redis("tcp://172.20.0.6:6379");
+auto redis = Redis("tcp://172.20.0.2:6379");
 
 tRmInfo	*ReInfo = 0;
 int RESTART = 0;
