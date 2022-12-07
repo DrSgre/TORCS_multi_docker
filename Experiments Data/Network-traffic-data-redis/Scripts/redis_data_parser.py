@@ -84,10 +84,14 @@ def compute_data_docker(n, file):
                 count += 2
         else:
             break
-    y1 = plot_data[0]
-    y2 = plot_data[1]
-    y3 = plot_data[2]
-    y4 = plot_data[3]
+    y1_temp = plot_data[0]
+    y1 = [k / 1000000000 for k in y1_temp]
+    y2_temp = plot_data[1]
+    y2 = [k / 1000000000 for k in y2_temp]
+    y3_temp = plot_data[2]
+    y3 = [k / 1000000000 for k in y3_temp]
+    y4_temp = plot_data[3]
+    y4 = [k / 1000000000 for k in y4_temp]
     x = np.linspace(0, 90, num=45)
     # Plot the sinus function
     fig = plt.figure()

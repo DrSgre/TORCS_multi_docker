@@ -10,6 +10,8 @@ services:
   Etcd1:
     image: 'my-etcd-1:latest'
     build: ./etcd
+    tmpfs:
+      - /ff:exec,mode=777
     environment:
       - ALLOW_NONE_AUTHENTICATION=yes 
       - ETCD_AUTO_COMPACTION_RETENTION=5s
@@ -33,9 +35,12 @@ services:
         ipv4_address: 172.20.0.2
     cap_add:
       - NET_ADMIN
+      
   Etcd2:
     image: 'my-etcd-2:latest'
     build: ./etcd
+    tmpfs:
+      - /ff:exec,mode=777
     environment:     
       - ALLOW_NONE_AUTHENTICATION=yes
       - ETCD_AUTO_COMPACTION_RETENTION=5s
@@ -50,6 +55,8 @@ services:
       - ETCD_INITIAL_CLUSTER=my-etcd-1=http://172.20.0.2:2380,my-etcd-2=http://172.20.0.3:2380,my-etcd-3=http://172.20.0.4:2380
       - ETCD_INITIAL_CLUSTER_STATE=new
       - ETCD_INITIAL_CLUSTER_TOKEN=my-etcd-token
+    depends_on:
+      - Etcd1
     expose:
       - "2379"
       - "2380"
@@ -59,9 +66,12 @@ services:
         ipv4_address: 172.20.0.3
     cap_add:
       - NET_ADMIN
+      
   Etcd3:
     image: 'my-etcd-3:latest'
     build: ./etcd
+    tmpfs:
+      - /ff:exec,mode=777
     environment:     
       - ALLOW_NONE_AUTHENTICATION=yes
       - ETCD_AUTO_COMPACTION_RETENTION=5s
@@ -76,10 +86,12 @@ services:
       - ETCD_INITIAL_CLUSTER=my-etcd-1=http://172.20.0.2:2380,my-etcd-2=http://172.20.0.3:2380,my-etcd-3=http://172.20.0.4:2380
       - ETCD_INITIAL_CLUSTER_STATE=new
       - ETCD_INITIAL_CLUSTER_TOKEN=my-etcd-token
+    depends_on:
+      - Etcd1
     expose:
       - "2379"
       - "2380"
-      - "4001"
+      - "4001" 
     networks:
       net-torcs:
         ipv4_address: 172.20.0.4

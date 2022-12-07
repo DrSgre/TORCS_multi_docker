@@ -1,0 +1,52 @@
+version: "3"
+
+networks:
+  net-torcs:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "172.20.0.0/16"
+services:
+  redis1:
+    build: ./redis1
+    environment:
+      - 'ALLOW_EMPTY_PASSWORD=yes'
+    expose:
+      - "2379"
+      - "2380"
+      - "4001"
+    networks:
+      net-torcs:
+        ipv4_address: 172.20.0.2
+    cap_add:
+      - NET_ADMIN
+      
+  redis2:
+    build: ./redis2
+    environment:
+      - 'ALLOW_EMPTY_PASSWORD=yes'
+    expose:
+      - "2379"
+      - "2380"
+      - "4001"
+    networks:
+      net-torcs:
+        ipv4_address: 172.20.0.3
+    cap_add:
+      - NET_ADMIN
+      
+  redis3:
+    build: ./redis3
+    environment:
+      - 'ALLOW_EMPTY_PASSWORD=yes'
+    expose:
+      - "2379"
+      - "2380"
+      - "4001"
+    networks:
+      net-torcs:
+        ipv4_address: 172.20.0.4
+    cap_add:
+      - NET_ADMIN
+      
+
