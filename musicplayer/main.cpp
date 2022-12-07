@@ -34,7 +34,7 @@ int main() {
     char buf[UDP_MSGLEN];
     unsigned int serverPort = 4005;
     char id[1000] = "musicplayer";
-    char hostName[1000] = "172.20.0.3";
+    char hostName[1000] = "172.20.0.6";
 
     socketDescriptor = socket(AF_INET, SOCK_DGRAM, 0);
     if (INVALID(socketDescriptor))

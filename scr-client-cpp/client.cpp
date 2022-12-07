@@ -63,7 +63,7 @@ void parse_args(int argc, char *argv[], char *hostName, unsigned int &serverPort
 
 int main(int argc, char *argv[])
 {
-    static etcd::Client etcd_client("http://etcd:2379");
+    static etcd::Client etcd_client("http://172.20.0.2:2380,http://172.20.0.3:2380,http://172.20.0.4:2380");
     std::cout << "Connected to ETCD..." << std::endl;
     SOCKET socketDescriptor;
     int numRead;

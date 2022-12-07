@@ -29,7 +29,7 @@ using namespace cv;
 #define resize_height 480
 
 //ETCD setup
-etcd::Client etcd_client("http://etcd:2379");
+etcd::Client etcd_client("http://172.20.0.2:2380,http://172.20.0.3:2380,http://172.20.0.4:2380");
 int key;
 
 

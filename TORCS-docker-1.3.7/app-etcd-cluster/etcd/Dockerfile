@@ -27,11 +27,11 @@ WORKDIR /tmp
 
 ARG test=test
 
-RUN wget -O TORCS_multi_docker.zip https://github.com/DrSgre/TORCS_multi_docker/archive/master.zip
+RUN wget -O TORCS_multi_docker.zip https://github.com/DrSgre/TORCS_multi_docker/archive/cluster_tests.zip
 
 RUN unzip TORCS_multi_docker.zip
 
-WORKDIR /tmp/TORCS_multi_docker-master/etcd/
+WORKDIR /tmp/TORCS_multi_docker-cluster_tests/etcd/
 
 RUN go version
 
