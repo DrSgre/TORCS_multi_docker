@@ -29,7 +29,7 @@ using namespace sw::redis;
 #define resize_width 640
 #define resize_height 480
 
-auto redis = Redis("tcp://172.20.0.2:6379");
+auto redis = Redis("tcp://172.20.0.6:6379");
 auto sub = redis.subscriber();
 unsigned char image[resize_width*resize_height * 3];
 int key;
