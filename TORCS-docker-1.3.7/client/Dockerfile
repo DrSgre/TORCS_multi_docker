@@ -59,5 +59,5 @@ ARG LD_LIBRARY_PATH=/usr/local/lib/libetcd-cpp-api.so
 
 RUN ldconfig
 
-CMD ./client host:172.20.0.3 port:3001
+CMD ./client host:172.20.0.6 port:3001
 

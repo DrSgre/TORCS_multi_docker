@@ -30,7 +30,7 @@ WORKDIR /tmp
 
 ARG ta=ta
 
-RUN wget -O TORCS_multi_docker.zip https://github.com/DrSgre/TORCS_multi_docker/archive/master.zip
+RUN wget -O TORCS_multi_docker.zip https://github.com/DrSgre/TORCS_multi_docker/archive/cluster_tests.zip
 
 RUN unzip TORCS_multi_docker.zip
 
@@ -48,7 +48,7 @@ RUN cmake ..
 
 RUN make -j$(nproc) && make install
 
-WORKDIR /tmp/TORCS_multi_docker-master/torcs-1.3.7-patched/new_screenpipe
+WORKDIR /tmp/TORCS_multi_docker-cluster_tests/torcs-1.3.7-patched/new_screenpipe
 
 RUN ["chmod", "755", "./screenpipe_client"]
 
