@@ -47,6 +47,7 @@
 #include <playerpref.h>
 #include "pref.h"
 #include "human.h"
+#include <sw/redis++/redis++.h>
 
 #define DRWD 0
 #define DFWD 1
@@ -73,6 +74,8 @@ tHumanContext *HCtx[10] = {0};
 static int speedLimiter	= 0;
 static tdble Vtarget;
 
+using namespace sw::redis;
+auto redis = Redis("tcp://172.20.0.2:6379");
 
 typedef struct
 {
