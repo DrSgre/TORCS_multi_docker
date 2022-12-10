@@ -29,7 +29,12 @@ using namespace sw::redis;
 #define resize_width 640
 #define resize_height 480
 
+static auto start = std::chrono::system_clock::now();
+static double total_time = 0;
+static int count_time = 0;
+
 auto redis = Redis("tcp://172.20.0.2:6379");
+static std::ofstream OutputFile("output.txt");
 auto sub = redis.subscriber();
 unsigned char image[resize_width*resize_height * 3];
 int key;
@@ -48,6 +53,19 @@ void watch_for_changes()
             auto p_img = cv::Mat(480, 640, CV_8UC3, image_vector.data());
             cv::imshow("Image from TORCS", p_img);
             key = cvWaitKey(1);
+            auto end = std::chrono::system_clock::now();
+            std::chrono::duration<double> elapsed_seconds = end-start;
+            total_time += elapsed_seconds.count();
+            count_time += 1;
+            if (total_time >= 1)
+            {
+                OutputFile.open("output.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+                OutputFile << "Current FPS: " << count_time/total_time << "\n";
+                OutputFile.close();
+                count_time = 0;
+                total_time = 0;
+            }
+            start = end;
         }
         catch (std::exception const & ex)
         {
