@@ -64,6 +64,7 @@ void *grTrackHandle = NULL;
 int grWinx, grWiny, grWinw, grWinh;
 
 static float grMouseRatioX, grMouseRatioY;
+static std::ofstream OutputFile;
 static float totFrames = 0;
 static int lastCount = 0;
 
@@ -326,8 +327,11 @@ refresh(tSituation *s)
     grCurTime = GfTimeClock();
     grDeltaTime = grCurTime - OldTime;
     if ((grCurTime - OldTime) > 1.0) {
-		/* The Frames Per Second (FPS) display is refreshed every second */
+	/* The Frames Per Second (FPS) display is refreshed every second */
 		grFps = (tdble)nFrame / (grCurTime - OldTime);
+		OutputFile.open("output.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+		OutputFile << "Current FPS: " << grFps << "\n";
+		OutputFile.close();
 		nFrame = 0;
 		OldTime = grCurTime;
     }
