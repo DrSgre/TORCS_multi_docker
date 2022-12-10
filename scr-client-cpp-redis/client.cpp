@@ -66,7 +66,7 @@ void parse_args(int argc, char *argv[], char *hostName, unsigned int &serverPort
 
 int main(int argc, char *argv[])
 {
-    static auto redis = Redis("tcp://172.20.0.6:6379");
+    static auto redis = Redis("tcp://172.20.0.2:6379");
     std::cout << "Connected to Redis..." << std::endl;
     SOCKET socketDescriptor;
     int numRead;
