@@ -336,8 +336,8 @@ static int reRaceRealStart(void)
 		GfuiScreenActivate(ReInfo->_reGameScreen);
 	}
 
-	std::thread statemanager(StartStateManager, ReInfo);
-	statemanager.detach();
+	//std::thread statemanager(StartStateManager, ReInfo);
+	//statemanager.detach();
 	return RM_SYNC | RM_NEXT_STEP;
 }
 
