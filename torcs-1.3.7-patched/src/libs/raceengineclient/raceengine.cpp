@@ -65,7 +65,7 @@ int RESTART = 0;
 
 static void ReRaceRules(tCarElt *car);
 //ETCD setup
-etcd::Client etcd_client("http://172.20.0.2:2380,http://172.20.0.3:2380,http://172.20.0.4:2380");
+etcd::Client etcd_client("http://172.20.0.2:2380");
 
 /* Compute Pit stop time */
 static void

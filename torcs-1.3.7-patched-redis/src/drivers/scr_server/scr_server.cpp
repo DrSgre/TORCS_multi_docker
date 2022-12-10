@@ -119,7 +119,6 @@ tSockAddrIn clientAddress[NBBOTS], serverAddress[NBBOTS];
 
 // Redis setup
 auto redis = Redis("tcp://172.20.0.2:6379");
-static ofstream OutputFile("output.txt");
 static tdble oldAccel[NBBOTS];
 static tdble oldBrake[NBBOTS];
 static tdble oldSteer[NBBOTS];

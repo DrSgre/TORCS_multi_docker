@@ -33,7 +33,7 @@ static double total_time = 0;
 static int count_time = 0;
 
 //ETCD setup
-etcd::Client etcd_client("http://172.20.0.2:2380,http://172.20.0.3:2380,http://172.20.0.4:2380");
+etcd::Client etcd_client("http://172.20.0.2:2380");
 static std::ofstream OutputFile("output.txt");
 int key;
 

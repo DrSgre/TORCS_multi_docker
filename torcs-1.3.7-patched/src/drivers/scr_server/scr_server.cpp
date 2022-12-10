@@ -114,7 +114,7 @@ tSockAddrIn clientAddress[NBBOTS], serverAddress[NBBOTS];
 /************************************************/
 
 //ETCD setup
-static etcd::Client etcd_client("http://172.20.0.2:2380,http://172.20.0.3:2380,http://172.20.0.4:2380");
+static etcd::Client etcd_client("http://172.20.0.2:2380");
 
 static tdble oldAccel[NBBOTS];
 static tdble oldBrake[NBBOTS];
