@@ -138,9 +138,6 @@ static float trackSensAngle[NBBOTS][19];
 static const char* botname[NBBOTS] = {"scr_server 1", "scr_server 2", "scr_server 3", "scr_server 4", "scr_server 5", "scr_server 6", "scr_server 7", "scr_server 8", "scr_server 9", "scr_server 10"};
 
 static unsigned long total_tics[NBBOTS];
-static auto start = std::chrono::system_clock::now();
-static double total_time = 0;
-static int count_time = 0;
 
 /*
  * Module entry point
@@ -544,10 +541,6 @@ if (RESTARTING[index]==0)
     string actionPoint = "/driver_action/" + std::to_string(UDP_LISTEN_PORT+index);
 
     redis.set(statePoint, line);
-    auto end = std::chrono::system_clock::now();
-    std::chrono::duration<double> elapsed_seconds = end-start;
-    OutputFile << "Current RTT time: " << elapsed_seconds.count() << "s\n";
-    start = end;
 	
     // Set timeout for client answer
     FD_ZERO(&readSet);

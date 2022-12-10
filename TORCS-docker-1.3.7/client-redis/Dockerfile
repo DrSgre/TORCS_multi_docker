@@ -14,11 +14,13 @@ RUN apt-get install -y alsa-utils
 
 WORKDIR /tmp
 
-ARG tf=tf
+ARG tj=tj
 
 RUN git clone --recursive https://github.com/DrSgre/TORCS_multi_docker
 
 WORKDIR TORCS_multi_docker/scr-client-cpp
+
+RUN apt-get update
 
 RUN apt-get install -y \
     libboost-all-dev \
