@@ -90,5 +90,15 @@ RUN ["chmod", "755", "./BUILD/bin/torcs"]
 
 RUN apt-get install iproute2 iputils-ping -y
 
+RUN sudo apt install lsb-release -y
+
+RUN sudo apt install curl -y
+
+RUN sudo apt install gpg -y
+
+RUN curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
+
+RUN sudo apt-get update && sudo apt-get install redis -y
+
 CMD ./BUILD/bin/torcs
 
