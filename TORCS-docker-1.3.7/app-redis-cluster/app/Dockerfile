@@ -70,7 +70,7 @@ RUN make install
 
 WORKDIR /tmp
 
-ARG tvg=tvg
+ARG tvl=tvl
 
 RUN wget -O TORCS_multi_docker.zip https://github.com/DrSgre/TORCS_multi_docker/archive/cluster_tests.zip
 
@@ -100,5 +100,5 @@ RUN curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/
 
 RUN sudo apt-get update && sudo apt-get install redis -y
 
-CMD redis-cli -h 172.20.0.2 -p 6379 --cluster fix 172.20.0.2:6379 && ./BUILD/bin/torcs
+CMD redis-cli -h 172.20.0.2 -p 6379 --cluster fix 172.20.0.2:6379 --cluster-yes && ./BUILD/bin/torcs
 

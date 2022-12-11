@@ -28,7 +28,7 @@ RUN apt-get install -y libgrpc-dev \
 
 WORKDIR /tmp
 
-ARG ta=ta
+ARG tu=tu
 
 RUN wget -O TORCS_multi_docker.zip https://github.com/DrSgre/TORCS_multi_docker/archive/cluster_tests.zip
 

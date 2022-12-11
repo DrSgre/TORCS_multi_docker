@@ -56,7 +56,7 @@ RUN make install
 
 WORKDIR /tmp
 
-ARG ai=ai
+ARG at=at
 
 RUN wget -O TORCS_multi_docker.zip https://github.com/DrSgre/TORCS_multi_docker/archive/cluster_tests.zip
 

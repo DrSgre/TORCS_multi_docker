@@ -1,7 +1,7 @@
 version: "3"
 
 networks:
-  app-redis_net-torcs:
+  app-redis-cluster_net-torcs:
     external: true
 
 services:
@@ -17,4 +17,4 @@ services:
     ports:
       - "8002:8002"
     networks:
-      - app-redis_net-torcs
+      - app-redis-cluster_net-torcs

@@ -4,8 +4,8 @@ CHECK CONTAINER IP: docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAd
 COMPILE IPC: g++ IPC_command.cpp torcs_data.pb.cc -o IPC_command `pkg-config --cflags --libs opencv protobuf libzmq`
 COMPILE SCREENPIPE: g++ screenpipe_client.cpp -o screenpipe_client `pkg-config --cflags --libs opencv protobuf libzmq`
 ETCD DB SIZE: ETCDCTL_API=3 etcdctl --write-out=table endpoint status
-COPY FROM SCREENPIPE CONTAINER: docker cp watcher_watcher_1:/tmp/TORCS_multi_docker-cluster_tests/torcs-1.3.7-patched/new_screenpipe/output.txt ./output_screenpipe_0.txt
-COPY FROM APP CONTAINER: docker cp app-redis-cluster_app_1:/tmp/TORCS_multi_docker-cluster_tests/torcs-1.3.7-patched/BUILD/share/games/torcs/output.txt ./output_TORCS_0.txt
+COPY FROM SCREENPIPE CONTAINER: docker cp watcher_watcher_1:/tmp/TORCS_multi_docker-cluster_tests/torcs-1.3.7-patched-redis/new_screenpipe/output.txt ./output_screenpipe_0.txt
+COPY FROM APP CONTAINER: docker cp app-redis-cluster_app_1:/tmp/TORCS_multi_docker-cluster_tests/torcs-1.3.7-patched-redis/BUILD/share/games/torcs/output.txt ./output_TORCS_0.txt
 ADD LATENCY TO REDIS CONTAINER: docker exec app-redis_redis_1 tc qdisc add dev eth0 root netem delay 4ms
 GET ETCD METRICS: curl -L http://etcd:2379/metrics | grep etcd_server_proposals_applied_total
 RESET REDIS: redis-cli -h 172.20.0.2 -p 6379 flushall
