@@ -24,7 +24,6 @@
 */
 
 #include <etcd/Client.hpp>
-#include <thread>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -45,7 +44,6 @@
 #include "racemanmenu.h"
 
 #include "racemain.h"
-#include "statemanager.h"
 
 extern void musicmenu(int, bool);
 extern etcd::Client etcd_client;
@@ -230,6 +228,8 @@ int RePreRace(void)
 
 	ReInitRules(ReInfo);
 
+	//std::thread statemanager(StartStateManager, ReInfo);
+	//statemanager.detach();
 	return RM_SYNC | RM_NEXT_STEP;
 }
 
@@ -247,7 +247,6 @@ static int reRaceRealStart(void)
 	void *params = ReInfo->params;
 	void *results = ReInfo->results;
 	tSituation *s = ReInfo->s;
-	
 
 	RmLoadingScreenSetText("Loading Simulation Engine...");
 	const char* dllname = GfParmGetStr(ReInfo->_reParam, "Modules", "simu", "");
@@ -320,7 +319,8 @@ static int reRaceRealStart(void)
 	ReInfo->_reTimeMult = 1.0;
 	ReInfo->_reLastTime = -1.0;
 	ReInfo->s->currentTime = -2.0;
-	ReInfo->s->deltaTime = RCM_MAX_DT_SIMU;
+	etcd_client.set("/test/situation/deltaTime", std::to_string(RCM_MAX_DT_SIMU));
+
 	ReInfo->s->_raceState = RM_RACE_STARTING;
 
 	if ((ReInfo->_displayMode != RM_DISP_MODE_CONSOLE) &&  ReInfo->_reGraphicItf.initview != 0) {
@@ -336,8 +336,6 @@ static int reRaceRealStart(void)
 		GfuiScreenActivate(ReInfo->_reGameScreen);
 	}
 
-	//std::thread statemanager(StartStateManager, ReInfo);
-	//statemanager.detach();
 	return RM_SYNC | RM_NEXT_STEP;
 }
 

@@ -24,6 +24,7 @@
 */
 
 #include <iostream>
+#include <sw/redis++/redis++.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -47,11 +48,12 @@
 #include <playerpref.h>
 #include "pref.h"
 #include "human.h"
-#include <sw/redis++/redis++.h>
 
 #define DRWD 0
 #define DFWD 1
 #define D4WD 2
+
+using namespace sw::redis;
 
 static void initTrack(int index, tTrack* track, void *carHandle, void **carParmHandle, tSituation *s);
 static void drive_mt(int index, tCarElt* car, tSituation *s);
@@ -74,7 +76,6 @@ tHumanContext *HCtx[10] = {0};
 static int speedLimiter	= 0;
 static tdble Vtarget;
 
-using namespace sw::redis;
 auto redis = Redis("tcp://172.20.0.2:6379");
 
 typedef struct
@@ -587,7 +588,8 @@ static void common_drive(int index, tCarElt* car, tSituation *s)
 				HCtx[idx]->prevLeftSteer = leftSteer = 0;
 			} else {
 				ax0 = 2 * ax0 - 1;
-				leftSteer = HCtx[idx]->prevLeftSteer + ax0 * cmd[CMD_LEFTSTEER].sens * s->deltaTime / (1.0 + cmd[CMD_LEFTSTEER].spdSens * car->pub.speed / 10.0);
+				double deltaTime = std::stod(redis.get("/state/deltaTime").value());
+				leftSteer = HCtx[idx]->prevLeftSteer + ax0 * cmd[CMD_LEFTSTEER].sens * deltaTime / (1.0 + cmd[CMD_LEFTSTEER].spdSens * car->pub.speed / 10.0);
 				if (leftSteer > 1.0) leftSteer = 1.0;
 				if (leftSteer < 0.0) leftSteer = 0.0;
 				HCtx[idx]->prevLeftSteer = leftSteer;
@@ -635,7 +637,8 @@ static void common_drive(int index, tCarElt* car, tSituation *s)
 				HCtx[idx]->prevRightSteer = rightSteer = 0;
 			} else {
 				ax0 = 2 * ax0 - 1;
-				rightSteer = HCtx[idx]->prevRightSteer - ax0 * cmd[CMD_RIGHTSTEER].sens * s->deltaTime / (1.0 + cmd[CMD_RIGHTSTEER].spdSens * car->pub.speed / 10.0);
+				double deltaTime = std::stod(redis.get("/state/deltaTime").value());
+				rightSteer = HCtx[idx]->prevRightSteer - ax0 * cmd[CMD_RIGHTSTEER].sens * deltaTime / (1.0 + cmd[CMD_RIGHTSTEER].spdSens * car->pub.speed / 10.0);
 				if (rightSteer > 0.0) rightSteer = 0.0;
 				if (rightSteer < -1.0) rightSteer = -1.0;
 				HCtx[idx]->prevRightSteer = rightSteer;

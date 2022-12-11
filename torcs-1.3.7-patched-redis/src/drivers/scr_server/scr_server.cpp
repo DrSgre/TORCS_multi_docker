@@ -540,7 +540,7 @@ if (RESTARTING[index]==0)
     string actionPoint = "/driver_action/" + std::to_string(UDP_LISTEN_PORT+index);
 
     redis.set(statePoint, line);
-	
+
     // Set timeout for client answer
     FD_ZERO(&readSet);
     FD_SET(listenSocket[index], &readSet);
@@ -731,3 +731,4 @@ double normRand(double avg,double std)
 	    y2 = x2 * w;
 	    return y1*std + avg;
 }
+

@@ -17,6 +17,8 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <etcd/Client.hpp>
+
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -46,6 +48,8 @@
 #include "grtrackmap.h"
 #include "grcarlight.h"
 #include <glfeatures.h>
+
+extern etcd::Client etcd_client;
 
 int maxTextureUnits = 0;
 static double OldTime;
@@ -327,7 +331,7 @@ refresh(tSituation *s)
     grCurTime = GfTimeClock();
     grDeltaTime = grCurTime - OldTime;
     if ((grCurTime - OldTime) > 1.0) {
-	/* The Frames Per Second (FPS) display is refreshed every second */
+		/* The Frames Per Second (FPS) display is refreshed every second */
 		grFps = (tdble)nFrame / (grCurTime - OldTime);
 		OutputFile.open("output.txt", std::fstream::in | std::fstream::out | std::fstream::app);
 		OutputFile << "Current FPS: " << grFps << "\n";

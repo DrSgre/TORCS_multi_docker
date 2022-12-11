@@ -8,7 +8,7 @@
 
 extern etcd::Client etcd_client;
 
-void SaveState(tSituation *s)
+/* void SaveState(tSituation *s)
 {
     // If the ETCD values are different from the local ones, they are updated accordingly.
     if (std::stod(etcd_client.get("/state/deltaTime").get().value().as_string()) != s->deltaTime) {
@@ -222,3 +222,4 @@ void StartStateManager(tRmInfo* ReInfo)
     }
 }
 
+ */

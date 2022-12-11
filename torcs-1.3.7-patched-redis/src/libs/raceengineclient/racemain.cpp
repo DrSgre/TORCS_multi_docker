@@ -24,6 +24,7 @@
 */
 
 #include <thread>
+#include <sw/redis++/redis++.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -50,6 +51,10 @@ extern void musicmenu(int, bool);
 
 /***************************************************************/
 /* ABANDON RACE HOOK */
+
+using namespace sw::redis;
+
+extern Redis redis;
 
 static void *AbandonRaceHookHandle = 0;
 
@@ -318,7 +323,8 @@ static int reRaceRealStart(void)
 	ReInfo->_reTimeMult = 1.0;
 	ReInfo->_reLastTime = -1.0;
 	ReInfo->s->currentTime = -2.0;
-	ReInfo->s->deltaTime = RCM_MAX_DT_SIMU;
+	redis.set("/state/deltaTime", std::to_string(RCM_MAX_DT_SIMU));
+	//ReInfo->s->deltaTime = RCM_MAX_DT_SIMU;
 	ReInfo->s->_raceState = RM_RACE_STARTING;
 
 	if ((ReInfo->_displayMode != RM_DISP_MODE_CONSOLE) &&  ReInfo->_reGraphicItf.initview != 0) {

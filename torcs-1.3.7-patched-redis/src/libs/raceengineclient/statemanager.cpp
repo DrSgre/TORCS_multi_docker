@@ -10,7 +10,7 @@ using namespace sw::redis;
 
 extern Redis redis;
 
-void SaveState(tSituation *s)
+/* void SaveState(tSituation *s)
 {
     // If the ETCD values are different from the local ones, they are updated accordingly.
     if (std::stod(redis.get("/state/deltaTime").value()) != s->deltaTime) {
@@ -223,3 +223,4 @@ void StartStateManager(tRmInfo* ReInfo)
         redis.del("/carstate/car" + std::to_string(i) + "/seg_id");
     }
 }
+ */

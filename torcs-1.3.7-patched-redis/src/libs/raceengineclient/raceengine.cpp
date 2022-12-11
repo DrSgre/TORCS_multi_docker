@@ -659,7 +659,7 @@ int count=0;
 unsigned char image[resize_width*resize_height * 3];
 unsigned char data[image_width*image_height*3];
 uint8_t* pdata = data;
-bool streamActive = true;
+bool streamActive = false;
 
 // Setup opencv
 IplImage* screenRGB=cvCreateImage(cvSize(image_width,image_height),IPL_DEPTH_8U,3);
@@ -669,7 +669,7 @@ static void
 ReOneStep(double deltaTimeIncrement)
 {
 	count++;
-	if (count>50) // 10FPS
+	if (count>10) // 10FPS
 	{
 		count=1;
 
@@ -736,7 +736,8 @@ ReOneStep(double deltaTimeIncrement)
 
 	START_PROFILE("rbDrive*");
 	if ((s->currentTime - ReInfo->_reLastTime) >= RCM_MAX_DT_ROBOTS) {
-		s->deltaTime = s->currentTime - ReInfo->_reLastTime;
+		redis.set("/state/deltaTime", std::to_string(s->currentTime - ReInfo->_reLastTime));
+		//s->deltaTime = s->currentTime - ReInfo->_reLastTime;
 		for (i = 0; i < s->_ncars; i++) {
 			if ((s->cars[i]->_state & RM_CAR_STATE_NO_SIMU) == 0) {
 				robot = s->cars[i]->robot;
