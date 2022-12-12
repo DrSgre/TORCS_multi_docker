@@ -60,7 +60,7 @@ typedef int (*tfRmRunState) (struct RmInfo *);
 typedef struct {
     int			ncars;		/**< number of cars */
     int			totLaps;	/**< total laps */
-    int			state;
+//    int			state;
 #define RM_RACE_RUNNING		0X00000001
 #define RM_RACE_FINISHING	0X00000002
 #define RM_RACE_ENDED		0X00000004
@@ -77,15 +77,15 @@ typedef struct {
 
 #define _ncars		raceInfo.ncars
 #define _totLaps	raceInfo.totLaps
-#define _raceState	raceInfo.state
+//#define _raceState	raceInfo.state
 #define _raceType	raceInfo.type
 #define _maxDammage	raceInfo.maxDammage
 
 /** cars situation used to inform the GUI and the drivers */
 typedef struct Situation {
     tRaceAdmInfo	raceInfo;
-    //double		deltaTime;
-    //double		currentTime;	/**< current time in sec since the beginning of the simulation */
+    // double		deltaTime;
+    // double		currentTime;	/**< current time in sec since the beginning of the simulation */
     int			nbPlayers;	/**< number of human player in local (splitted screen) */
     tCarElt		**cars;		/**< list of cars */ 
 } tSituation;
@@ -351,6 +351,5 @@ typedef struct RmInfo
 #define RE_ATTR_PENALTYTIME	"penaltytime"
 
 #endif /* _RACEMANV1_H_ */ 
-
 
 

@@ -100,7 +100,7 @@ ReStateManage(void)
 
 			case RE_STATE_RACE:
 				mode = ReUpdate();
-				if (ReInfo->s->_raceState == RM_RACE_ENDED) {
+				if (stoi(etcd_client.get("/test/situation/raceState").get().value().as_string()) == RM_RACE_ENDED) {
 					/* race finished */
 					ReInfo->_reState = RE_STATE_RACE_END;
 				} else if (mode & RM_END_RACE) {

@@ -63,7 +63,7 @@ reScreenActivate(void * /* dummy */)
 {
     glutDisplayFunc(reDisplay);
 
-    if ((ReInfo->s->_raceState & RM_RACE_PAUSED) == 0) {
+    if ((stoi(etcd_client.get("/test/situation/raceState").get().value().as_string()) & RM_RACE_PAUSED) == 0) {
 	ReStart(); 			/* resynchro */
     }
     glutPostRedisplay();
@@ -72,12 +72,12 @@ reScreenActivate(void * /* dummy */)
 static void
 ReBoardInfo(void * /* vboard */)
 {
-    if (ReInfo->s->_raceState & RM_RACE_PAUSED) {
-	ReInfo->s->_raceState &= ~RM_RACE_PAUSED;
+    if (stoi(etcd_client.get("/test/situation/raceState").get().value().as_string()) & RM_RACE_PAUSED) {
+	etcd_client.set("/test/situation/raceState", std::to_string(~RM_RACE_PAUSED));
 	ReStart();
 	GfuiVisibilitySet(reScreenHandle, rePauseId, 0);
     } else {
-	ReInfo->s->_raceState |= RM_RACE_PAUSED;
+	etcd_client.set("/test/situation/raceState", std::to_string(RM_RACE_PAUSED));
 	ReStop();
 	GfuiVisibilitySet(reScreenHandle, rePauseId, 1);
     }

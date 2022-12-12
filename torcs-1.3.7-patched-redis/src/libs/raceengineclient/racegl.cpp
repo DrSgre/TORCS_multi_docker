@@ -52,7 +52,7 @@ static float red[4]     = {1.0, 0.0, 0.0, 1.0};
 
 using namespace sw::redis;
 
-extern Redis redis;
+extern Redis redis_client;
 
 static void
 reDisplay(void)
@@ -64,8 +64,8 @@ static void
 reScreenActivate(void * /* dummy */)
 {
     glutDisplayFunc(reDisplay);
-
-    if ((ReInfo->s->_raceState & RM_RACE_PAUSED) == 0) {
+	int raceState = std::stoi(redis_client.get("/state/raceState").value());
+    if ((raceState & RM_RACE_PAUSED) == 0) {
 	ReStart(); 			/* resynchro */
     }
     glutPostRedisplay();
@@ -74,12 +74,15 @@ reScreenActivate(void * /* dummy */)
 static void
 ReBoardInfo(void * /* vboard */)
 {
-    if (ReInfo->s->_raceState & RM_RACE_PAUSED) {
-		ReInfo->s->_raceState &= ~RM_RACE_PAUSED;
+	int raceState = std::stoi(redis_client.get("/state/raceState").value());
+    if (raceState & RM_RACE_PAUSED) {
+		//ReInfo->s->_raceState &= ~RM_RACE_PAUSED;
+		redis_client.set("/state/raceState", std::to_string(~RM_RACE_PAUSED));
 		ReStart();
 		GfuiVisibilitySet(reScreenHandle, rePauseId, 0);
     } else {
-		ReInfo->s->_raceState |= RM_RACE_PAUSED;
+		//ReInfo->s->_raceState |= RM_RACE_PAUSED;
+		redis_client.set("/state/raceState", std::to_string(RM_RACE_PAUSED));
 		ReStop();
 		GfuiVisibilitySet(reScreenHandle, rePauseId, 1);
     }
@@ -88,7 +91,7 @@ ReBoardInfo(void * /* vboard */)
 static void
 reSkipPreStart(void * /* dummy */)
 {
-	double currentTime = std::stod(redis.get("/state/currentTime").value());
+	double currentTime = std::stod(redis_client.get("/state/currentTime").value());
     if (currentTime < -1.0) {
 		currentTime = -1.0;
 		ReInfo->_reLastTime = -1.0;

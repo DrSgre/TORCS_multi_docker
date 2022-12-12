@@ -20,9 +20,6 @@
 #include <etcd/Client.hpp>
 #include <iostream>
 
-#include <chrono>
-#include <thread>
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <memory.h>
@@ -321,8 +318,7 @@ RemoveCar(tCar *car, tSituation *s)
 	car->restPos.vel.ay = dang / travelTime;
 }
 
-extern int counter;
-extern int delay;
+
 
 void
 SimUpdate(tSituation *s, double deltaTime, int telemetry)
@@ -332,8 +328,6 @@ SimUpdate(tSituation *s, double deltaTime, int telemetry)
 	tCarElt *carElt;
 	tCar *car;
 	
-	//std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-	//counter += 1;
 	SimDeltaTime = deltaTime;
 	SimTelemetry = telemetry;
 	for (ncar = 0; ncar < s->_ncars; ncar++) {
@@ -357,7 +351,7 @@ SimUpdate(tSituation *s, double deltaTime, int telemetry)
 			}
 		}
 	
-		if (s->_raceState & RM_RACE_PRESTART) {
+		if (stoi(etcd_client.get("/test/situation/raceState").get().value().as_string())  & RM_RACE_PRESTART) {
 			car->ctrl->gear = 0;
 		}
 	
@@ -371,7 +365,7 @@ SimUpdate(tSituation *s, double deltaTime, int telemetry)
 		SimEngineUpdateTq(car);
 		CHECK(car);
 	
-		if (!(s->_raceState & RM_RACE_PRESTART)) {
+		if (!(stoi(etcd_client.get("/test/situation/raceState").get().value().as_string())  & RM_RACE_PRESTART)) {
 	
 			SimCarUpdateWheelPos(car);
 			CHECK(car);
