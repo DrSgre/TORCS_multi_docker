@@ -228,8 +228,6 @@ int RePreRace(void)
 
 	ReInitRules(ReInfo);
 
-	//std::thread statemanager(StartStateManager, ReInfo);
-	//statemanager.detach();
 	return RM_SYNC | RM_NEXT_STEP;
 }
 
@@ -318,7 +316,7 @@ static int reRaceRealStart(void)
 
 	ReInfo->_reTimeMult = 1.0;
 	ReInfo->_reLastTime = -1.0;
-	ReInfo->s->currentTime = -2.0;
+	etcd_client.set("/test/situation/currentTime", std::to_string(-2.0));
 	etcd_client.set("/test/situation/deltaTime", std::to_string(RCM_MAX_DT_SIMU));
 
 	ReInfo->s->_raceState = RM_RACE_STARTING;

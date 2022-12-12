@@ -337,7 +337,7 @@ cGrBoard::grDispCarBoard1(tCarElt *car, tSituation *s)
 	y -= dy;
 	
 	GfuiPrintString("Total:", clr, GFUI_FONT_SMALL_C, x, y, GFUI_ALIGN_HL_VB);
-	grWriteTime(clr, GFUI_FONT_SMALL_C, x2, y, s->currentTime, 0);
+	grWriteTime(clr, GFUI_FONT_SMALL_C, x2, y, std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string()), 0);
 	y -= dy;
 	
 	GfuiPrintString("Curr:", clr, GFUI_FONT_SMALL_C, x, y, GFUI_ALIGN_HL_VB);

@@ -69,8 +69,6 @@ int grWinx, grWiny, grWinw, grWinh;
 
 static float grMouseRatioX, grMouseRatioY;
 static std::ofstream OutputFile;
-static float totFrames = 0;
-static int lastCount = 0;
 
 tgrCarInfo *grCarInfo;
 ssgContext grContext;
@@ -313,13 +311,6 @@ initView(int x, int y, int width, int height, int /* flag */, void *screen)
 	return 0;
 }
 
-static int geFps;
-
-extern int counter;
-extern int delay;
-extern int GEstepcount;
-int laststepcount;
-
 int
 refresh(tSituation *s)
 {
@@ -331,13 +322,13 @@ refresh(tSituation *s)
     grCurTime = GfTimeClock();
     grDeltaTime = grCurTime - OldTime;
     if ((grCurTime - OldTime) > 1.0) {
-		/* The Frames Per Second (FPS) display is refreshed every second */
-		grFps = (tdble)nFrame / (grCurTime - OldTime);
-		OutputFile.open("output.txt", std::fstream::in | std::fstream::out | std::fstream::app);
-		OutputFile << "Current FPS: " << grFps << "\n";
-		OutputFile.close();
-		nFrame = 0;
-		OldTime = grCurTime;
+	/* The Frames Per Second (FPS) display is refreshed every second */
+	grFps = (tdble)nFrame / (grCurTime - OldTime);
+	OutputFile.open("output.txt", std::fstream::out | std::fstream::app);
+    OutputFile << "Current FPS: " << std::to_string(grFps) << "\n";
+	OutputFile.close();
+	nFrame = 0;
+	OldTime = grCurTime;
     }
 
     TRACE_GL("refresh: start");
@@ -355,7 +346,7 @@ refresh(tSituation *s)
 	grScreens[i]->update(s, grFps);
     }
 
-    grUpdateSmoke(s->currentTime);
+    grUpdateSmoke(std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string()));
 
     STOP_PROFILE("refresh");
     return 0;

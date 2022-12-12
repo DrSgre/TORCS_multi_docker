@@ -73,22 +73,22 @@ static void
 ReBoardInfo(void * /* vboard */)
 {
     if (ReInfo->s->_raceState & RM_RACE_PAUSED) {
-		ReInfo->s->_raceState &= ~RM_RACE_PAUSED;
-		ReStart();
-		GfuiVisibilitySet(reScreenHandle, rePauseId, 0);
+	ReInfo->s->_raceState &= ~RM_RACE_PAUSED;
+	ReStart();
+	GfuiVisibilitySet(reScreenHandle, rePauseId, 0);
     } else {
-		ReInfo->s->_raceState |= RM_RACE_PAUSED;
-		ReStop();
-		GfuiVisibilitySet(reScreenHandle, rePauseId, 1);
+	ReInfo->s->_raceState |= RM_RACE_PAUSED;
+	ReStop();
+	GfuiVisibilitySet(reScreenHandle, rePauseId, 1);
     }
 }
 
 static void
 reSkipPreStart(void * /* dummy */)
 {
-    if (ReInfo->s->currentTime < -1.0) {
-		ReInfo->s->currentTime = -1.0;
-		ReInfo->_reLastTime = -1.0;
+    if (std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string()) < -1.0) {
+	etcd_client.set("/test/situation/currentTime", std::to_string(-1.0));
+	ReInfo->_reLastTime = -1.0;
     }
 }
 

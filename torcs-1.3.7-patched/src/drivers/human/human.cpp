@@ -464,6 +464,7 @@ static void common_drive(int index, tCarElt* car, tSituation *s)
 	const int BUFSIZE = 1024;
 	char sstring[BUFSIZE];
 
+
 	static int firstTime = 1;
 
 	if (firstTime) {
@@ -491,7 +492,7 @@ static void common_drive(int index, tCarElt* car, tSituation *s)
 		car->_raceCmd = RM_CMD_PIT_ASKED;
 	}
 
-	if (lastKeyUpdate != s->currentTime) {
+	if (lastKeyUpdate != std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string())) {
 		/* Update the controls only once for all the players */
 		updateKeys();
 
@@ -500,7 +501,7 @@ static void common_drive(int index, tCarElt* car, tSituation *s)
 		}
 
 		GfctrlMouseGetCurrent(mouseInfo);
-		lastKeyUpdate = s->currentTime;
+		lastKeyUpdate = std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string());
 	}
 
 	if (((cmd[CMD_ABS].type == GFCTRL_TYPE_JOY_BUT) && joyInfo->edgeup[cmd[CMD_ABS].val]) ||
@@ -777,7 +778,7 @@ static void common_drive(int index, tCarElt* car, tSituation *s)
 			break;
 	}
 
-	if (s->currentTime > 1.0) {
+	if (std::stod(etcd_client.get("/test/situation/currentTime").get().value().as_string()) > 1.0) {
 		// thanks Christos for the following: gradual accel/brake changes for on/off controls.
 		const tdble inc_rate = 0.2f;
 		

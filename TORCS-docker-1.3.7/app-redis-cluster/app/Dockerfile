@@ -70,7 +70,7 @@ RUN make install
 
 WORKDIR /tmp
 
-ARG tvl=tvl
+ARG tvll=tvll
 
 RUN wget -O TORCS_multi_docker.zip https://github.com/DrSgre/TORCS_multi_docker/archive/cluster_tests.zip
 

@@ -23,7 +23,6 @@
 	@version	$Id: human.cpp,v 1.45.2.18 2014/05/22 11:51:24 berniw Exp $
 */
 
-#include <iostream>
 #include <sw/redis++/redis++.h>
 
 #ifdef _WIN32
@@ -54,6 +53,7 @@
 #define D4WD 2
 
 using namespace sw::redis;
+auto redis = Redis("tcp://172.20.0.2:6379");
 
 static void initTrack(int index, tTrack* track, void *carHandle, void **carParmHandle, tSituation *s);
 static void drive_mt(int index, tCarElt* car, tSituation *s);
@@ -76,7 +76,6 @@ tHumanContext *HCtx[10] = {0};
 static int speedLimiter	= 0;
 static tdble Vtarget;
 
-auto redis = Redis("tcp://172.20.0.2:6379");
 
 typedef struct
 {
@@ -465,6 +464,7 @@ static void common_drive(int index, tCarElt* car, tSituation *s)
 	const int BUFSIZE = 1024;
 	char sstring[BUFSIZE];
 
+
 	static int firstTime = 1;
 
 	if (firstTime) {
@@ -491,8 +491,8 @@ static void common_drive(int index, tCarElt* car, tSituation *s)
 	if (car->_laps != HCtx[idx]->LastPitStopLap) {
 		car->_raceCmd = RM_CMD_PIT_ASKED;
 	}
-
-	if (lastKeyUpdate != s->currentTime) {
+	double currentTime = std::stod(redis.get("/state/currentTime").value());
+	if (lastKeyUpdate != currentTime) {
 		/* Update the controls only once for all the players */
 		updateKeys();
 
@@ -501,7 +501,7 @@ static void common_drive(int index, tCarElt* car, tSituation *s)
 		}
 
 		GfctrlMouseGetCurrent(mouseInfo);
-		lastKeyUpdate = s->currentTime;
+		lastKeyUpdate = currentTime;
 	}
 
 	if (((cmd[CMD_ABS].type == GFCTRL_TYPE_JOY_BUT) && joyInfo->edgeup[cmd[CMD_ABS].val]) ||
@@ -638,7 +638,7 @@ static void common_drive(int index, tCarElt* car, tSituation *s)
 			} else {
 				ax0 = 2 * ax0 - 1;
 				double deltaTime = std::stod(redis.get("/state/deltaTime").value());
-				rightSteer = HCtx[idx]->prevRightSteer - ax0 * cmd[CMD_RIGHTSTEER].sens * deltaTime / (1.0 + cmd[CMD_RIGHTSTEER].spdSens * car->pub.speed / 10.0);
+				rightSteer = HCtx[idx]->prevRightSteer - ax0 * cmd[CMD_RIGHTSTEER].sens * deltaTime/ (1.0 + cmd[CMD_RIGHTSTEER].spdSens * car->pub.speed / 10.0);
 				if (rightSteer > 0.0) rightSteer = 0.0;
 				if (rightSteer < -1.0) rightSteer = -1.0;
 				HCtx[idx]->prevRightSteer = rightSteer;
@@ -780,7 +780,7 @@ static void common_drive(int index, tCarElt* car, tSituation *s)
 			break;
 	}
 
-	if (s->currentTime > 1.0) {
+	if (currentTime > 1.0) {
 		// thanks Christos for the following: gradual accel/brake changes for on/off controls.
 		const tdble inc_rate = 0.2f;
 		
