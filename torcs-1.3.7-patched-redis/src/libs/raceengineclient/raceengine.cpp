@@ -61,6 +61,7 @@ static int refresh_count = 10;
 static int count_limit = 10;
 
 auto redis = Redis("tcp://172.20.0.2:6379");
+extern bool do_update = true;
 
 tRmInfo	*ReInfo = 0;
 int RESTART = 0;
@@ -659,7 +660,7 @@ int count=0;
 unsigned char image[resize_width*resize_height * 3];
 unsigned char data[image_width*image_height*3];
 uint8_t* pdata = data;
-bool streamActive = true;
+bool streamActive = false;
 
 // Setup opencv
 IplImage* screenRGB=cvCreateImage(cvSize(image_width,image_height),IPL_DEPTH_8U,3);
@@ -748,7 +749,9 @@ ReOneStep(double deltaTimeIncrement)
 	STOP_PROFILE("rbDrive*");
 
 	START_PROFILE("_reSimItf.update*");
-	ReInfo->_reSimItf.update(s, deltaTimeIncrement, -1);
+	if (do_update) {
+		ReInfo->_reSimItf.update(s, deltaTimeIncrement, -1);
+	}
 	for (i = 0; i < s->_ncars; i++) {
 		ReManage(s->cars[i]);
 	}

@@ -4,9 +4,10 @@
 #include <thread>
 #include <raceman.h>
 
-#define SNAPSHOT_FREQUENCY 100
+#define SNAPSHOT_FREQUENCY 1
 
 extern etcd::Client etcd_client;
+extern bool do_update;
 
 void SaveState(tSituation *s)
 {
@@ -20,6 +21,7 @@ void SaveState(tSituation *s)
     if (std::stoi(etcd_client.get("/state/raceState").get().value().as_string()) != s->_raceState) {
         etcd_client.set("/state/raceState", std::to_string(s->_raceState));
     }
+    // If the ETCD values are different from the local ones, they are updated accordingly.
     for (int i = 0; i < s->_ncars; i++) {
         // Store the information related to the position with respect to the track segment.
         if (std::stod(etcd_client.get("/carstate/car" + std::to_string(i) + "/pos_toStart").get().value().as_string()) != s->cars[i]->_trkPos.toStart) {
@@ -60,6 +62,27 @@ void SaveState(tSituation *s)
         if (std::stod(etcd_client.get("/carstate/car" + std::to_string(i) + "/pos_AZ").get().value().as_string()) != s->cars[i]->_yaw) {
             etcd_client.set("/carstate/car" + std::to_string(i) + "/pos_AZ", std::to_string(s->cars[i]->_yaw));
         }
+        if (std::stod(etcd_client.get("/carstate/car" + std::to_string(i) + "/vel_AZ").get().value().as_string()) != s->cars[i]->_yaw_rate) {
+            etcd_client.set("/carstate/car" + std::to_string(i) + "/vel_AZ", std::to_string(s->cars[i]->_yaw_rate));
+        }
+        if (std::stod(etcd_client.get("/carstate/car" + std::to_string(i) + "/vel_X").get().value().as_string()) != s->cars[i]->_speed_x) {
+            etcd_client.set("/carstate/car" + std::to_string(i) + "/vel_X", std::to_string(s->cars[i]->_speed_x));
+        }
+        if (std::stod(etcd_client.get("/carstate/car" + std::to_string(i) + "/vel_Y").get().value().as_string()) != s->cars[i]->_speed_y) {
+            etcd_client.set("/carstate/car" + std::to_string(i) + "/vel_Y", std::to_string(s->cars[i]->_speed_y));
+        }
+        if (std::stod(etcd_client.get("/carstate/car" + std::to_string(i) + "/vel_Z").get().value().as_string()) != s->cars[i]->_speed_z) {
+            etcd_client.set("/carstate/car" + std::to_string(i) + "/vel_Z", std::to_string(s->cars[i]->_speed_z));
+        }
+        if (std::stod(etcd_client.get("/carstate/car" + std::to_string(i) + "/accel_X").get().value().as_string()) != s->cars[i]->_accel_x) {
+            etcd_client.set("/carstate/car" + std::to_string(i) + "/accel_X", std::to_string(s->cars[i]->_accel_x));
+        }
+        if (std::stod(etcd_client.get("/carstate/car" + std::to_string(i) + "/accel_Y").get().value().as_string()) != s->cars[i]->_accel_y) {
+            etcd_client.set("/carstate/car" + std::to_string(i) + "/accel_Y", std::to_string(s->cars[i]->_accel_y));
+        }
+        if (std::stod(etcd_client.get("/carstate/car" + std::to_string(i) + "/accel_Z").get().value().as_string()) != s->cars[i]->_accel_z) {
+            etcd_client.set("/carstate/car" + std::to_string(i) + "/accel_Z", std::to_string(s->cars[i]->_accel_z));
+        }
     }
 }
 
@@ -78,7 +101,6 @@ void LoadState (tRmInfo *ReInfo) {
     if (raceState != s->_raceState) {
         s->_raceState = raceState;
     }
-
     // For each car in the race, get the data related to the position with respect to the track segment and the global position of the car.
     for (int i = 0; i < s->_ncars; i++) {
         double pos_toStart = std::stod(etcd_client.get("/carstate/car" + std::to_string(i) + "/pos_toStart").get().value().as_string());
@@ -137,6 +159,34 @@ void LoadState (tRmInfo *ReInfo) {
         if (pos_AZ != s->cars[i]->_yaw) {
             s->cars[i]->_yaw  = pos_AZ;
         }
+        double vel_AZ = std::stod(etcd_client.get("/carstate/car" + std::to_string(i) + "/vel_AZ").get().value().as_string());
+        if (vel_AZ != s->cars[i]->_yaw_rate) {
+            s->cars[i]->_yaw_rate = vel_AZ;
+        }
+        double vel_X = std::stod(etcd_client.get("/carstate/car" + std::to_string(i) + "/vel_X").get().value().as_string());
+        if (vel_X != s->cars[i]->_speed_x) {
+            s->cars[i]->_speed_x = vel_X;
+        }
+        double vel_Y = std::stod(etcd_client.get("/carstate/car" + std::to_string(i) + "/vel_Y").get().value().as_string());
+        if (vel_Y != s->cars[i]->_speed_y) {
+            s->cars[i]->_speed_y  = vel_Y;
+        }
+        double vel_Z = std::stod(etcd_client.get("/carstate/car" + std::to_string(i) + "/vel_Z").get().value().as_string());
+        if (vel_Z != s->cars[i]->_speed_z) {
+            s->cars[i]->_speed_z  = vel_Z;
+        }
+        double accel_X = std::stod(etcd_client.get("/carstate/car" + std::to_string(i) + "/accel_X").get().value().as_string());
+        if (accel_X != s->cars[i]->_accel_x) {
+            s->cars[i]->_accel_x = accel_X;
+        }
+        double accel_Y = std::stod(etcd_client.get("/carstate/car" + std::to_string(i) + "/accel_Y").get().value().as_string());
+        if (accel_Y != s->cars[i]->_accel_y) {
+            s->cars[i]->_accel_y  = accel_Y;
+        }
+        double accel_Z = std::stod(etcd_client.get("/carstate/car" + std::to_string(i) + "/accel_Z").get().value().as_string());
+        if (accel_Z != s->cars[i]->_accel_z) {
+            s->cars[i]->_accel_z  = accel_Z;
+        }
 
         ReInfo->_reSimItf.config(s->cars[i], ReInfo);
     }
@@ -145,16 +195,29 @@ void LoadState (tRmInfo *ReInfo) {
 void StartStateManager(tRmInfo* ReInfo)
 {
     tSituation *s = ReInfo->s;
-    // If a race is running and values are already set in ETCD, then the local GE gets them.
-    // There is no need to get the time/racestate related values, as they are loaded during the loop.
-    if (etcd_client.get("/state/currentTime").get().is_ok()) {
+    if (etcd_client.get("/distributed_game_engine").get().value().as_string() == "true")
+    {
         s->_raceType = std::stoi(etcd_client.get("/state/raceType").get().value().as_string());
         s->_totLaps = std::stoi(etcd_client.get("/state/totLaps").get().value().as_string());
         s->_ncars = std::stoi(etcd_client.get("/state/ncars").get().value().as_string());
         s->_maxDammage = std::stoi(etcd_client.get("/state/maxDammage").get().value().as_string());
+        do_update = false;
+        while(s->_raceState != RM_RACE_ENDED) {
+            // If the race is paused we wait without performing requests.
+            if (s->_raceState == RM_RACE_PAUSED)
+            {
+                std::this_thread::sleep_for(std::chrono::milliseconds(SNAPSHOT_FREQUENCY));
+            }
+            else 
+            {
+                LoadState(ReInfo);
+                std::this_thread::sleep_for(std::chrono::milliseconds(SNAPSHOT_FREQUENCY));
+            }
+        }
     }
-    // Otherwise, the values are set in ETCD just once, at the beginning of the race.
-    else {
+    else
+    {
+        etcd_client.set("/distributed_game_engine", "true");
         etcd_client.set("/state/raceType", std::to_string(s->_raceType));
         etcd_client.set("/state/totLaps", std::to_string(s->_totLaps));
         etcd_client.set("/state/ncars", std::to_string(s->_ncars));
@@ -164,7 +227,6 @@ void StartStateManager(tRmInfo* ReInfo)
         etcd_client.set("/state/deltaTime", std::to_string(s->deltaTime));
         etcd_client.set("/state/currentTime", std::to_string(s->currentTime));
         etcd_client.set("/state/raceState", std::to_string(s->_raceState));
-
         // Initialize car state values, to allow for later comparisons.
         for (int i = 0; i < s->_ncars; i++) {
             etcd_client.set("/carstate/car" + std::to_string(i) + "/pos_toStart", std::to_string(s->cars[i]->_trkPos.toStart));
@@ -179,46 +241,58 @@ void StartStateManager(tRmInfo* ReInfo)
             etcd_client.set("/carstate/car" + std::to_string(i) + "/pos_AX", std::to_string(s->cars[i]->_roll));
             etcd_client.set("/carstate/car" + std::to_string(i) + "/pos_AY", std::to_string(s->cars[i]->_pitch));
             etcd_client.set("/carstate/car" + std::to_string(i) + "/pos_AZ", std::to_string(s->cars[i]->_yaw));
+            etcd_client.set("/carstate/car" + std::to_string(i) + "/vel_AZ", std::to_string(s->cars[i]->_yaw_rate));
+            etcd_client.set("/carstate/car" + std::to_string(i) + "/vel_X", std::to_string(s->cars[i]->_speed_x));
+            etcd_client.set("/carstate/car" + std::to_string(i) + "/vel_Y", std::to_string(s->cars[i]->_speed_y));
+            etcd_client.set("/carstate/car" + std::to_string(i) + "/vel_Z", std::to_string(s->cars[i]->_speed_z));
+            etcd_client.set("/carstate/car" + std::to_string(i) + "/accel_X", std::to_string(s->cars[i]->_accel_x));
+            etcd_client.set("/carstate/car" + std::to_string(i) + "/accel_Y", std::to_string(s->cars[i]->_accel_y));
+            etcd_client.set("/carstate/car" + std::to_string(i) + "/accel_Z", std::to_string(s->cars[i]->_accel_z));
         }
-    }
 
-    // The game state update loop is started and proceeds with a fixed frequency until the race has ended.
-    while(s->_raceState != RM_RACE_ENDED) {
-        // If the race is paused we wait without performing requests.
-        if (s->_raceState == RM_RACE_PAUSED)
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(SNAPSHOT_FREQUENCY));
-        }
-        else 
-        {
-            // If the race time on ETCD is greater than the one in local, this means that the local state is obsolete 
-            // and needs update. Otherwise, the state is updated and the GE proceeds with saving it in ETCD.
-            if (s->currentTime < std::stod(etcd_client.get("/state/currentTime").get().value().as_string()))
+        // The game state update loop is started and proceeds with a fixed frequency until the race has ended.
+        while(s->_raceState != RM_RACE_ENDED) {
+            // If the race is paused we wait without performing requests.
+            if (s->_raceState == RM_RACE_PAUSED)
             {
-                LoadState(ReInfo);
+                std::this_thread::sleep_for(std::chrono::milliseconds(SNAPSHOT_FREQUENCY));
             }
             else 
             {
                 SaveState(ReInfo->s);
+                std::this_thread::sleep_for(std::chrono::milliseconds(SNAPSHOT_FREQUENCY));
             }
-            std::this_thread::sleep_for(std::chrono::milliseconds(SNAPSHOT_FREQUENCY));
         }
-    }
-    // Clean up ETCD keys, before stopping the State Manager.
-    etcd_client.rm("/state/raceType");
-    etcd_client.rm("/state/totLaps");
-    etcd_client.rm("/state/ncars");
-    etcd_client.rm("/state/maxDammage");
-    etcd_client.rm("/state/deltaTime");
-    etcd_client.rm("/state/currentTime");
-    etcd_client.rm("/state/raceState");
-    for (int i = 0; i < s->_ncars; i++) {
-        etcd_client.rm("/carstate/car" + std::to_string(i) + "/pos_toStart");
-        etcd_client.rm("/carstate/car" + std::to_string(i) + "/pos_toMiddle");
-        etcd_client.rm("/carstate/car" + std::to_string(i) + "/pos_toRight");
-        etcd_client.rm("/carstate/car" + std::to_string(i) + "/pos_toLeft");
-        etcd_client.rm("/carstate/car" + std::to_string(i) + "/pos_type");
-        etcd_client.rm("/carstate/car" + std::to_string(i) + "/seg_id");
+            // Clean up ETCD keys, before stopping the State Manager.
+        etcd_client.rm("/state/raceType");
+        etcd_client.rm("/state/totLaps");
+        etcd_client.rm("/state/ncars");
+        etcd_client.rm("/state/maxDammage");
+        etcd_client.rm("/state/deltaTime");
+        etcd_client.rm("/state/currentTime");
+        etcd_client.rm("/state/raceState");
+        for (int i = 0; i < s->_ncars; i++) {
+            etcd_client.rm("/carstate/car" + std::to_string(i) + "/pos_toStart");
+            etcd_client.rm("/carstate/car" + std::to_string(i) + "/pos_toMiddle");
+            etcd_client.rm("/carstate/car" + std::to_string(i) + "/pos_toRight");
+            etcd_client.rm("/carstate/car" + std::to_string(i) + "/pos_toLeft");
+            etcd_client.rm("/carstate/car" + std::to_string(i) + "/pos_type");
+            etcd_client.rm("/carstate/car" + std::to_string(i) + "/seg_id");
+            etcd_client.rm("/carstate/car" + std::to_string(i) + "/pos_X");
+            etcd_client.rm("/carstate/car" + std::to_string(i) + "/pos_Y");
+            etcd_client.rm("/carstate/car" + std::to_string(i) + "/pos_Z");
+            etcd_client.rm("/carstate/car" + std::to_string(i) + "/pos_AX");
+            etcd_client.rm("/carstate/car" + std::to_string(i) + "/pos_AY");
+            etcd_client.rm("/carstate/car" + std::to_string(i) + "/seg_AZ");
+            etcd_client.rm("/carstate/car" + std::to_string(i) + "/vel_AZ");
+            etcd_client.rm("/carstate/car" + std::to_string(i) + "/vel_X");
+            etcd_client.rm("/carstate/car" + std::to_string(i) + "/vel_Y");
+            etcd_client.rm("/carstate/car" + std::to_string(i) + "/vel_Z");
+            etcd_client.rm("/carstate/car" + std::to_string(i) + "/accel_X");
+            etcd_client.rm("/carstate/car" + std::to_string(i) + "/accel_Y");
+            etcd_client.rm("/carstate/car" + std::to_string(i) + "/accel_Z");
+        }
+        etcd_client.set("/distributed_game_engine", "false");
     }
 }
 

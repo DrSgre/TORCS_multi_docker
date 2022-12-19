@@ -70,13 +70,13 @@ RUN make install
 
 WORKDIR /tmp
 
-ARG tvd=tvd
+ARG tvdh=tvdh
 
-RUN wget -O TORCS_multi_docker.zip https://github.com/DrSgre/TORCS_multi_docker/archive/master.zip
+RUN wget -O TORCS_multi_docker.zip https://github.com/DrSgre/TORCS_multi_docker/archive/state_test.zip
 
 RUN unzip TORCS_multi_docker.zip
 
-WORKDIR /tmp/TORCS_multi_docker-master/torcs-1.3.7-patched-redis
+WORKDIR /tmp/TORCS_multi_docker-state_test/torcs-1.3.7-patched-redis
 
 RUN ln -s /usr/include/opencv4/opencv2 /usr/include/opencv2
 

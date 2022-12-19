@@ -24,6 +24,7 @@
 */
 
 #include <iostream>
+#include <sw/redis++/redis++.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -51,6 +52,9 @@
 #define DRWD 0
 #define DFWD 1
 #define D4WD 2
+
+using namespace sw::redis;
+auto redis = Redis("tcp://172.20.0.2:6379");
 
 static void initTrack(int index, tTrack* track, void *carHandle, void **carParmHandle, tSituation *s);
 static void drive_mt(int index, tCarElt* car, tSituation *s);
