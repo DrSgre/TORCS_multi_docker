@@ -6,36 +6,380 @@
 \label{cap:development}
 %**************************************************************
 
-\intro{This chapter discusses the development done on the initial TORCS codebase, from the starting point introduced in the previous chapter. The discussion includes the \textbf{containerization} of the main TORCS system components, the introduction of \textbf{additional software} (e.g. ETCD) and the development of \textbf{new components} (e.g. the state management middleware).}\\
+\intro{This chapter discusses the development done on the TORCS codebase, including the evaluation of multiple projects as possible starting point. The discussion includes the \textbf{containerization} of the main TORCS system components, the introduction of \textbf{additional software} and the development of \textbf{new components}.}\\
 
 \section{Codebase definition}
-\intro{In this section we discuss some TORCS related projects found on GitHub, whose ideas provided an useful development basis or inspiration for our work.}
+Before beginning the work on the TORCS codebase, we performed an exploration and analysis of some TORCS related projects. In the following sections we discuss the two most relevant proposals we identified.
 
-\subsection{Patched TORCS 1.3.7}
-\intro{General description of this patched version of TORCS, which includes the \textbf{SCR client-server architecture} and the \textbf{screenpipe video streaming}. Here we can also discuss the reasons for choosing this project as starting point for the development of our work.}
+\subsection{Patched TORCS 1.3.7}\label{patched-torcs}
+This project takes inspiration from the previously mentioned SCR architecture, introducing significant enhancements to the original TORCS software. It presents a codebase which is mostly congruent with the original 1.3.7 (latest) version of TORCS. 
+\subsubsection{Original TORCS 1.3.7}
+The original codebase, in particular, includes the following high-level directories:
+\begin{itemize}
+	\item \textit{data}: containing useful data information about car models, tracks and UI elements;
+	\item \textit{doc}: containing general documentation related to the project functionalities and structure;
+	\item \textit{src}: containing the actual source code for the software, with its libraries and modules.
+\end{itemize}
+Inside the source code directory, we can find multiple lower-level directories related to the Game Engine modules and libraries, such as:
+\begin{itemize}
+	\item \textit{libs}: containing multiple TORCS utility libraries, as well as core components such as the \texttt{raceengineclient}, which is used to manage the main loop of the application;
+	\item \textit{drivers}: containing various AI implementations for handling robots (cars) behaviour. It also contains an "human" driver, with code related to user manual control of a car;
+	\item \textit{graphic}: containing code related to \texttt{ssgraph}, with elements to manage special effects, sound and general rendering of graphical elements;
+	\item \textit{simu}: containing code related to the management of the two possible types of simulation provided. This includes physic elements (e.g. collisions), but also data about the actuators functionalities used to drive the car (as described in section \ref{sensors-actuators});
+	\item \textit{track}: containing code for managing the build, structure and status of the racing tracks. 
+\end{itemize}
+The two main enhancements provided by this project are: an implementation of the \textit{SCR-server} for managing the client-server communication with the robots, and a patch which allows to send the game image to another application using \textit{IPC shared memory}.
+
+\subsubsection{SCR-server}
+The SCR-server implementation is composed of multiple files related to the management of the robot's sensors (e.g. mathematical computation of the readings) and a single file dedicated to define the actual behaviour of the server in the context of state-action communication. In particular, the server provides three main functions to: \textit{initialize} a new race, \textit{drive} during the race and \textit{end} the current race. In order to start a new race, the component operates as follows:
+\begin{enumerate}
+	\item binds a listen socket to a specific port (e.g. 3001);
+	\item waits for clients to connect and identifies them;
+	\item initializes the sensors for sending information to the client robots.
+\end{enumerate}
+The function dedicated to driving the robot is more complex, since in manages a communication loop with the various remote drivers, operating as follows:
+\begin{enumerate}
+	\item sends an identification message to each client using a socket;
+	\item updates the related sensors;
+	\item builds a string representing the current game state;
+	\item sends the state string to the remote clients;
+	\item waits (with a timeout) for a response action from the clients;
+	\item sets the control commands to the input action received and computes the next game state;
+	\item if no input is received and the timeout is reached, the old commands are used instead, to compute the next game state.
+\end{enumerate}
+This configuration is particularly interesting for the purpose of our work, since it manages to successfully decouple the driver component from the main TORCS executable and also to implement the communication of the game state without the usage of pointers.
+
+\subsubsection{screenpipe component}
+As previously mentioned, this project tries to introduce the possibility of remotely streaming the game image to a different application, using a dedicated patch. This patch introduces two components, one for obtaining the game image data and serialize it (\texttt{IPC\_command.cpp}), and one for remotely receiving and processing such data (\texttt{screenpipe\_client.py}). As suggested by the files extensions, the components are written in C++ ad Python respectively. \\ \\
+In particular, the software and libraries used to accomplish such task are the following ones:
+\begin{itemize}
+	\item \textit{ZeroMQ}: which is a messaging library for distributed systems, used in both screenpipes's streaming components implement a socket-based communication. The peculiarity of the socket objects created using this library is the possibility to handle asynchronous messages;
+	\item \textit{OpenCV}: used as a real time artificial vision library, it is able to both obtain the image from the main game display (in the form of data) and also to reconstruct this same game image, based on the data transferred using the socket-based communication;
+	\item \textit{System V IPC}: which is a package able to provide shared memory between multiple processes on the same system, allowing them to share parts of their virtual space. In this context of application, it is used to allow the game image obtained from the main TORCS executable to be transferred to the local streaming component, run in a different executable;
+	\item \textit{Google protocol buffers}: used as a data format for serialization and exchange of streaming-related data.
+\end{itemize}
+While providing an reasonable starting point for implementing streaming communication, this configuration is incomplete in the version provided by the original project. As such, in our work, we elaborate more on this proposal, actually implementing a distributed version of game image streaming.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\linewidth]{"immagini/Software development/patched-torcs-architecture"}
+	\caption[Proposed streaming architecture]{Proposed streaming architecture}
+	\label{fig:patched-torcs-architecture}
+\end{figure}
+
 
 \subsection{PyTorcs-docker}
-\intro{General description of the PyTorcs-docker project, including its development of the original SCR client-server architecture, the usage of nvidia-docker and of the SnakeOil library. We also disccuss the reasons for not choosing this project as a starting point, which may be summed up as:
-	\begin{itemize}
-		\item this project had an already clear development direction and removed multiple original TORCS functionalities for that purpose;
-		\item this project acted as a Python wrapper of the original TORCS code, introducing a not-needed layer of complexity for our work;
-		\item while providing interesting features, nvidia-docker is not compatible with docker-compose, which could impose techical limitations for our project development.
-\end{itemize}}
+This projects is a further development, conducted starting from the previously discusses Patched TORCS 1.3.7 project. More specifically, this proposal aims to implement a Python wrapper of the TORCS software, instantiable on Docker and using System V IPC to manage the game state. \\ \\
+In order to efficiently run graphic components on Docker containers, this project proposes the usage of \textit{NVIDIA Docker containers}, which have the peculiar characteristic of being GPU accelerated. They are, however, not simple to implement on any system, since they require access to the GPU hardware. Moreover, as of now, they are not compatible with \textit{docker-compose}, which is also an interesting tool for implementing systems composed of multiple Docker containers, like in our work. \\ \\
+Similarly to the SCR project, this proposal presents an architecture where the driver is decoupled from the main TORCS executable. However, the PyTorcs architecture also manages to instantiate the executable into a dedicated Docker container, thus taking a step further in the same direction of our work. \\ \\
+\begin{figure}
+	\centering
+	\includegraphics[width=0.9\linewidth]{"immagini/Software development/PyTorcs architecture"}
+	\caption[Representation of the PyTorcs architecture.]{Representation of the PyTorcs architecture.}
+	\label{fig:pytorcs-architecture}
+\end{figure}
+As we can see in figure \ref{fig:pytorcs-architecture}, in order to share with the clients the information of the Render engine, the system makes use of \textit{System V IPC} shared memory in a read-only manner (attach-detach, no semaphores). \\ 
+Using the \textit{SnakeOil3} library, developed for interfacing with TORCS using server extensions, this architecture is able to setup an UPD connection on port 3001 to the SCR-server and perform a constant state-action communication.
+
+\subsection{Codebase evaluation}
+The PyTorcs-docker project can be considered an evolution of the Patched TORCS 1.3.7 project, with some interesting developments that make use of approaches similar to what we intend to accomplish in our work (e.g. decoupling of modules, usage of Docker). \\
+There are, however, some important aspects of this project that discourage its choice as a starting point for our work:
+\begin{itemize}
+	\item introducing a Python wrapper on top of the original TORCS architecture can be problematic for modularization operations, since it could introduce an additional level of complexity when trying to translate the original Game Engine functionalities to a containerized virtual environment;
+	\item the usage of System V IPC shared memory and sockets for game state/image is not necessarily the ideal approach in a distributed virtual environment with multiple containers;
+	\item the implementation of NVIDIA Docker containers conflicts with the docker-compose tool, which is particularly interesting for the purpose of our work;
+	\item this project removed multiple TORCS core functionalities (e.g. main menu) for the sake of simplicity. This can limit the scope of our project, which aims to modularize and containerize the TORCS Game Engine as a complete software, with all its single components.
+\end{itemize} 
+As such, considering the interesting SCR approach to TORCS drivers decoupling, the final decision is to reference the Patched TORCS 1.3.7 codebase as a starting point for our project development.
 
 \section{Containerization of TORCS}
-\intro{In this section we discuss the initial transition of TORCS from a local Game Engine, towards its implementation with Docker containers, starting from its patched version. This includes the \textbf{SCR client-server configuration} with two different containers and references to \textbf{X11} for the local display of the game image coming from the container.}
+Starting the development from the Patched TORCS 1.3.7 codebase, while the driver module is already decoupled from the main executable, no Docker image is included in the proposed architecture. \\
+As such, we develop a new Docker image for the TORCS executable, with a dedicated Dockerfile that can be referenced to build a TORCS Docker container using the command \texttt{docker build}. This Docker image is based on the code provided at the project repository, which we call \href{https://github.com/DrSgre/TORCS_multi_docker}{"TORCS\_multi\_docker"}. \\ \\
+The Dockerfile alone, however, is not able to directly import environment variables during the launch of the container. In order to circumvent this limitation, we introduce the \texttt{docker-compose} tool mentioned in section \ref{docker-compose}, which also allows us to run multiple containers at the same time and set cross-container configurations. \\ \\
+The possibility to import custom environment variables into the application container is particularly important for the implementation of \textit{X11 (X Window System)}. This architecture-independent system can be used for remote graphical user interfaces and input device capabilities, which are both paramount features required by a virtual container running an interactable video game. More specifically, launching the TORCS Docker container will make use of the local display in order to render the video game image for the user, provided that the required permissions have been granted using the command: \texttt{sudo xhost local:root}. \\ \\
+As previously mentioned, in order to make use of the SCR architecture we require a different executable for the client running the driver module. Additionally, the client must be run on an environment that is separated from the main executable. As such, we develop a Docker image dedicated to this SCR client, referencing the code provided by the SCR project for the \href{https://sourceforge.net/projects/cig/files/SCR\%20Championship/Client\%20C\%2B\%2B/}{C++ Client}. \\ \\
+Different Docker containers, however, cannot by default communicate with each other, as they are completely separate virtual environments. As such, using \texttt{docker-compose}, we setup a \textit{Docker network}, which creates a bridge between the connected containers, allowing them to exchange data. \\ \\
+Finally, the Distributed TORCS architecture presented in figure \ref{fig:development-1} is able to launch the TORCS software application, render its game image on the local display and allow a second container to connect to a "quick race" instance of TORCS.
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.8\linewidth]{"immagini/Software development/Development-1"}
+	\caption[Distributed TORCS architecture - phase 1.]{Distributed TORCS architecture - phase 1.}
+	\label{fig:development-1}
+\end{figure}
+ 
 
-\section{Implementation and improvement of ETCD}
-\intro{In this section we discuss the \textbf{implementation} of ETCD as a Docker container, its \textbf{configurations} and the \textbf{improvements} introduced in order to adapt it for the purpose of the current project. Despite being triggered by the results of the experiments we performed, such experiments are only briefly referenced in this section, as their are discussed in-depth in later sections.}
+\section{Distributed databases implementation}
+In order to allow the Game Engine modules located in different containers to communicate with each other, a dedicated mean of communication is required. In the implementation proposed by the Patched TORCS 1.3.7 project, the main TORCS executable and the SCR client communicate through a socket-based connection. This is a reasonable choice for simple action-state exchanges, however when multiple modules are accessing and modifying the same shared game state this approach might not be ideal. Inconsistency in the data read by different modules can, in fact, impact the video game functionalities. As such, we decide to implement data communication between the modules using a \textit{shared storage distributed database}. In this context, we evaluate two different solutions, considered to both to be fitting for the purpose of our work, namely: \textit{ETCD} and \textit{Redis}. \\ \\
+Both solutions are provided with Docker images (\href{https://hub.docker.com/r/bitnami/etcd}{ETCD image} and \href{https://hub.docker.com/_/redis}{Redis image}) that can be freely implemented into applications, as such the Docker integration is simple and straightforward, provided that said images are configured to be connected to the same Docker network as the other containers. \\ \\
+Nonetheless, in order to interact with the distributed databases instances from the TORCS application, we also require APIs and libraries dedicated to such purpose. As such, we decide to compile and link into TORCS both: \href{https://github.com/etcd-cpp-apiv3/etcd-cpp-apiv3}{etcd-cpp-apiv3} and \href{https://github.com/sewenew/redis-plus-plus}{redis-plus-plus}. In order to separate the two distributed databases implementations, we have two different and dedicated TORCS applications in our project repository. \\ \\
+The results of initial experiments exposed some performance issues with ETCD, mostly caused by the local storage of the history of all the keys that have been changed during execution, alongside multiple expensive DB snapshots. As such, we have applied some changes to the original ETCD application, in order to remove said expensive operations and correct some memory management issues arisen in our application context. The new ETCD Docker image referenced in the project is stored in our repository.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.8\linewidth]{"immagini/Software development/Development-2"}
+	\caption[Distributed TORCS architecture - phase 2.]{Distributed TORCS architecture - phase 2.}
+	\label{fig:development-2}
+\end{figure}
+
+\subsection{OrbitDB}
+An additional distributed DB we considered for implementation is OrbisDB. This system is a decentralized database that uses the InterPlanetary File System (IPFS) as its storage layer. It is designed to be a lightweight distributed database, which requires no central authority to operate. \\ \\
+OrbitDB stores data in a database structure that is similar to a key-value store or a document store. Each database is associated with a unique address, and data is stored in a series of append-only logs that are replicated across the IPFS network. This allows multiple users to access and modify the database concurrently, without the need for a central server. \\ \\
+OrbitDB is implemented in JavaScript and designed to be integrated into applications developed using this language (either using Node.js or native). This was considered to be strong limitation, in our context of application, since TORCS is strictly developed in C++, with no way to interact with such system. \\ \\
+As such, this solution was discarded, in favour of ETCD and Redis distributed databases.
+
+\subsection{Distributed database clusters}\label{ddb-clusters}
+The benefits of Redis Eventual Consistency mechanism, when compared with ETCD Strong Consistency mechanism, are not quite evident in a stand-alone configuration of these distributed databases. The lack of node replicas, in fact, prevents the need for replication operations, which generally slow down the performance of Strong Consistency mechanisms. \\
+As such, since this core difference in functionality is not present, and the two systems end up working in a similar manner. \\ \\
+In order to more clearly highlight the benefits of the Redis distributed database, we implemented a 3-members cluster version of both Redis and ETCD, integrating it with our TORCS distributed architecture.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.8\linewidth]{"immagini/Software development/ETCD cluster"}
+	\caption[ETCD 3-members cluster configuration.]{ETCD 3-members cluster configuration.}
+	\label{fig:etcd-cluster}
+\end{figure}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.8\linewidth]{"immagini/Software development/Redis cluster"}
+	\caption[Redis 3-members cluster configuration.]{Redis 3-members cluster configuration.}
+	\label{fig:redis-cluster}
+\end{figure}
+As we can see in Figure \ref{fig:etcd-cluster}, the requests in the ETCD cluster implementation can be sent to any of the ETCD containers, which directly respond to read requests and redirect write requests to the Leader. The choice of which container to send the request is delegated to the ETCD C++ API, which uses a Round Robin (RR) strategy to balance out the workload between the instances. \\
+In Figure \ref{fig:redis-cluster}, on the other hand, we see how all the requests are directed towards the Redis Master node, which immediately responds to the client upon completion.
 
 \section{Game image streaming}
-\intro{In this section we discuss the initial implementation of the \textbf{screenpipe} game image streaming, the corrections introduced in order for it to work as expected and the improvements we introduced. These improvements will reference mainly the \textbf{introduction of ETCD} and the \textbf{refactoring}, which removed the need for IPC shared memory and the data serialization.}
+As previously mentioned in section \ref{patched-torcs}, another interesting functionality implemented in the Patched TORCS 1.3.7 project is the possibility to remotely stream the game image to another display. \\ \\
+This functionality is interesting for testing the performance and capabilities of our means of communication (a.k.a. the distributed databases). As such, we proceed with turning the previously socket-based communication into a data exchange performed using the shared memory provided by ETCD/Redis. In this context, the serialized data of the game image is stored into a specific key of the database, while the remote screenpipe component is notified upon each key change and is able to get such information through a read request. \\ \\
+Considering the weight of the data information used to describe a complete game image (multiple MBs), it is to be expected that the storage operation is quite expensive for a distributed database. \\
+In fact, while the refactoring operation was successful, the streaming performance of the resulting system are not satisfactory, with a very low display framerate (<1 fps). \\ \\
+The reason for this low performance lies in the remote client component responsible for rendering the received image, which is not fit for efficiently perform such task. The component is, in fact, incomplete and developed using Python, which is not the best choice for applications required to process large amounts of data swiftly. Moreover, the sending component also performs unnecessary expensive operations, such as serialization and transfers of data between executables using System V IPC shared memory. \\ \\
+As such, we perform a complete refactoring of both streaming components (sender and receiver), developing them in C++ and significantly reducing the amount of elaboration operations. The result of this process is a much more efficient streaming functionality, which, despite exchanging data using a distributed database, is able to provide reasonable performance (about 30 fps). \\ \\
+Still, considering the excessively large amount of network communication and bandwidth required to implement such functionality at its full potential, we limit the image streaming framerate to 10 frames-per-second.
 
-\section{ETCD state-action communication}
-\intro{In this section we discuss the introduction of ETCD as an alternative to socket-based communication for the interaction between client and server in the \textbf{SCR configuration}. More specifically, we discuss how it was possible to allow for the exchange of \textbf{states and actions} between the client and the server using \textbf{ETCD keys}.}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.9\linewidth]{"immagini/Software development/Development-3"}
+	\caption[Distributed TORCS architecture - phase 3.]{Distributed TORCS architecture - phase 3.}
+	\label{fig:development-3}
+\end{figure}
+
+\subsection{ETCD changes for resource management}\label{etcd-evolution}
+One of the main problems arisen during the implementation of ETCD is the amount of resources needed for the storage of the history of all keys changed during the system execution. This data is stored into the hard drive and memory of the system where ETCD is run. As such, in situations where changes are frequent and the key history data rapidly increases in volume, the resources available can prove not to be sufficient for handling the system operations. \\ \\
+This is particularly evident in our context of execution, where the game image streaming, alongside other functionalities later discussed, cause a constant flux of large-sized requests. \\
+As such, we operated some changes to the original ETCD software, by:
+\begin{itemize}
+	\item removing the functionality which caused the saving and update of WAL files, used for snapshotting the database;
+	\item instruct ETCD to create a new WAL folder at each database startup, restarting the database from a standard empty condition.
+\end{itemize}
+This was considered to be in line with the needs of our project, considering that long term storage of information was not required in this context. While this change greatly reduced the size of the data stored on the disk, the memory resources were still not managed efficiently enough. As such, we made use of two additional built-in ETCD functionalities: \textit{automatic periodic compaction} and \textit{defragmentation}. \\
+Since the ETCD defragmentation can only be requested manually, we set up a custom script to perform it at certain intervals of time. \\ \\
+Finally, after noticing a delay between the end of the defragmentation operations and the actual freeing of memory resources, we assumed that the system memory management was actually delegated to the Go Garbage Collector. As such, in order to see an immediate effect on the available resources after a defragmentation, we introduced an additional explicit call to the Go Garbage Collector, at the end of the related function. \\ \\
+In the end, we managed to keep the actual DB in-memory size within 300 MB, during TORCS execution, which was deemed reasonable to guarantee not to reach resource saturation.
+
+\section{Distributed state-action communication}\label{DDB-SA-communication}
+As discussed in the previous section, we managed to verify the possibility of replacing socket-based communication between TORCS system components, with a data exchange carried out through the shared memory of a distributed database. \\
+We now proceed with performing a similar replacement operation also in the context of the SCR state-action communication that happens between the TORCS main executable and the remote driver. \\ \\
+In this context, as described in section \ref{scr}, the SCR-server broadcasts a string representing the game state to all connected peers, awaits their response action and then processes the new game state based on the responses. This whole communication process can be implemented by writing both the game state string and the response action string on different keys in the distributed database, and have the components continuously check for key changes. \\ \\
+The result of this implementation is a new SCR client-server architecture, providing the same remote driving functionalities as the original system, but leveraging the characteristics of a distributed database.
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.9\linewidth]{"immagini/Software development/Development-4"}
+	\caption[Distributed TORCS architecture - phase 4.]{Distributed TORCS architecture - phase 4.}
+	\label{fig:development-4}
+\end{figure}
+
 
 \section{Music Player library}
-\intro{In this section we discuss the study behind the possibility of decoupling some of the TORCS libraries, which lead to the decision of focusing on the \textbf{Music Player library}, and how this operation was carried out.}
+Up until this point, in the development process, we focused on containerizing Game Engine modules (e.g. AI driver) or introduce new functionalities (e.g. distributed databases, remote streaming). The TORCS software, however, is also composed of multiple libraries which may benefit from containerization. \\
+These libraries, which we previously mentioned in section \ref{patched-torcs}, are smaller sized with respect to complete TORCS modules. However, they are still responsible for managing core functionalities of the system (e.g. music). \\ \\
+Before beginning the decoupling operations, we perform a preliminary analysis on the quantity of external references and dependencies present in some of the libraries. In fact, as the number of references increases, the complexity of the decoupling operation increases as well, considering the side effects on the external referencing components that must also be adapted. \\ \\
+The result of this analysis highlights the \textit{musicplayer} library as a reasonable candidate for containerization. This component is dedicated to managing the enabling and disabling of the music in the game menu, and presents no dependency towards other components, making it quite simple to implement as an independent executable. \\ \\
+Considering the basic logic exposed by this component's methods, the implementation was realized based on the original socket-based communication between SCR client and server, where:
+\begin{enumerate}
+	\item the main TORCS executable is launched and listen for messages from the musicplayer on a specific socket port;
+	\item the musicplayer component is launched and sends an identification message on a specific socket port, allowing the TORCS executable to identify it and proceed;
+	\item the musicplayer then processes any requests for enabling/disabling the menu music, coming from the TORCS executable on the same socket used for identification.
+\end{enumerate}
+Using this configuration is possible to implement the same original functionalities of the TORCS musicplayer library, as a distributed component.
 
-\section{State Manager Middleware}
-\intro{In this section we discuss the development of the State Manager Middleware, referencing the works and ideas mentioned in the \textbf{Related Works} section of chapter 1, and providing detailed technical information about the structure of the developed component.}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.95\linewidth]{"immagini/Software development/Development-5"}
+	\caption[Distributed TORCS architecture - phase 5.]{Distributed TORCS architecture - phase 5.}
+	\label{fig:development-5}
+\end{figure}
+
+
+\section{State Manager Middleware}\label{state-manager-middleware}
+One of the main goals of our development is to be able to effectively distributed information about the TORCS game state among its different decoupled components. However, during our experiments, which we will discuss in the following chapters, we identified a problem in implementing this game state distribution with the same approach as in other development phases (e.g. game image streaming, state-action communication). \\ \\
+In previous contexts the processing time required by the distributed databases to elaborate the requests was considered to be reasonable, with a low impact on the system performance. However, this is not the case in the context of TORCS internal game state management, where certain system components (e.g. graphic module, simulation module) present the requirement for rapid access to such data. In fact, the original implementation with C++ pointers, while centralized, is designed to allow for efficient game state data access, even between different system components. \\ \\
+In order to both allow for distribution of game state data and prevent significant impact on the system performance, we consider a different approach. \\
+We develop a new component, dedicated to managing the storage of the TORCS game state into the distributed database with a set update frequency, independent from the original game loop. This component is also meant to be able to distinguish the nature of the specific game state fields to be stored, depending on the inconsistency tolerance of the user and the frequency of specific values changes, managing the storage operations accordingly. \\ \\
+The final goal is to have a background-running component, which is able to independently store or update the current game state, and to provide a reasonable degree of synchronization between multiple distributed TORCS Game Engine states.
+
+\subsection{Technical choices}
+This component, which we will call \textit{State Manager middleware}, is run as a different thread, detached from the main TORCS executable, but running in its same environment (Docker container). \\
+It makes use of \texttt{etcd-cpp-apiv3} (or \texttt{redis-plus-plus}) to be able to connect to the distributed database container, and perform read/write operations. \\
+Moreover, it also includes the \texttt{chrono} and \texttt{thread} libraries, in order to introduce thread sleep lasting less than a second. \\ \\
+The update frequency has been set to 100 ms, considering the balance between inconsistency tolerance and the impact on the distributed database performance of frequent requests. Additional tests, with different frequency levels, can be conducted to find the best fitting value for specific system implementations. \\ \\
+The component is initialized through its \textit{StartStateManager} method, which is called during the instantiation of a dedicated thread at the start of a new race. This is done in order to allow for background execution, without influencing the TORCS system performance. \\ \\
+We also distinguish between \textit{static game state fields}, which are variables that compose the game state that are not updated after a race has been started, and \textit{dynamic game state fields}, which are variable of the game state that are frequently updated during race execution.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.9\linewidth]{"immagini/Software development/Game state manager"}
+	\caption[State Manager middleware architecture.]{State Manager middleware architecture.}
+	\label{fig:game-state-manager}
+\end{figure}
+
+\subsection{Component methods}
+The State Management middleware provides three methods:
+\begin{itemize}
+	\item \textit{StartStateManager}: accessible from other modules and taking \texttt{tRmInfo} (full game state data) as input parameter, this method performs the initialization of the \texttt{statemanager} component and its update loop;
+	\item \textit{SaveState}: only accessible inside the \texttt{statemanager} component and taking the current game state (\texttt{tSituation}) as input parameter, this method performs the storage on the distributed DB of the relevant game state fields and car state fields (for all cars);
+	\item \textit{LoadState}: only accessible inside the \texttt{statemanager} component and taking \texttt{tRmInfo} as input parameter, this method reads from the distributed DB the relevant game state fields and car state fields (for all cars), updating the local state accordingly.
+\end{itemize}
+We can now elaborate more on each method's elaboration logic.
+
+\subsubsection{StartStateManager}
+This method operates with the following logic:
+\begin{enumerate}
+	\item it checks whether a race is running by verifying if the \texttt{/state/currentTime} key is set in the distributed DB;
+	\begin{enumerate}
+		\item if it is, the following static game state fields are read from the distributed DB and set in the local game state:
+		\begin{itemize}
+			\item \texttt{/state/raceType}
+			\item \texttt{/state/totLaps}
+			\item \texttt{/state/ncars}
+			\item \texttt{/state/maxDammage}
+		\end{itemize}
+		\item otherwise, the following static game state fields are written into the distributed DB:
+		\begin{itemize}
+			\item \texttt{/state/raceType}
+			\item \texttt{/state/totLaps}
+			\item \texttt{/state/ncars}
+			\item \texttt{/state/maxDammage}
+		\end{itemize}
+		The following dynamic game state fields are written into the distributed DB, to allow for later comparisons:
+		\begin{itemize}
+			\item \texttt{/state/deltaTime}
+			\item \texttt{/state/currentTime}
+			\item \texttt{/state/raceState}
+		\end{itemize}
+		The following dynamic car state fields are written into the distributed DB, for each car \textit{"i"} to allow for later comparisons:
+		\begin{itemize}
+			\item \texttt{/carstate/car[i]/pos\_toStart}
+			\item \texttt{/carstate/car[i]/pos\_toMiddle}
+			\item \texttt{/carstate/car[i]/pos\_toRight}
+			\item \texttt{/carstate/car[i]/pos\_toLeft}
+			\item \texttt{/carstate/car[i]/seg\_id}
+			\item \texttt{/carstate/car[i]/pos\_X}
+			\item \texttt{/carstate/car[i]/pos\_Y}
+			\item \texttt{/carstate/car[i]/pos\_Z}
+			\item \texttt{/carstate/car[i]/pos\_AX}
+			\item \texttt{/carstate/car[i]/pos\_AY}
+			\item \texttt{/carstate/car[i]/pos\_AZ}
+		\end{itemize}
+	\end{enumerate}
+	\item the game state update loop is started, performing a cycle each 100 ms;
+	\item if the race is paused, the \texttt{statemanager} waits without performing requests. Otherwise, it checks whether the distributed DB \texttt{/state/currentTime} is different from the local value;
+	\begin{enumerate}
+		\item if the remote value is greater than the local one, this means that the local GE values are outdated and the \textit{LoadState} method is called;
+		\item if the remote value is lower than the local one, this means that the local GE is able to provide updated state values to the distributed DB, so the \textit{SaveState} method is called.
+	\end{enumerate}
+	\item after the Load/Save operations have been performed, the thread sleeps for 100 ms and then starts a new cycle.
+\end{enumerate}
+Once the race has ended, all the distributed DB keys are removed as a clean up operation.
+
+\subsubsection{StartStateManager}
+This method operates with the following logic:
+\begin{enumerate}
+	\item for each dynamic game state field, the remote value is checked and, if different from the local one, it is updated through a write request;
+	\item for each dynamic car state field of each car, the remote value is checked and, if different from the local one, it is updated through a write request;
+	\begin{itemize}
+		\item the following values are related to the position of the car with respect to the specific track segment:
+		\begin{itemize}
+			\item \texttt{/carstate/car[i]/pos\_toStart}
+			\item \texttt{/carstate/car[i]/pos\_toMiddle}
+			\item \texttt{/carstate/car[i]/pos\_toRight}
+			\item \texttt{/carstate/car[i]/pos\_toLeft}
+			\item \texttt{/carstate/car[i]/seg\_id}
+		\end{itemize}
+		\item the following values are related to the position of the car with respect to the global position:
+		\begin{itemize}
+			\item \texttt{/carstate/car[i]/pos\_X}
+			\item \texttt{/carstate/car[i]/pos\_Y}
+			\item \texttt{/carstate/car[i]/pos\_Z}
+			\item \texttt{/carstate/car[i]/pos\_AX}
+			\item \texttt{/carstate/car[i]/pos\_AY}
+			\item \texttt{/carstate/car[i]/pos\_AZ}
+		\end{itemize}
+	\end{itemize}
+\end{enumerate}
+
+\subsubsection{LoadState}
+This method operates with the following logic:
+\begin{enumerate}
+	\item for each dynamic game state field, the local value is checked and, if different from the one in remote value, it is updated accordingly;
+	\item for each dynamic car state field of each car, the local value is checked and, if different from the remote one, it is updated accordingly;
+	\begin{itemize}
+		\item the following values are related to the position of the car with respect to the specific track segment:
+		\begin{itemize}
+			\item \texttt{/carstate/car[i]/pos\_toStart}
+			\item \texttt{/carstate/car[i]/pos\_toMiddle}
+			\item \texttt{/carstate/car[i]/pos\_toRight}
+			\item \texttt{/carstate/car[i]/pos\_toLeft}
+		\end{itemize}
+		\item the value related to segment id (\texttt{seg\_id}) is used to iterate on the double linked list present in the local car state, setting the current track segment depending on the id read from the distributed DB.
+		\item the following values are related to the position of the car with respect to the global position:
+		\begin{itemize}
+			\item \texttt{/carstate/car[i]/pos\_X}
+			\item \texttt{/carstate/car[i]/pos\_Y}
+			\item \texttt{/carstate/car[i]/pos\_Z}
+			\item \texttt{/carstate/car[i]/pos\_AX}
+			\item \texttt{/carstate/car[i]/pos\_AY}
+			\item \texttt{/carstate/car[i]/pos\_AZ}
+		\end{itemize}
+	\end{itemize}
+	\item in order for the car state updates to be reflected in the game simulation, the \textit{\_reSimItf.config()} method is called.
+\end{enumerate}
+
+\subsection{Final remarks}
+With the introduction of this component into TORCS, we can see at execution time how if we:
+\begin{enumerate}
+	\item launch an instance of distributed DB.
+	\item run a race in a TORCS executable for a certain amount of time.
+	\item pause/stop the race.
+	\item launch a race on a second TORCS executable.
+\end{enumerate}
+The \texttt{statemanager} on the second instance immediately synchronizes with the values stored into the distributed DB, updating the game time and teleporting the car to the position read from distributed DB.
+With some additional enhancements (e.g. add velocity and acceleration car state fields to distributed DB), it could be possible to implement a synchronization mechanism able to work in a distributed Game Engine environment.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.95\linewidth]{"immagini/Software development/Development-6"}
+	\caption[Distributed TORCS architecture - phase 6.]{Distributed TORCS architecture - phase 6.}
+	\label{fig:development-6}
+\end{figure}
+
+\subsection{Additional development}\label{state-manager-next}
+In order to verify the possibility to implement constant game state distribution, between multiple TORCS instances, we perform some changes to the original State Manager configuration. More specifically, we introduce the following modifications:
+\begin{itemize}
+	\item we increase the update frequency from 100 ms to 1 ms (sleep time);
+	\item we allow only the first TORCS instance launched to write on the distributed database, while the TORCS following instances are allowed only to read from the database;
+	\item the read-only TORCS instances do not perform local simulation updates, as their state is updated by the State Manager.
+\end{itemize}
+We also add new car state fields for the storage operations, including speed-related ones:
+\begin{itemize}
+	\item \texttt{/carstate/car[i]/vel\_X}
+	\item \texttt{/carstate/car[i]/vel\_Y}
+	\item \texttt{/carstate/car[i]/vel\_Z}
+	\item \texttt{/carstate/car[i]/vel\_AZ}
+\end{itemize}
+And acceleration-related ones:
+\begin{itemize}
+	\item \texttt{/carstate/car[i]/acc\_X}
+	\item \texttt{/carstate/car[i]/acc\_Y}
+	\item \texttt{/carstate/car[i]/acc\_Z}
+\end{itemize}
+With this configuration, we are able to have multiple distributed instances of TORCS reproducing the in-game situation of the first TORCS instance, without any computation being performed by the game engines themselves. Moreover, the system is able to update the remote state of up to 10 cars in the same race.

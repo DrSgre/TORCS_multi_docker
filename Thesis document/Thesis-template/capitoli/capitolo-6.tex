@@ -6,67 +6,388 @@
 \label{cap:experimental-methodology}
 %**************************************************************
 
-\intro{This chapter discusses the single experiments conducted during the project, providing their \textbf{purpose} and \textbf{expected theoretical outcome. Moreover, this chapter introduces the research methods and design that were used to conduct the studies, both for the \textbf{qualitative} and the \textbf{quantitative} experiments.}}
+\intro{This chapter discusses the single experiments conducted during the project, providing their \textbf{purpose} and \textbf{expected theoretical outcome}. Moreover, this chapter introduces the research methods and design that were used to conduct the studies, both for the \textbf{qualitative} and the \textbf{quantitative} experiments.}
 
 \section{Qualitative experiments}
-\intro{The following sections present qualitative experiments, performed in order to obtain a general idea about the effects on the system of specific development decisions. These experiments can provide general numerical data, which is generally \textbf{not} supported by multiple misurations or graphical representations.}
+In the following sections we present the qualitative experiments, performed during the development of our project, in order to obtain a general idea about the effects on the system of specific software integrations or configurations. More specifically, we discuss the various data collection and analysis methods we used for these experiments and their expected theoretical outcome. \\ \\
+In the end, these experiments can provide us general numerical data, which is often not supported by multiple measurements or graphical representations, but meaningful enough to gain an insight on the positive/negative effects of technical decisions. \\ \\
+The software development direction in our project heavily relies on the outcomes of these experiments.
+
+\subsection{X11 forwarding performance assessment} \label{X11-forwarding-assessment-desc}
+Considering the initial status of the project, with a single image running TORCS in command line mode, one of the first steps of the development is to allow the display of the game image even when running it on a Docker container. \\ \\
+The most common approach to this task involves the use of X11 (X Window System) with \textit{X11 forwarding}. This functionality, in particular, allows users to remotely access graphical user interface (GUI) applications on a remote server. On a practical level, the users are able to run GUI application on a remote machine, while displaying the application window on the local machine. \\
+This technology, however, presents some drawbacks in terms of performance when managing remote image streaming over networks. As such, we decide to verify whether X11 can lead to bottlenecks, in our system. \\ \\
+Taking into account the network latency present between two remote machines, we expect to be able to identify a noticeable degradation on terms of graphics framerate, between the local and the remote game image, using this technology. 
+
+\subsubsection{Methods \& Configurations}
+In order to verify whether X11 can lead to bottlenecks, we prepare two machines connected to the same local network: a \textit{Desktop PC} and a \textit{Notebook PC}. The specifications of both machines are described as follows:
+\definecolor{lightRowColor}{HTML}{fafafa}
+\definecolor{darkRowColor}{HTML}{ffcccb}
+
+\def\arraystretch{1.75}
+\rowcolors{2}{lightRowColor}{darkRowColor}
+\begin{longtable}{ 
+		>{\centering}p{0.35\textwidth} 
+		>{\centering}p{0.65\textwidth}}
+	
+	
+	\caption{Desktop machine specifications} \label{desktop-machine-specifications} \\
+	\coloredTableHead
+	\textbf{\color{white}Component} & 
+	\centering\textbf{\color{white}Description}
+	\endfirsthead
+	
+	\rowcolor{white}\caption[]{(continue)}\\
+	\coloredTableHead 
+	\textbf{\color{white}Component} &
+	\centering\textbf{\color{white}Description}
+	\endhead
+	
+	\textbf{Operating system} & Ubuntu 20.04.4 LTS - 64 bit \cr
+	\textbf{CPU} & AMD Ryzen 5 2600 six-core processor x12 \cr
+	\textbf{GPU} & NVIDIA GeForce GTX 1060 6 GB \cr
+	\textbf{RAM} & 16 GB DDR4 \cr
+	\textbf{Storage Memory (HDD)} & 1.3 TB \cr
+\end{longtable}
+
+\def\arraystretch{1.75}
+\rowcolors{2}{lightRowColor}{darkRowColor}
+\begin{longtable}{ 
+		>{\centering}p{0.35\textwidth} 
+		>{\centering}p{0.65\textwidth}}
+	
+	\caption{Notebook machine specifications} \\
+	\coloredTableHead
+	\textbf{\color{white}Component} & 
+	\centering\textbf{\color{white}Description}
+	\endfirsthead
+	
+	\rowcolor{white}\caption[]{(continue)}\\
+	\coloredTableHead 
+	\textbf{\color{white}Component} &
+	\centering\textbf{\color{white}Description}
+	\endhead
+	
+	\textbf{Operating system} & Ubuntu 20.04.4 LTS - 64 bit \cr
+	\textbf{CPU} & Intel Core i3-6006U (2.0 GHz) \cr
+	\textbf{GPU} & NVIDIA GeForce 940MX 2 GB \cr
+	\textbf{RAM} & 4 GB DDR4 \cr
+	\textbf{Storage Memory (HDD)} & 500 GB \cr
+\end{longtable}
+
+This experiment is first conducted using an \textit{SSH based connection} which, as per design, encrypts all data transferred using the channel. To allow such connection, with the X11 forwarding feature, we perform the following preliminary configuration operations:
+\begin{enumerate}
+	\item install \texttt{openssh-server} on the Notebook PC, which allows remote clients to connect to the local machine and render on their display the applications GUI;
+	\item install \texttt{openssh-client} on the Desktop PC, which allows the local machine to connect to other machines, provided that they have \texttt{openssh-server} installed;
+	\item enable the usage of \textit{Indirect GLX}, from the Window Manager configurations of both machines. This is an OpenGL extension to the X Window System, which is required for most GUI applications to be run through remote connections;
+	\item enable the X11 Forwarding option in the \texttt{/etc/ssh/sshd\_config} file, present in the Notebook PC.
+\end{enumerate}
+After these steps have been performed, it is possible to connect from the Desktop PC to the Notebook PC, using an SSH connection, requested through the following command: \texttt{ssh -Y <remote\_user>@<notebook\_IP>}. This command specifies that a \textit{Trusted X11 Forwarding} should be used, with the \texttt{-Y} flag. \\ \\
+As previously mentioned, however, this configuration makes use of an SSH connection, which performs encryption/decryption of all transferred data. These operations can be expensive for the machines and possibly have a significant impact on the performance of the application. As such, we perform some additional operations to allow for a non-SSH connection, which completely rely on X11:
+\begin{enumerate}
+	\item remove the \texttt{-nolisten tcp} flag present in the Window Manager configuration file, in order for the X11-Server to be reachable through local network connections;
+	\item use the command \texttt{xhost +} on both machines, to allow all connections to the X11-Server. This configuration is a security risk, and should only be used for local network experimental purposes;
+	\item set the \texttt{DISPLAY} environment variable on the Notebook PC to the Desktop display, using the command: \texttt{export DISPLAY=<desktop\_IP>:0.0};
+	\item using the \texttt{xauth generate \$DISPLAY} command on the Desktop, generate a new token for accessing the X11-Server. Then, add this token to the Notebook using the \texttt{xauth add \$DISPLAY . <token\_hex>} command in the Notebook terminal.
+\end{enumerate}
+Using these configurations, launching the TORCS executable on the Notebook PC actually renders its game image on the Desktop display, allowing for user input directly from the Desktop PC. \\ \\
+With both the SSH and the direct X11 configurations, we are able to see the \textbf{graphics framerate} of TORCS directly from the game image and the \textbf{latency between the two machines}, using the \texttt{hping} command. \\
+These two values are deemed significant, in order to qualitatively evaluate whether the usage of X11 for this type of operations introduces significant performance degradation and is source of bottlenecks, taking into consideration the network latency present in a realistic environment. \\ Additionally, these values allow us to compare the two configurations and verify whether the SSH encrypting operations significantly impacts the application performance.  
 
 \subsection{ETCD for SCR state-action communication}
-\intro{This section presents the introduction of ETCD for SCR state-action communication, as a replacement for the socket-based original alternative.}
-\subsubsection{Purpose \& Expected outcome}
-\subsubsection{Methods \& Design}
+As discussed in section \ref{DDB-SA-communication}, one of the fist steps in the development of our system is the introduction of distributed databases, starting with ETCD, as a means to realize state-action communication between server and client in the SCR configuration. \\ \\
+In particular, we want to verify the possibility to implement such a configuration without a significant impact on the game performance (framerate) and without altering the functionalities of the IA drivers, which are managed with this communication.
 
-\subsection{Multi-node ETCD cluster}
-\intro{This section presents the introduction of an ETCD cluster of 3 members, verifying the effect this had on the system performance.}
-\subsubsection{Purpose \& Expected outcome}
-\subsubsection{Methods \& Design}
-
-
-\section{Quantitative experiments}
-\intro{The following sections present quantitative experiments, performed in order to obtain precise and numerical data about specific phenomena, effects on the system performance of specific configurations or correlation between system components. The data provided by these experiments is supported by multiple misurations and graphical representations.}
-
-\subsection{X11 forwarding performance assessment}
-\intro{This section presents the test conducted in order to verify whether X11 can be considered a bottleneck and have significant impact on the performance of video streaming between two different PCs.}
-\subsubsection{Purpose \& Expected outcome}
-\subsubsection{Methods \& Design}
+\subsubsection{Methods \& Configuration}
+The configuration of the system, which acts as System Under Test (SUT), is the one presented on Figure \ref{fig:development-4}. The game image streaming functionality is disabled, as not to introduce workload not correlated with the purpose of the test. \\
+In terms of machine specifications, we reference the ones presented in Table \ref{desktop-machine-specifications}. \\ \\
+The system, with this configuration, handles the state-action communication via the following procedure:
+\begin{enumerate}
+	\item the TORCS executable (server) writes the current game state information as a \texttt{string} in the key \texttt{/gamestate/<port>}, where the port is identified by the one used by the client to connect;
+	\item the IA driver (client), which is watching the game state key for any changes, is notified when a new game state is written, and proceeds with computing the action to send as a response;
+	\item the IA driver writes the current game state information as a \texttt{string} in the key \texttt{/driver\_action/<port>}.
+\end{enumerate}
+Considering the time needed to process write/read requests in ETCD, it is possible that the game framerate and the system functionalities are negatively impacted, with respect to the original socket-based configuration. As such, we proceed to verify the variation of the framerate with respect to the original configuration, by looking at the in-game value fluctuation, and the movement of the car on the track. \\ \\
+Additionally, we also sample the average round-trip-time of the state-action communication in the original and the current configuration, to obtain a general idea of the difference between the two. In this context we do not compute the confidence intervals related to the measurements, as such we cannot make any assertion on the best performing configuration, out of the two.
 
 \subsection{Game image streaming solutions}
-\intro{This section presents the experiment performed in order to measure the video streaming performance of the system with different configurations.}
-\subsubsection{Purpose \& Expected outcome}
-\subsubsection{Methods \& Design}
 
-\subsection{Network traffic analysis}
-\intro{This section presents the experiment performed in order to measure the amount of data processed in I/O from/towards the network or the disk, alongside measuring the round-trip-time between SCR client and server in the same architecture.}
-\subsubsection{Purpose \& Expected outcome}
+After the development and integration of the game image streaming functionality, we aim to measure the performance of the \textit{screenpipe} component of the distributed TORCS system. Moreover, our intention is to verify the difference between multiple configurations, with different environments and means of communication. \\
+In particular, we experiment with two versions of the ETCD system, the original and our updated version, as described in section \ref{etcd-evolution}. \\
+In terms of machine specifications, we reference the ones presented in Table \ref{desktop-machine-specifications}.
+
 \subsubsection{Methods \& Design}
+The measurements are conducted during a TORCS race, lasting 90 seconds, with the SCR client-server communication being active and running. \\
+The variables we deemed to be relevant for this performance evaluation are:
+\begin{itemize}
+	\item \textit{graphics framerate} of the remote display;
+	\item \textit{average CPU usage} of the system-related processes or Docker containers;
+	\item \textit{average RAM usage} of the system-related processes or Docker containers.
+\end{itemize}
+The measurements are then conducted on the following system configurations:
+\begin{itemize}
+	\item local environment using ZeroMQ as means of communication;
+	\item local environment using the original version of ETCD as means of communication;
+	\item local environment using out updated version of ETCD as means of communication;
+	\item local environment using Redis as means of communication;
+	\item Docker environment using ZeroMQ as means of communication;
+	\item Docker environment using the original version of ETCD as means of communication;
+	\item Docker environment using out updated version of ETCD as means of communication;
+	\item Docker environment using Redis as means of communication.
+\end{itemize}
+For the Docker environments we do not bind the containers to specific CPU cores, as the distributed TORCS containers often make use of multiple cores. As such, any binding introduced would limit the resources available to the application and have an impact on its performance. \\
+Moreover, the "updated ETCD" version referenced during this experiment is an intermediate version, with respect to the improvement discussed in section \ref{etcd-evolution}. This intermediate version includes the removal of DB snapshotting and the introduction of maintenance operations (compaction and defragmentation), but not the additional call to the Go Garbage Collection and the in-memory configuration.
+
+\subsection{3-members clusters benchmarking}\label{benchmarking}
+As mentioned in section \ref{ddb-clusters}, the cluster implementation of both Redis and ETCD are significantly different from their stand-alone version, in terms of actual behaviour. While the stand-alone versions of the two systems present a similar request processing method, in the cluster version the Eventual Consistency mechanism of Redis should provide relatively better performance than ETCD. \\ \\
+In order to verify this assumption, we perform benchmarking operations on cluster configurations of these two systems. The number of nodes chosen for this tests is 3, since it is considered to be reasonably balanced both in terms of replication-related traffic and resources required to actually instance the cluster on a local environment. \\ \\
+It is important to remark that Redis, by default, implements the \textit{sharding} of the key space. This means that the management of all the keys (e.g. 9000 key spaces), in the key-value database, should be split among at least three Master nodes (e.g. 3000 key spaces each), to have a stable configuration. However, such a requirement is problematic for our tests, since we intend to only instantiate three nodes: a Master and two replicas; in order to obtain exactly the same configuration between Redis and ETCD. \\
+As such, we forced Redis to instantiate all the key space on a single Master node, which is not a recommended setting, but fits our testing purposes. \\ \\
+Considering the technical characteristics and the replication mechanisms of the two systems, we expect to be able notice better performance in the Redis cluster. Still, we also consider the impact of network latency on the two systems. As such, in situations with network latency, ETCD could be able to provide comparable performance with respect to Redis, thanks to its HTTP pipelining implementation.
+
+\subsubsection{Methods \& Design}
+To perform significant performance evaluations and comparisons between Redis and ETCD, we first aim to identify the saturation point of one of the two systems. According to its documentation, Redis is hard to saturate, thanks to its high performance and in-memory data persistence. As such, we focus on identifying ETCD saturation point. \\ \\
+In the process of reaching this objective, we perform the following operations:
+\begin{enumerate}
+	\item fix a large \textit{amount of requests} (e.g. 300000);
+	\item gradually increase the number of \textit{concurrent connections} making requests to the distributed database, until the saturation point is reached;
+	\item collect the \textit{number of failed requests}, which, if different from 0, indicates that the saturation point has been reached.
+\end{enumerate}
+Specifically, we set the following configurations:
+\begin{itemize}
+	\item \textit{number of requests}: 300000;
+	\item \textit{type of requests}: read and write;
+	\item \textit{size of the request}: 256 bytes;
+	\item \textit{number of clients}: 100 to 1000 with a step of 100.
+\end{itemize}
+Then, a pre-saturation value, for \textit{concurrent connections}, is chosen for performing additional tests on both systems. These following tests focus on measuring the system \textit{throughput}, for both read and write requests, with a gradually increasing amount of latency: from 0 to 20 ms, with a 2 ms step. \\ \\
+In order to carry out these tests, we make use of benchmarking tools provided by ETCD and Redis. \\
+ETCD, in particular, provides a dedicated tool in its \texttt{etcd/tools/benchmark} directory, which can be used through specific commands, which allow multiple parameters. For our tests, the command used is the following: \\ \\
+\texttt{go run main.go put --endpoints=172.20.0.2:2379 --conns=100 --clients=100 put
+--total=300000 --val-size=256} \\ \\
+Where we specify:
+\begin{itemize}
+	\item the \textit{Leader endpoint}, to which to send the requests;
+	\item the \textit{number of connections and clients}, which is the same for both settings and identifies the number of clients sending the requests to the distributed database;
+	\item the \textit{type of requests}, either GET or SET;
+	\item the \textit{number of total requests}, set to 300000 in order to provide a reasonable benchmarking interval;
+	\item the \textit{size of the request}, which is 256 bytes for both reads and writes;
+\end{itemize}
+On the other hand, Redis provides a benchmarking tool in its CLI interface: \texttt{redis-cli}. The command used for our test is the following: \\ \\
+\texttt{redis-benchmark -h 172.20.0.2 -p 6379 -c 10 -t set -n 300000 -d 256} \\ \\
+Where we specify:
+\begin{itemize}
+	\item the \textit{Master endpoint}, to which to send the requests;
+	\item the \textit{number of clients}, which identifies the number of clients sending the requests to the distributed database;
+	\item the \textit{type of requests}, either GET or SET;
+	\item the \textit{size of the request}, which is 256 bytes for both reads and writes;
+	\item the \textit{number of total requests}, set to 300000 in order to provide a reasonable benchmarking interval.
+\end{itemize}
+
+\section{Quantitative experiments}\label{quant-ex}
+In the following sections we present the quantitative experiments, performed during the development of our project, in order to obtain precise and numerical data about specific phenomena, effects on the system performance of specific configurations or correlation between system components. More specifically, we will discuss the various data collection and analysis methods we used for these experiments and their expected theoretical outcome. \\ \\
+The data provided by these experiments is supported by multiple measurements and graphical representations, which allow for clear numerical comparisons between different system configurations. \\ \\
+All the following experiments are conducted in a Docker environment, in a situation of \textit{steady-state simulation}, which starts at the beginning of a race and terminates after 90 seconds. \\
+In order to obtain numerical data, useful to perform accurate comparisons, we compute the \textit{arithmetic mean} of the values of the collected samples, using the following formula:
+\[\bar{x} = \frac{1}{N} \sum_{j=1}^N x_j\]
+Then, we compute the \textit{standard deviation}, using the formula:
+\[s = \sqrt{\frac{\sum_{j=1}^N (x_j-\bar{x})^2}{N-1}}\]
+From which we can compute the \textit{standard error}, using the formula:
+\[se = \frac{s}{\sqrt{sample\_size}}\]
+Finally, we compute the \textit{confidence intervals}, using 95\% as \textit{confidence level} and the following formulas:
+\[lower\_bound = \bar{x} - (1.96 * se)\]
+\[upper\_bound = \bar{x} + (1.96 * se)\]
+
+\subsection{Network traffic analysis}\label{network-traffic-ex}
+One of the biggest limitations when developing systems based on network communication is the bandwidth available, since intense traffic can easily saturate the channel which is being used. Moreover, distributed databases, even if instanced on virtual environments, are often dependant on the physical hardware (e.g. hard drive, memory) which constitutes the hosting machine. \\ \\
+As such, when comparing different system solutions, we also need to take into consideration the amount of data transferred in input/output, both on the network and on the disk/memory. In particular, according to documentation, ETCD is considered to be heavily dependant on the performance of the hard drive used to store the database-related data. \\ \\
+Redis, on the other hand, is defined as an in-memory database. As such, its performance are mostly dependant on the local memory (RAM) and the network bandwidth available. \\ \\
+In general, we expect ETCD to be more demanding in terms of resources, if compared with Redis.
+
+\subsubsection{Methods \& Design}
+The distributed system in this test is configured such that:
+\begin{itemize}
+	\item SCR client-server communication is active and using a distributed database as means of communication;
+	\item the game image streaming is active and using a distributed database as means of communication.
+\end{itemize}
+Thus, we perform the experiment in TORCS "quick game" mode (which makes use of the SCR communication) and  expect to be able to correlate the data we collect with the two main functionalities we previously mentioned. It is important to remark that the screenpipe component has been bounded to perform image streaming up to 10 FPS, in order to reasonably limit the network traffic generated by the streaming functionality. \\ \\
+In order to evaluate and compare the resource required by configurations of our distributed system, we focus on the following variables:
+\begin{itemize}
+	\item \textit{Network I/O}: indicating the amount of data sent and received over the network;
+	\item \textit{Block I/O}: indicating the amount of data written and read from the disk.
+\end{itemize}
+These data is provided by the command \texttt{docker stats} and written into a text file at regular intervals of 2 seconds, using a custom bash script. More specifically, we collect the data from the three main Docker containers interested by the elaborations: the TORCS executable container, the distributed database container and the client (IA driver) container. \\ \\
+Considering that these variables values are \textit{monotonically increasing} with the number of samples, we compute the confidence intervals based on the following elaborations:
+\begin{itemize}
+	\item the average \textit{increase in Network Input};
+	\item the average \textit{increase in Network Output};
+	\item the average \textit{increase in Block Input};
+	\item the average \textit{increase in Block Output}.
+\end{itemize}
+Finally, the two distributed databases implementations we evaluate and compare are: our updated version of ETCD, the standard version of Redis.
+
+\subsection{SCR client-server responsiveness}\label{scr-responsiveness-desc}
+As described in section \ref{scr}, the communication between client and server in this distributed TORCS implementation is a core functionality, which allows to decouple the AI driver from the main executable. \\
+Still, different means of communication provide different performance, when implementing such functionality. As such, with this experiment, we aim to quantify and compare the performance of different distributed databases implementations. In particular, we consider:
+\begin{itemize}
+	\item ETCD in its stand-alone implementation;
+	\item ETCD in its 3-members cluster implementation;
+	\item Redis in its stand-alone implementation;
+	\item Redis in its 3-members cluster implementation.
+\end{itemize}
+Considering the design and characteristics of these two distributed databases, we expect the stand-alone versions to provide a similar performance, since no latency is involved and there is no theoretical benefit provided to Redis by its Eventual Consistency mechanism (as discussed in section \ref{ddb-clusters}). In the cluster versions, on the other hand, we expect Redis to provide better performance than ETCD, since it consensus mechanism should allow for a swifter elaboration of write requests.
+
+\subsubsection{Methods \& Design}
+Focusing on the SCR communication, we configure the distributed system to have the game image streaming functionality disabled, since it introduced additional traffic which could impact the measurements. Moreover, we perform the experiment in TORCS "quick race" mode, where the SCR communication is present. \\ \\
+In order to obtain significant and comparable data for the different configurations, we focused on the measurement of the \textit{round-trip-time}, for each round of communication between the client and the server. \\
+To collect such data, we set up a real-time counter in the SCR server, which measure the time elapsed between the writing of the game state onto the distributed DB and the reading of the next action. All the values obtained are then written on a dedicated text file. \\ \\
+Considering the large sample size, we perform a preliminary computation of the average between groups of 10 samples, which we call \textit{partials}. Then we proceed with computing the average value from the partials, and the confidence intervals following the procedure discussed in section \ref{quant-ex}.
 
 \subsection{Network latency impact assessment}
-\intro{This section presents the experiment performed in order to measure the performance of TORCS and screenpipe displays, in situations with high or moderate network latency in the ETCD container.}
-\subsubsection{Purpose \& Expected outcome}
+As we previously mentioned, a distributed system which bases its components communication on a network, is likely to be impacted negatively in terms of performance by the presence of network latency. \\
+Thus, in order to quantify this impact on our TORCS distributed system, we artificially introduce an increasing amount of network latency into the system, while measuring the performance degradation experienced by the application. \\ \\
+Considering that the distributed database container acts as a means of communication between the various distributed TORCS modules, it is considered to be a suitable point for introducing the artificial delay. \\ \\
+In particular, taking into account the dependency of the main TORCS executable from the SCR communication, while operating in "quick game" default configuration, we expect the game framerate to be noticeably impacted by network delays. Additionally, since the network data transfer performed to implement game image streaming is very intense, we also expect to be able to notice a significant reduction in terms of screenpipe's graphics framerate. \\ \\
+In this experiment, we aim to compare the behaviour of ETCD and Redis, in both its stand-alone and 3-members cluster version. In general, in the stand-alone version, we expect ETCD to guarantee an higher degree of resistance to performance degradation caused by network latency, thanks to its HTTP pipelining feature. Still, in the cluster version, Redis could provide benefits in terms of performance, thanks to it Eventual Consistency mechanism.
+
 \subsubsection{Methods \& Design}
+The distributed system configuration is similar to the one presented in section \ref{network-traffic-ex}, with both SCR communication and game image streaming, being active and running. As such, we still perform the experiment in TORCS "quick game" mode. \\ \\
+In order to reasonably evaluate and compare the application performance, we measure the values related to  the following variables:
+\begin{itemize}
+	\item the average \textit{framerate} of the main TORCS display, in frames-per-second (FPS);
+	\item the average \textit{framerate} of the remote screenpipe display, in frames-per-second (FPS).
+\end{itemize}
+The measurements are conducted with a sampling interval of 1 second, on both displays. \\
+It is important to remark that the screenpipe component has been bounded to perform image streaming up to 10 FPS, in order to reasonably limit the network traffic generated by the streaming functionality. \\ \\
+As previously mentioned, the network latency is artificially introduced only on the distributed database (ddb) container, using the command: \[\texttt{docker exec <ddb\_container> tc qdisc add dev eth0 root netem delay <x>ms}\]
+Where \texttt{<x>} is the quantity of latency to be introduced. More specifically, with this command, we only introduce latency in the container's output communications. \\ \\
+The experiment involves the introduction of network latency with values that range from 0 to 20 ms, with a step of 4 ms, and from 20 to 100 ms, with a step of 20 ms. These values are deemed to be reasonable in order to most clearly represent the impact of both low, moderate and high latency on the system performance. \\ \\
+The four distributed databases implementations we evaluate and compare are: ETCD in its stand-alone version, ETCD in its 3-members cluster version, Redis in its stand-alone version, Redis in its 3-members cluster version.
 
 \subsection{Distribution of dynamic game state data}
-\intro{This section presents the experiment performed in order to measure the system performance when introducing the storage of an increasing number of game state data fields into ETCD, alongside an increasing amount of network latency in the ETCD container.}
-\subsubsection{Purpose \& Expected outcome}
+One of the core objectives of our project is to verify the possibility to replace the C++ pointers-based approach to game state distribution between TORCS components (described in section \ref{torcs-state-management}), with a solution based on shared memory and a distributed database. \\ \\
+Our general idea is to operate on each single game state related data field, as defined by TORCS codebase, replacing each reference to it with a write/read requests to the distributed database. \\
+For instance, operating on a data field called \texttt{deltaTime}, we create a related key in the key-value storage of the distributed database, called \texttt{/state/deltaTime}. Then we replace each local value assignment operation with a write request sent to the distributed database, targeting the value key, and each local read of the value with a read request sent to the distributed database. \\ \\
+Through this logic we can completely remove the need for C++ pointers in the management of the game state. However, the processing of requests performed by the distributed database is not as fast as a read/write of the local value, and this can impact the performance of the TORCS application. \\
+Moreover, the amount of requests sent to the distributed database could prove to be overbearing, and slow down its request throughput. \\ \\
+In general, we expect the TORCS performance (particularly the framerate) to be significantly degraded by this change, with an increasing impact as more data fields are stored into the database. In terms of requests, we expect to find a balanced situation, where introducing the management of additional data fields increases the number of requests being made. However, the database could likely reach a saturation point, after which the number of requests actually served cannot increase any more. \\ \\
+Lastly, we also consider the impact network latency can have in this context, experimenting with it both on stand-alone and cluster versions of ETCD/Redis. We expect network latency to have a very significant and negative impact on the system performance, considering the large number of requests being made. As such, ETCD should greatly benefit from its HTTP pipelining implementation.
+
 \subsubsection{Methods \& Design}
+In order to understand the impact on the TORCS performance of storing information about the game state, we experiment on a system configuration where game image streaming and SCR client-server communication are both disabled. \\ \\
+We then focus on the following variables, deemed relevant for providing significant comparison between different configurations:
+\begin{itemize}
+	\item the average \textit{graphics framerate} of the TORCS main display;
+	\item the average \textit{number of write requests} processed by the distributed database, obtained through network sniffing, performed using the Wireshark software;
+	\item the average \textit{number of read requests} processed by the distributed database, obtained through network sniffing, performed using the Wireshark software.
+\end{itemize}
+The testing configuration change based on the following variables:
+\begin{itemize}
+	\item the \textit{number of game state data fields} stored on the distributed database, which varies from 0 to 3, including:
+	\begin{itemize}
+		\item \texttt{deltaTime};
+		\item \texttt{currentTime};
+		\item \texttt{raceState};
+	\end{itemize}
+	\item the \textit{network latency} introduced, which varies from 0 to 20 ms, with a step of 4 ms.
+\end{itemize}
+The game state data fields differ in nature and in the number of read/write requests being performed to manage their operations. In fact, we consider only data fields which are read or changed after their configuration at the start of a new race, which we call \textit{ dynamic data fields}. \\ 
+Still, despite their differences, they are a significant factor for comparing the multiple system configurations. As such, we experiment both on stand-alone and cluster versions of ETCD/Redis.
 
 \subsection{Distribution of static game state data}
-\intro{This section presents the experiment performed in order to measure the system performance when introducing the storage of different static game state data fields into ETCD.}
-	\subsubsection{Purpose \& Expected outcome}
-	\subsubsection{Methods \& Design}
+With a logic similar to the one presented in the experiment discussed in the previous section, we operate a similar analysis on the \textit{static game state data fields}. These data fields are written just once at the beginning of each race and then read multiple times through TORCS execution. \\ \\
+The aim of this experiment is to understand the impact on the game performance of storing game state data fields that generate almost only read requests, and verify the specific source of the performance degradation. In particular, we first experiments with configurations with only write requests and then proceed to add interactions based on read requests. \\ \\
+In general, we expect to notice only a marginal performance reduction, regardless of the amount of static game state data fields stored into the distributed database. Moreover, this experiment is conducted only on a system configuration with a stand-alone version of ETCD.
 
-\subsection{ETCD in-memory persistence}
-\intro{This section presents the experiment performed in order to measure the system performance when storing 3 game state data fields in a situation in which ETCD is writing to memory, instead of the Disk.}
-	\subsubsection{Purpose \& Expected outcome}
-	\subsubsection{Methods \& Design}
-
+\subsubsection{Methods \& Design}
+In order to understand the impact on the TORCS performance of storing information about the game state, we experiment on a system configuration where game image streaming and SCR client-server communication are both disabled. \\ \\
+We then focus on the following variables, deemed relevant for providing significant comparison between different configurations:
+\begin{itemize}
+	\item the average \textit{graphics framerate} of the TORCS main display;
+	\item the average \textit{number of write requests} processed by the distributed database, obtained through network sniffing, performed using the Wireshark software;
+	\item the average \textit{number of read requests} processed by the distributed database, obtained through network sniffing, performed using the Wireshark software.
+\end{itemize}
+The testing configuration change depending on the static game state data field stored, experimenting with just one different field each time, including the following:
+\begin{itemize}
+	\item \texttt{totLaps};
+	\item \texttt{maxDamage};
+	\item \texttt{raceType};
+	\item \texttt{ncars}.
+\end{itemize}
+The game state data fields differ in nature and in the number of read requests being performed to manage their operations. These differences, however, are important to identify the actual source of the game performance degradation generated by the storage of different game state data fields.
 
 \subsection{Graphics and physics engine correlation}
-\intro{This section presents the experiment performed in order to verify and quantify the correlation between the graphic and physics engine of TORCS, by introducing an increasing delay into the simulation module and verifying the impact on the graphics framerate. Moreover, we also compute the theoretical framerate bounds generated by the delays and compare them with the actual measured framerate.}
-\subsubsection{Purpose \& Expected outcome}
-\subsubsection{Methods \& Design}
+During our experiments we identified a possible correlation between the TORCS graphics engine and the physical engine (simulation module). In fact, we noticed that the delay introduced by managing the game state data through a distributed database, instead of using local C++ pointers, have a significant impact on the graphics framerate of the game, when the requests are made from the simulation module. \\ \\
+In the actual TORCS code, this correlation is even more clear, since both the function for managing the simulation and the graphics updates are located inside the same Game Engine loop. As such, considering the synchronous and sequential management of instructions in TORCS, delays in one component certainly end up impacting also the other component operations. \\ \\
+In order to experimentally verify this correlation and quantify the impact on the system performance, we proceed with incrementally introduce artificial delay into the simulation module. Considering that the simulation is updated multiple times for each Game Engine step, we expect even small delays to have a significant impact on the system performance. \\ \\
+Additionally, introducing these delays on each frame elaboration prevents the system from being able to process more than a certain amount of frames-per-second (e.g. if each frame is experiments 20 ms of delay, no more than $1000/20=50$ FPS can be processed). As such, we also consider the theoretical framerate upper bounds introduced by the delays and expect the actual measured framerate to be limited in these bounds.
+
+\subsubsection{Methods \& Design}\label{delay-design}
+To numerically quantify the impact on the TORCS system performance of introducing delays into its simulation module, we experiment on a system configuration where no communication with the distributed database is performed. This is done in order to prevent any additional, non relevant, side effects. \\ \\
+We proceed with introducing an increasing amount of delay into the simulation update function, which is called inside the Game Engine step processing function. In particular, the method used to introduce the artificial delay is the following one: \\ \\
+\texttt{std::this\_thread::sleep\_for(std::chrono::milliseconds(<x>));}
+\\ \\
+Where \texttt{<x>} is the value in milliseconds of the delay we want to introduce, which ranges from 0 to 10 ms, with a step of 1 ms. This method does not perform \textit{busy wait}, but instead \textit{blocks} the thread for the specified amount of milliseconds. \\ \\
+The variables we consider to be significative in this experiment are:
+\begin{itemize}
+	\item the average \textit{graphics framerate}, which represents the performance of the TORCS system;
+	\item the average \textit{number of Game Engine steps}, which reflects the times a delay has been introduced into the simulation module. 
+\end{itemize}
+The number of Game Engine steps computed for each graphics frame is variable and dependant on a condition which is tied to the \textit{current game time}. As such, using the value in milliseconds of the delay introduced and the average number of Game Engine steps processed, we can compute the average delay introduced for each graphics frame, using the formula:
+\[avg\_frame\_delay = delay * avg\_num\_of\_calls\]
+Then, we can compute the maximum number of frames that can be computed in a second, taking into account this delay, using the formula:
+\[FPS\_up\_bound = 1000 / avg\_frame\_delay\]
+Finally, we can compare the graphics framerate we measured with the bound we computed, as well as evaluating the impact on the performance of the delays introduced.
 
 \subsection{Graphics and game engine framerate correlation}
-\intro{This section presents the experiment performed in order to measure the net operational time and the correlation between the GE framerate and the graphics framerate, in a situation in an increasing delay introduced into the simulation module.}
-\subsubsection{Purpose \& Expected outcome}
+As mentioned in the previous experiment, the TORCS graphics framerate is closely tied to the TORCS Game Engine steps computation, which we call \textit{Game Engine framerate}. \\ 
+To contextualize, the Game Engine framerate refers to the frequency at which the game simulation is updated, whereas the graphics framerate refers to the frequency at which the game is able to render and display new frames on the screen. \\ \\
+In order to quantify the ratio between these two values, we perform an experiment following a design which is similar to the one used for the one described in the previous section. We introduce an increasing amount of delay into the simulation module and then verify impact on both graphics and Game Engine framerate. \\ Additionally, we compute the actual \textit{net operational time} of the system, considering the delays we are introducing. \\ \\
+Similarly to the experiment described in the previous section, we expect to notice a significant decrease in both framerates values as the delay increases. As well as seeing the actual operational time drop to a much lower value.
+
 \subsubsection{Methods \& Design}
+The system configuration we used for this experiment is the same as described in section \ref{delay-design}, with no communication performed with the distributed database. The delays are introduced into the simulation module with the same approach. However, the variables we consider for our measurements are:
+\begin{itemize}
+	\item the average \textit{graphics framerate};
+	\item the average \textit{Game Engine framerate};
+	\item the \textit{net operational time}.
+\end{itemize}
+The net operational time, in particular, is computed directly from the actual delay introduced and printed on a text file by the TORCS executable.
+
+\subsection{Temporal State Manager inconsistency}\label{ex:temp-state-inconsistency}
+After the additional development performed on the State Manager middleware, as described in section \ref{state-manager-next}, we aim to quantify the temporal inconsistency between the first TORCS instance launched (which only writes to the DB) and the following TORCS instances (which only read from the DB). \\ \\
+Despite being mostly successful, in fact, this implementation presents the following problems:
+\begin{itemize}
+	\item the rendering of cars in the reading TORCS instances generates graphical glitches, which intensifies as the number of cars to be managed increases. They are also more noticeable in the ETCD configuration, rather than the Redis configuration;
+	\item various data related to the general state of the game (e.g. UI) is slightly inconsistent.
+\end{itemize}
+Experimenting with both ETCD/Redis stand-alone/cluster configurations, we expect the temporal delay to be more intense in cluster configurations, particularly ETCD which should generally perform worse than Redis when processing large amounts of data in a short period of time.
+\subsubsection{Methods \& Design}
+In this experiment, we configure the TORCS system to focus only on game state storage, without any game image streaming or SCR client-server functionalities. Then, we instantiate a "quick race" with 1 \textit{human} driver and 9 other \textit{local AI} controlled cars. \\ \\
+In order to specifically quantify the difference between the state of the local TORCS instance and the remote TORCS instance, we measure and compare the time \textit{before writing the state} and \textit{after reading the state} from the distributed database. Both these timestamps are printed on different text files by the two instances and then parsed for comparison. \\ \\
+In the end, we obtain the actual variable we are interested in, which is the \textit{average temporal inconsistency} between the two instances.
+
+\subsection{Positional State Manager inconsistency}
+In the same context of the experiment described in section \ref{ex:temp-state-inconsistency}, we also assume the presence of inconsistency in terms of the position of the cars which are represented in the read-only instances of TORCS. As such, we perform an additional experiment on both ETCD/Redis stand-alone/cluster configurations. \\ \\
+This analysis focuses on values related to the \textit{global position}, \textit{speed} and \textit{acceleration} of the human player's car, comparing them between the first TORCS instance and a second one. Additionally, we also aim to understand the impact of network latency on the positional inconsistency of the cars. As such, we introduce an increasing amount of artificial latency on the distributed database and measure the values related to the factors we previously mentioned. \\ \\
+In general, we expect ETCD to perform worse than Redis in both its stand-alone and cluster versions, when no latency is present. However, thanks to HTTP pipelining, it is possible for ETCD to present performance similar to Redis, when latency is introduced.
+
+\subsubsection{Methods \& Design}
+In this experiment, we configure the TORCS system to focus only on game state storage, without any game image streaming or SCR client-server functionalities. Then, we instantiate a "quick race" with 1 \textit{human} driver and 9 other \textit{local AI} controlled cars. \\ \\
+The variables we consider to be relevant for this experiment measurements are:
+\begin{itemize}
+	\item the \textit{global position of the car}, with its coordinates;
+	\item the \textit{speed of the car}, with its vectorial coordinates;
+	\item the \textit{acceleration of the car}, with its vectorial coordinates.
+\end{itemize}
+Considering the need to sample multiple local game state values at similar intervals of time in two different TORCS instances, we introduce an additional thread, launched at the beginning of a new race, which is responsible for printing data to a text file at a regular interval of time (1 ms). \\ \\
+The data printed include also a timestamp with nanosecond precision, in order to be able to compare the values of the two different TORCS instances. Considering the infeasibility of obtaining values at the exact same moment from both instances, we choose to compare the each game state of the first TORCS instance, with the game state of the second TORCS instance which is identified by the \textit{closest higher timestamp}. \\ \\
+Considering the multi-dimension vectorial nature of the data we are comparing, in order to compute the difference between the local and remote game state, we operate using the following formula, for each factor:
+\[diff = \sqrt(\sum_{n=1}^N (x_i-y_i)^2)\]
+Where we have:
+\begin{itemize}
+	\item $N$: as the number of dimensions for the single factor;
+	\item $x_i$: as the value for the dimension {i} of the factor, in the second TORCS instance;
+	\item $y_i$: as the value for the dimension {i} of the factor, in the first TORCS instance.
+\end{itemize}
+In the end, we are able to compare the positional inconsistency between the two instances with both ETCD and Redis in their stand-alone/cluster versions.
