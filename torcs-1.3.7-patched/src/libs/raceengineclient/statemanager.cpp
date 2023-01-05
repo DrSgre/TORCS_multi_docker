@@ -2,12 +2,19 @@
 
 #include <chrono>
 #include <thread>
+#include <fstream>
 #include <raceman.h>
 
 #define SNAPSHOT_FREQUENCY 1
 
-extern etcd::Client etcd_client;
+using namespace std::chrono;
+
+static std::ofstream OutputFile;
+static int state_id = 0;
+static int prev_id = -1;
 extern bool do_update;
+
+extern etcd::Client etcd_client;
 
 void SaveState(tSituation *s)
 {
@@ -16,6 +23,8 @@ void SaveState(tSituation *s)
         etcd_client.set("/state/deltaTime", std::to_string(s->deltaTime));
     }
     if (std::stod(etcd_client.get("/state/currentTime").get().value().as_string()) != s->currentTime) {
+        etcd_client.set("/state/id", std::to_string(state_id));
+        state_id += 1;
         etcd_client.set("/state/currentTime", std::to_string(s->currentTime));
     }
     if (std::stoi(etcd_client.get("/state/raceState").get().value().as_string()) != s->_raceState) {
@@ -190,6 +199,13 @@ void LoadState (tRmInfo *ReInfo) {
 
         ReInfo->_reSimItf.config(s->cars[i], ReInfo);
     }
+    prev_id = state_id;
+    state_id = std::stoi(etcd_client.get("/state/id").get().value().as_string());
+    if (prev_id != state_id) {
+        OutputFile.open("temp1.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+        OutputFile << "state " + std::to_string(state_id) + " " + std::to_string(duration_cast <nanoseconds> (system_clock::now().time_since_epoch()).count()) << "\n";
+        OutputFile.close();
+    }
 }
 
 void StartStateManager(tRmInfo* ReInfo)
@@ -227,6 +243,7 @@ void StartStateManager(tRmInfo* ReInfo)
         etcd_client.set("/state/deltaTime", std::to_string(s->deltaTime));
         etcd_client.set("/state/currentTime", std::to_string(s->currentTime));
         etcd_client.set("/state/raceState", std::to_string(s->_raceState));
+        etcd_client.set("/state/id", std::to_string(state_id));
         // Initialize car state values, to allow for later comparisons.
         for (int i = 0; i < s->_ncars; i++) {
             etcd_client.set("/carstate/car" + std::to_string(i) + "/pos_toStart", std::to_string(s->cars[i]->_trkPos.toStart));
@@ -259,6 +276,9 @@ void StartStateManager(tRmInfo* ReInfo)
             }
             else 
             {
+                OutputFile.open("temp2.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+                OutputFile << "state " + std::to_string(state_id) + " " + std::to_string(duration_cast <nanoseconds> (system_clock::now().time_since_epoch()).count()) << "\n";
+                OutputFile.close();
                 SaveState(ReInfo->s);
                 std::this_thread::sleep_for(std::chrono::milliseconds(SNAPSHOT_FREQUENCY));
             }

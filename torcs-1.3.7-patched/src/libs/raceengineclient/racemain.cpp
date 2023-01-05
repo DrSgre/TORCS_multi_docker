@@ -25,10 +25,12 @@
 
 #include <etcd/Client.hpp>
 #include <thread>
+#include <chrono>
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
+#include <fstream>
 #include <tgfclient.h>
 #include <raceman.h>
 #include <robot.h>
@@ -49,6 +51,10 @@
 
 extern void musicmenu(int, bool);
 extern etcd::Client etcd_client;
+
+extern bool do_update;
+
+using namespace std::chrono;
 
 /***************************************************************/
 /* ABANDON RACE HOOK */
@@ -234,6 +240,31 @@ int RePreRace(void)
 }
 
 
+void StatePrinter(tSituation *s){
+	std::ofstream OutputFile;
+	while (true) {
+		if (!do_update) {
+			OutputFile.open("remote_state.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+			OutputFile << "time: " + std::to_string(duration_cast <nanoseconds> (system_clock::now().time_since_epoch()).count()) + " data: " +
+			std::to_string(s->cars[0]->_pos_X) + "," + std::to_string(s->cars[0]->_pos_Y) + "," +  std::to_string(s->cars[0]->_pos_Z) + "," + std::to_string(s->cars[0]->_roll) + "," + std::to_string(s->cars[0]->_pitch) + "," + std::to_string(s->cars[0]->_yaw) + " " +
+			std::to_string(s->cars[0]->_speed_x) + "," + std::to_string(s->cars[0]->_speed_y) + "," + std::to_string(s->cars[0]->_speed_z) + "," + std::to_string(s->cars[0]->_yaw_rate) + " " +
+			std::to_string(s->cars[0]->_accel_x) + "," + std::to_string(s->cars[0]->_accel_y) + "," + std::to_string(s->cars[0]->_accel_z)
+			<< "\n";
+			OutputFile.close();
+		}
+		else {
+			OutputFile.open("current_state.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+			OutputFile << "time: " + std::to_string(duration_cast <nanoseconds> (system_clock::now().time_since_epoch()).count()) + " data: " + 
+			std::to_string(s->cars[0]->_pos_X) + "," + std::to_string(s->cars[0]->_pos_Y) + "," + std::to_string(s->cars[0]->_pos_Z) + "," + std::to_string(s->cars[0]->_roll) + "," + std::to_string(s->cars[0]->_pitch) + "," + std::to_string(s->cars[0]->_yaw) + " " +
+			std::to_string(s->cars[0]->_speed_x) + "," + std::to_string(s->cars[0]->_speed_y) + "," + std::to_string(s->cars[0]->_speed_z) + "," + std::to_string(s->cars[0]->_yaw_rate) + " " +
+			std::to_string(s->cars[0]->_accel_x) + "," + std::to_string(s->cars[0]->_accel_y) + "," + std::to_string(s->cars[0]->_accel_z)
+			<< "\n";
+			OutputFile.close();
+		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	}
+}
+
 /* return state mode */
 static int reRaceRealStart(void)
 {
@@ -338,6 +369,9 @@ static int reRaceRealStart(void)
 
 	std::thread statemanager(StartStateManager, ReInfo);
 	statemanager.detach();
+	std::thread stateprinter(StatePrinter, ReInfo->s);
+	stateprinter.detach();
+
 	return RM_SYNC | RM_NEXT_STEP;
 }
 
@@ -363,7 +397,6 @@ static void* StartRaceHookInit(void)
 
 	return StartRaceHookHandle;
 }
-
 
 /* return state mode */
 int ReRaceStart(void)
@@ -451,8 +484,6 @@ int ReRaceStart(void)
 			return RM_ASYNC | RM_NEXT_STEP;
 		}
 	}
-
-	return reRaceRealStart();
 }
 
 /***************************************************************/

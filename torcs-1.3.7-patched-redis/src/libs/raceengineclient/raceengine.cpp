@@ -741,7 +741,9 @@ ReOneStep(double deltaTimeIncrement)
 		for (i = 0; i < s->_ncars; i++) {
 			if ((s->cars[i]->_state & RM_CAR_STATE_NO_SIMU) == 0) {
 				robot = s->cars[i]->robot;
-				robot->rbDrive(robot->index, s->cars[i], s);
+				if (do_update) {
+					robot->rbDrive(robot->index, s->cars[i], s);
+				}
 			}
 		}
 		ReInfo->_reLastTime = s->currentTime;
@@ -760,7 +762,7 @@ ReOneStep(double deltaTimeIncrement)
 	if ((ReInfo->_displayMode != RM_DISP_MODE_NONE) && (ReInfo->_displayMode != RM_DISP_MODE_CONSOLE)) {
 		ReRaceMsgUpdate();
 	}
-	ReSortCars();
+	//ReSortCars();
 }
 
 void

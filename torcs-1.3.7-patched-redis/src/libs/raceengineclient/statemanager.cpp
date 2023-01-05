@@ -2,11 +2,17 @@
 
 #include <chrono>
 #include <thread>
+#include <fstream>
 #include <raceman.h>
 
 #define SNAPSHOT_FREQUENCY 1
 
 using namespace sw::redis;
+using namespace std::chrono;
+
+static std::ofstream OutputFile;
+static int state_id = 0;
+static int prev_id = -1;
 extern bool do_update;
 
 extern Redis redis;
@@ -18,6 +24,8 @@ void SaveState(tSituation *s)
         redis.set("/state/deltaTime", std::to_string(s->deltaTime));
     }
     if (std::stod(redis.get("/state/currentTime").value()) != s->currentTime) {
+        redis.set("/state/id", std::to_string(state_id));
+        state_id += 1;
         redis.set("/state/currentTime", std::to_string(s->currentTime));
     }
     if (std::stoi(redis.get("/state/raceState").value()) != s->_raceState) {
@@ -191,6 +199,17 @@ void LoadState (tRmInfo *ReInfo) {
 
         ReInfo->_reSimItf.config(s->cars[i], ReInfo);
     }
+    prev_id = state_id;
+    state_id = std::stoi(redis.get("/state/id").value());
+    if (prev_id != state_id) {
+        OutputFile.open("temp2.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+        OutputFile << "state " + std::to_string(state_id) + " data: " +
+        std::to_string(s->cars[0]->_pos_X) + "," + std::to_string(s->cars[0]->_pos_Y) + "," +  std::to_string(s->cars[0]->_pos_Z) + "," + std::to_string(s->cars[0]->_roll) + "," + std::to_string(s->cars[0]->_pitch) + "," + std::to_string(s->cars[0]->_yaw) + " " +
+        std::to_string(s->cars[0]->_speed_x) + "," + std::to_string(s->cars[0]->_speed_y) + "," + std::to_string(s->cars[0]->_speed_z) + "," + std::to_string(s->cars[0]->_yaw_rate) + " " +
+        std::to_string(s->cars[0]->_accel_x) + "," + std::to_string(s->cars[0]->_accel_y) + "," + std::to_string(s->cars[0]->_accel_z)
+        << "\n";
+        OutputFile.close();
+    }
 }
 
 void StartStateManager(tRmInfo* ReInfo)
@@ -228,6 +247,7 @@ void StartStateManager(tRmInfo* ReInfo)
         redis.set("/state/deltaTime", std::to_string(s->deltaTime));
         redis.set("/state/currentTime", std::to_string(s->currentTime));
         redis.set("/state/raceState", std::to_string(s->_raceState));
+        redis.set("/state/id", std::to_string(state_id));
         // Initialize car state values, to allow for later comparisons.
         for (int i = 0; i < s->_ncars; i++) {
             redis.set("/carstate/car" + std::to_string(i) + "/pos_toStart", std::to_string(s->cars[i]->_trkPos.toStart));
@@ -260,6 +280,13 @@ void StartStateManager(tRmInfo* ReInfo)
             }
             else 
             {
+                OutputFile.open("temp1.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+                OutputFile << "state " + std::to_string(state_id) + " data: " + 
+                std::to_string(s->cars[0]->_pos_X) + "," + std::to_string(s->cars[0]->_pos_Y) + "," + std::to_string(s->cars[0]->_pos_Z) + "," + std::to_string(s->cars[0]->_roll) + "," + std::to_string(s->cars[0]->_pitch) + "," + std::to_string(s->cars[0]->_yaw) + " " +
+                std::to_string(s->cars[0]->_speed_x) + "," + std::to_string(s->cars[0]->_speed_y) + "," + std::to_string(s->cars[0]->_speed_z) + "," + std::to_string(s->cars[0]->_yaw_rate) + " " +
+                std::to_string(s->cars[0]->_accel_x) + "," + std::to_string(s->cars[0]->_accel_y) + "," + std::to_string(s->cars[0]->_accel_z)
+                << "\n";
+                OutputFile.close();
                 SaveState(ReInfo->s);
                 std::this_thread::sleep_for(std::chrono::milliseconds(SNAPSHOT_FREQUENCY));
             }
