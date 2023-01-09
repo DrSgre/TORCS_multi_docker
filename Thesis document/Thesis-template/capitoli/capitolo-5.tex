@@ -12,7 +12,7 @@
 Before beginning the work on the TORCS codebase, we performed an exploration and analysis of some TORCS related projects. In the following sections we discuss the two most relevant proposals we identified.
 
 \subsection{Patched TORCS 1.3.7}\label{patched-torcs}
-This project takes inspiration from the previously mentioned SCR architecture, introducing significant enhancements to the original TORCS software. It presents a codebase which is mostly congruent with the original 1.3.7 (latest) version of TORCS. 
+This project takes inspiration from the previously mentioned SCR architecture, introducing significant enhancements to the original TORCS software. It presents a codebase which is mostly congruent with the original 1.3.7 (latest) version of TORCS \cite{site:patched-torcs}. 
 \subsubsection{Original TORCS 1.3.7}
 The original codebase, in particular, includes the following high-level directories:
 \begin{itemize}
@@ -69,7 +69,7 @@ While providing an reasonable starting point for implementing streaming communic
 
 
 \subsection{PyTorcs-docker}
-This projects is a further development, conducted starting from the previously discusses Patched TORCS 1.3.7 project. More specifically, this proposal aims to implement a Python wrapper of the TORCS software, instantiable on Docker and using System V IPC to manage the game state. \\ \\
+This projects is a further development, conducted starting from the previously discusses Patched TORCS 1.3.7 project \cite{site:pytorcs}. More specifically, this proposal aims to implement a Python wrapper of the TORCS software, instantiable on Docker and using System V IPC to manage the game state. \\ \\
 In order to efficiently run graphic components on Docker containers, this project proposes the usage of \textit{NVIDIA Docker containers}, which have the peculiar characteristic of being GPU accelerated. They are, however, not simple to implement on any system, since they require access to the GPU hardware. Moreover, as of now, they are not compatible with \textit{docker-compose}, which is also an interesting tool for implementing systems composed of multiple Docker containers, like in our work. \\ \\
 Similarly to the SCR project, this proposal presents an architecture where the driver is decoupled from the main TORCS executable. However, the PyTorcs architecture also manages to instantiate the executable into a dedicated Docker container, thus taking a step further in the same direction of our work. \\ \\
 \begin{figure}
@@ -122,7 +122,7 @@ The results of initial experiments exposed some performance issues with ETCD, mo
 \end{figure}
 
 \subsection{OrbitDB}
-An additional distributed DB we considered for implementation is OrbisDB. This system is a decentralized database that uses the InterPlanetary File System (IPFS) as its storage layer. It is designed to be a lightweight distributed database, which requires no central authority to operate. \\ \\
+An additional distributed DB we considered for implementation is OrbitDB \cite{site:orbitdb}. This system is a decentralized database that uses the InterPlanetary File System (IPFS) as its storage layer. It is designed to be a lightweight distributed database, which requires no central authority to operate. \\ \\
 OrbitDB stores data in a database structure that is similar to a key-value store or a document store. Each database is associated with a unique address, and data is stored in a series of append-only logs that are replicated across the IPFS network. This allows multiple users to access and modify the database concurrently, without the need for a central server. \\ \\
 OrbitDB is implemented in JavaScript and designed to be integrated into applications developed using this language (either using Node.js or native). This was considered to be strong limitation, in our context of application, since TORCS is strictly developed in C++, with no way to interact with such system. \\ \\
 As such, this solution was discarded, in favour of ETCD and Redis distributed databases.

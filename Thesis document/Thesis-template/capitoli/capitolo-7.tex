@@ -730,7 +730,7 @@ Finally, we if compare the results of the multiple measurements we just discusse
 	\label{fig:requests-comparison-etcd}
 \end{figure}
 
-\subsubsection{Redis stand-alone configuration - GRAFICI DA CORREGGERE}
+\subsubsection{Redis stand-alone configuration}
 For the system configuration with 0 game state fields stored we measure an average framerate of $83.789$ fps, which is not influenced by any network latency introduced into the distributed database, as there is no communication between TORCS and the storage. In this configuration, we consider both write and read requests rates.
 \begin{figure}[h!]
 	\centering
@@ -1378,5 +1378,108 @@ Using the same configuration as in the previous experiment, we now measure the g
 To conclude, we can assert that introducing delays into the simulation module is very problematic for the TORCS system performance. As such, any approach at game state distribution should avoid direct involvement in the TORCS main loop or in its modules operations.
 
 \subsection{Temporal State Manager inconsistency}
+In order to quantify the inconsistency between the local instance state and the remote instance state of TORCS, we compare the time before writing the state and after reading it from the distributed database. \\ The results we obtained for the different configurations are as follows:
+\definecolor{lightRowColor}{HTML}{fafafa}
+\definecolor{darkRowColor}{HTML}{ffcccb}
+
+\def\arraystretch{1.75}
+\rowcolors{2}{lightRowColor}{darkRowColor}
+\begin{longtable}{ 
+		>{\centering}p{0.18\textwidth} 
+		>{\centering}p{0.18\textwidth}
+		>{\centering}p{0.16\textwidth}
+		>{\centering}p{0.16\textwidth}
+		>{\centering}p{0.16\textwidth}}
+	
+	
+	\caption{Temporal inconsistency in the State Manager} \label{tab:temporal-inconsistency} \\
+	\coloredTableHead
+	\textbf{\color{white}System} & 
+	\centering\textbf{\color{white}Average time inconsistency} &
+	\centering\textbf{\color{white}CI low. bound} &
+	\centering\textbf{\color{white}CI up. bound} &
+	\centering\textbf{\color{white}Sample size}
+	\endfirsthead
+	
+	\rowcolor{white}\caption[]{(continue)}\\
+	\coloredTableHead 
+	\textbf{\color{white}System} & 
+	\centering\textbf{\color{white}Average time inconsistency} &
+	\centering\textbf{\color{white}CI low. bound} &
+	\centering\textbf{\color{white}CI up. bound} &
+	\centering\textbf{\color{white}Sample size}
+	\endhead
+	
+	Redis solo & 4.804 ms & 4.736 ms & 4.872 ms & 6439 \cr
+	ETCD solo & 54.916 ms & 51.050 ms & 58.782 ms & 736 \cr
+	Redis cluster & 6.433 ms & 6.320 ms & 6.547 ms & 4396 \cr
+	ETCD cluster & 100.847 ms & 91.539 ms & 110.157 ms & 443 \cr
+\end{longtable}        
+As we can see from table \ref{tab:temporal-inconsistency}, Redis provides much better performance than ETCD both in its cluster and stand-alone configuration, with a much lower inconsistency value. This is to be expected, considering the large amount of requests to be computed and the lack of any network latency.
+
+\pagebreak
+
+We can also see how, similarly to what we identified in other experiments, the difference between the performance of the Redis cluster and stand-alone versions is much smaller than the one between the two ETCD configurations. This is also expected behaviour considering the technical characteristics of Redis, which allow it to provide an higher degree of horizontal scalability, as previously discussed.
+\\ \\
+Considering the moderate inconsistency values provided by the Redis configurations, we can conclude that they are a reasonable solution for the purpose of the State Manager. On the other hand, ETCD does not provide satisfactory performance in this context, with a much higher temporal inconsistency.
 
 \subsection{Positional State Manager inconsistency}
+During this experiment we measured the positional state inconsistency between remote and local instances of TORCS, in terms of: position, velocity and acceleration. We performed this measurement while introducing an increasing amount of network latency into the distributed database, in order to quantify the its effect on the positional state inconsistency. 
+\subsubsection{Redis stand-alone configuration}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.78\linewidth]{"../../TORCS_multi_docker/Experiments Data/Inconsistency-state-test/Images/Redis_inc"}
+	\caption[Redis positional state inconsistency]{Redis positional state inconsistency}
+	\label{fig:redis-inconsistency}
+\end{figure}
+As we can see in figure \ref{fig:redis-inconsistency}, the impact on the positional state inconsistency caused by the introduction of even low (<5 ms) amounts of latency is very significant. The increase in inconsistency is mostly regular, with a much heavier impact on the position of the car, rather than speed or acceleration.
+
+\subsubsection{ETCD stand-alone configuration}
+In the ETCD stand-alone configuration, the behaviour is essentially similar to the Redis stand-alone configuration, as we can see in figure \ref{fig:etcd-inconsistency}, even if with a more irregular increase in inconsistency value.
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.78\linewidth]{"../../TORCS_multi_docker/Experiments Data/Inconsistency-state-test/Images/ETCD_inc"}
+	\caption[ETCD positional state inconsistency]{ETCD positional state inconsistency}
+	\label{fig:etcd-inconsistency}
+\end{figure}
+
+\subsubsection{Redis 3-members cluster configuration}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.78\linewidth]{"../../TORCS_multi_docker/Experiments Data/Inconsistency-state-test/Images/Redis_cluster_inc"}
+	\caption[Redis cluster positional state inconsistency]{Redis cluster positional state inconsistency}
+	\label{fig:redis-cluster-inconsistency}
+\end{figure}
+In the Redis 3-members cluster configuration, we experience a similar situation as in the stand-alone version, with a mostly regular increase of the inconsistency value as the amount of delay introduced increases.
+
+\subsubsection{ETCD 3-members cluster configuration}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.78\linewidth]{"../../TORCS_multi_docker/Experiments Data/Inconsistency-state-test/Images/ETCD_cluster_inc"}
+	\caption[ETCD cluster positional state inconsistency]{ETCD cluster positional state inconsistency}
+	\label{fig:etcd-cluster-inconsistency}
+\end{figure}
+In the ETCD 3-members cluster configuration, we experience a similar situation as in the stand-alone version, with a mostly regular increase of the inconsistency value as the amount of delay introduced increases.
+
+\subsubsection{Inconsistency configuration comparison}
+After experiencing a mostly similar behaviour in term of inconsistency increase with the network latency, in the four configurations we considered, we now compare the actual values obtained.
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.80\linewidth]{"../../TORCS_multi_docker/Experiments Data/Inconsistency-state-test/Images/Position_inc_comparison"}
+	\caption[Position state inconsistency comparison]{Position state inconsistency comparison}
+	\label{fig:position-inconsistency-comparison}
+\end{figure}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.80\linewidth]{"../../TORCS_multi_docker/Experiments Data/Inconsistency-state-test/Images/Speed_inc_comparison"}
+	\caption[Speed state inconsistency comparison]{Speed state inconsistency comparison}
+	\label{fig:speed-inconsistency-comparison}
+\end{figure}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.80\linewidth]{"../../TORCS_multi_docker/Experiments Data/Inconsistency-state-test/Images/Acc_inc_comparison"}
+	\caption[Acceleration state inconsistency comparison]{Acceleration state inconsistency comparison}
+	\label{fig:acceleration-inconsistency-comparison}
+\end{figure}
+\\ From the graphs (figures \ref{fig:position-inconsistency-comparison}, \ref{fig:speed-inconsistency-comparison}, \ref{fig:acceleration-inconsistency-comparison}) we can see that the ETCD cluster version is presenting a higher degree of inconsistency, in terms of car position, speed and acceleration. The other three system configurations, on the other hand, perform better, with Redis generally providing slightly lower inconsistency with when no latency is present. However, leveraging the benefits provided by HTTP pipelining, ETCD provides performance similar to Redis, when latency is introduced. \\ \\
+Still, comparing the two cluster versions, Redis present better scalability in the number of nodes, with respect to ETCD, and thus better performance.

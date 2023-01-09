@@ -8,9 +8,9 @@
 \intro{This chapter discusses the technologies \textbf{used} or \textbf{considered} during the project, providing an in-depth description and motivating their choice.}
 
 \section{Docker}
-Docker is defined as a set of platform as a service (PaaS) products that use OS-level virtualization to package and run applications in loosely isolated environments called \textit{containers}. \\
+Docker is defined as a set of platform as a service (PaaS) products that use OS-level virtualization to package and run applications in loosely isolated environments called \textit{containers} \cite{site:docker-wiki}. \\
 These containers can be seen as lightweight virtual machines, containing all the software needed to run applications. The flexibility of such environments makes it easy to run multiple simultaneous instances of them on the same host, allocating them a defined quantity of resources. \\ \\
-In general, the main features of Docker are:
+In general, the main features of Docker are \cite{site:docker-website}:
 \begin{itemize}
 	\item \textit{contained environments}: considering the isolation provided by Docker containers, its possible atomically perform changes to the software that is being hosted, without impacting any component outside of that environment;
 	\item \textit{responsive deployment and scaling}: Docker's lightweight nature makes it possible to dynamically manage workloads, scaling up or tearing down applications and services as needed, in real time;
@@ -20,7 +20,7 @@ In general, the main features of Docker are:
 If we compare these characteristics with the needs of Game Engine modules in a distributed architecture, it is easy to see them matching reasonably well with each other. Thus we can consider Docker as an interesting alternative for the implementation of Distributed Game Engine modules.
 
 \subsection{Architecture}
-Docker is designed with a client-server architecture, composed of:
+Docker is designed with a client-server architecture \cite{site:docker-overview}, composed of:
 \begin{itemize}
 	\item \textit{Docker client}: which talks to a daemon and it's one of the primary ways to interact with Docker;
 	\item \textit{Docker daemon}: which performs the operations related to building, running and distributing Docker containers.
@@ -35,7 +35,7 @@ Both these components can be run on the same system or remotely, communicating u
 
 
 \subsection{Docker-compose}\label{docker-compose}
-Compose is a tool used for defining and running applications which require multiple Docker containers, in a simplified manner. Using Compose, its possible to provide a single YAML file to configure the services needed by the application and then, with a single command, create and start all these containerized services. \\
+Compose is a tool used for defining and running applications which require multiple Docker containers, in a simplified manner \cite{site:docker-compose-doc}. Using Compose, it's possible to provide a single YAML file to configure the services needed by the application and then, with a single command, create and start all these containerized services. \\
 Some of the main features provided by this tool are:
 \begin{itemize}
 	\item \textit{multiple isolated environments on a single host}, which, even if possible without this tool, is made much easier and configurable;
@@ -46,8 +46,8 @@ Some of the main features provided by this tool are:
 Overall, this tool can prove quite helpful when developing distributed systems using Docker.
 
 \subsection{Nvidia-docker}
-The NVIDIA Container Toolkit allows users to build and run GPU accelerated Docker containers. The toolkit comprises both a container runtime library and utilities to automatically configure containers to leverage NVIDIA GPUs. \\ \\
-The main components include:
+The NVIDIA Container Toolkit allows users to build and run GPU accelerated Docker containers. The toolkit comprises both a container runtime library and utilities to automatically configure containers to leverage NVIDIA GPUs \cite{site:nvidia-docker-doc}. \\ \\
+The main components \cite{site:nvidia-docker-repo} include:
 \begin{itemize}
 	\item the \texttt{nvidia-docker} wrapper;
 	\item the \textit{NVIDIA Container Runtime}, which mostly includes NVIDIA specific code and additional hooks;
@@ -63,12 +63,12 @@ The main components include:
 This toolkit can be an interesting addition for implementing Game Engine graphics modules. However, it is currently not compatible with Docker-compose, which is also an important tool for building distributed system applications.
 
 \section{ETCD}
-ETCD is described as a disk-based, distributed and reliable Key-Value Store, which allows the storage of data that can be accessed by a distributed system [ref. General ETCD description]. More specifically, ETCD is designed to reliably store infrequently updated data, exposing previous versions of key-value pairs to support inexpensive snapshots of the DB and watch history events [ref. ETCD data model]. \\ \\
+ETCD is described as a disk-based, distributed and reliable Key-Value Store, which allows the storage of data that can be accessed by a distributed system \cite{site:etcd-desc}. More specifically, ETCD is designed to reliably store infrequently updated data, exposing previous versions of key-value pairs to support inexpensive snapshots of the DB and watch history events \cite{site:etcd-data-model}. \\ \\
 In order to provide these features, ETCD presents a persistent, multi-version, concurrency-control data model for its key-value storage. This component preserves the previous version of any key-value pair when its value is overwritten with new data. As such, this storage system is described as immutable, since its operations do ot update the structure in-place, but instead generate a new updated structure, where all past versions of the keys are accessible and watchable after modification. \\ \\
 In order to guarantee the storage of strongly consistent data, ETCD uses a leader-based consensus protocol called \textit{Raft} for data replication and log execution. The implementation of such algorithm, as well as the rest of ETCD architecture, is developed in the Go programming language, which is particularly fitting for distributed system environments.
 
 \subsection{The Raft Algorithm}
-The Raft algorithm is typically adopted in the context of \textit{state machine replication (SMR)} [ref. SMR], which is a general method for implementing a fault-tolerant service. This is done by replicating servers (or nodes) and coordinating client interactions with the server replicas. \\
+The Raft algorithm is typically adopted in the context of \textit{state machine replication (SMR)} \cite{site:state-machine-replication-wiki}, which is a general method for implementing a fault-tolerant service. This is done by replicating servers (or nodes) and coordinating client interactions with the server replicas. \\
 The state machine can be defined as a combination of:
 \begin{itemize}
 	\item a set of \textit{states};
@@ -87,7 +87,7 @@ In this context, a consensus algorithm is required in order to determine and pre
 	\label{fig:states}
 \end{figure}
 \subsubsection{Algorithm overview}
-The main goal of the Raft algorithm is to allow distributed nodes to achieve \textit{consensus} on the system state. This means that multiple servers or nodes must agree on some data value that is needed during computation [ref. Raft e Consensus]. This is, generally, a primary objective in the design of fault-tolerant distributed systems. \\ \\
+The main goal of the Raft algorithm is to allow distributed nodes to achieve \textit{consensus} on the system state. This means that multiple servers or nodes must agree on some data value that is needed during computation \cite{site:consensus-wiki, site:raft-consensus-algorithm}. This is, generally, a primary objective in the design of fault-tolerant distributed systems. \\ \\
 The Raft algorithms defines three main roles, which may be assumed by any node in certain specific situations:
 \begin{itemize}
 	\item \textit{Follower}: which is a simple node that composes the replicated state machine. This is the default role assigned to nodes when they become part of the \textit{server cluster}, which we define as the subset of nodes that implements the Raft algorithm in a distributed system. Follower nodes may only respond to Candidate and Leader nodes;
@@ -102,7 +102,7 @@ As previously mentioned, these roles are very important for Raft to be implement
 	\label{fig:roles}
 \end{figure}
 \subsubsection{Time management}
-In order to correctly handle server states, the Raft algorithm manages the time by dividing it in \textit{terms} [ref. Raft]. \\
+In order to correctly handle server states, the Raft algorithm manages the time by dividing it in \textit{terms} \cite{site:raft-consensus-algorithm}. \\
 Working in an asynchronous environment, these terms are not identified by a fixed real-time length. Different servers may observe the transition between terms at different times, while the most significant element of reference is actually the local state of each server. As such, the terms are meant to act as a logical clock, allowing servers to detect obsolete information and stale Leaders, regardless of the asynchronous nature of the system. \\ \\
 Each term is uniquely identified by a monotonically increasing integer number called \textit{term number}. This number is stored in each node and attached in node communications. \\
 Each term starts with a Leader election, where the Candidates request votes to other server nodes (Followers) in order to obtain a majority consensus:
@@ -125,7 +125,7 @@ This makes the term number a crucial factor in time management, for the Raft alg
 	\label{fig:terms}
 \end{figure}
 \subsubsection{Leader election}
-In order to maintain the authority as Leader of the cluster, the node sends periodic messages to the other Follower nodes. These communications are called \textit{heartbeats} [ref. Raft]. \\ \\
+In order to maintain the authority as Leader of the cluster, the node sends periodic messages to the other Follower nodes. These communications are called \textit{heartbeats} \cite{site:raft-consensus-algorithm}. \\ \\
 When a Follower node doesn't receive a heartbeat within a given time bound, it assumes the Leader is not active anymore and promotes itself to the role of Candidate. It then votes for itself and requests other nodes to vote for itself, in order to establish a majority. The result of the election can be one of:
 \begin{itemize}
 	\item the Candidate node receives a vote from the majority of the nodes of the cluster, making it the new Leader. In that moment, the node begins to send heartbeats to notify other nodes of the presence of a new Leader. Candidate nodes receiving the heartbeat will return to the Follower role;
@@ -134,7 +134,7 @@ When a Follower node doesn't receive a heartbeat within a given time bound, it a
 \end{itemize}
 This whole process is performed multiple times during the Raft algorithm lifecycle in distributed systems. It ensures that a Leader is always present to serve clients requests and that is condition to do so.
 \subsubsection{Log replication}\label{etcd-replication}
-Each request made by a client is stored by the Leader in the \textit{logs}, which are then replicated in the other Follower nodes [ref. Raft]. \\
+Each request made by a client is stored by the Leader in the \textit{logs}, which are then replicated in the other Follower nodes \cite{site:raft-consensus-algorithm}. \\
 Generally, a log entry contains the following information:
 \begin{itemize}
 	\item \textit{command}: which is the instruction specified by the user to be executed;
@@ -149,7 +149,7 @@ In a situation in which the Leader node crashes, the logs may become inconsisten
 \subsubsection{Safety}
 In order to maintain \textit{Strong Consistency} of data on a set of server nodes, the Raft algorithm ensures that the Leader is storing all the entries related to previous terms, committed inside its own log. \\
 During Leader election, the request for a vote that a Candidate sends to other nodes, also contains some information regarding the log of the Candidate. This information includes the term number of said node, which can be evaluated by the receiver, to immediately discard requests from not updated nodes. \\ \\
-In addition to this rule, there are also several other design choices, which help avoid breakage of consensus [ref. Raft]:
+In addition to this rule, there are also several other design choices, which help avoid breakage of consensus \cite{site:raft-consensus-algorithm}:
 \begin{itemize}
 	\item \textit{leader election safety}: there shall be at most one Leader for each term;
 	\item \textit{log matching safety}: if multiple logs contains an entry with the same Index and Term, then those logs are guaranteed to be identical, till the given index;
@@ -162,20 +162,20 @@ These characteristics of the Raft algorithm are considered to be sufficient, in 
 As such, it is possible that the performance of this system may not be ideal in contexts where the stored data is changed frequently.
 
 \subsection{Interaction with ETCD}\label{ETCD-interaction}
-ETCD allows direct interactions from the client through specific requests, which generally include functionalities such as:
+ETCD allows direct interactions from the client through specific requests, which generally include functionalities \cite{site:etcd-doc} such as:
 \begin{itemize}
 	\item \textit{write key}: where the client, communicating with any node of the ETCD cluster, instruct the distributed system to write a new key-value or modify an existing key-value. Following the Raft algorithm, if this type of request is sent to a Follower node, it is redirected to the Leader for the actual processing;
-	\item \textit{read key}: where the client, communicating with any node of the ETCD cluster, asks for the value of a specific key. According to ETCD configurations, this type of request can be carried out by any ETCD cluster member, since they are constantly updated on the current state of the stored data.
+	\item \textit{read key}: where the client, communicating with any node of the ETCD cluster, asks for the value of a specific key. According to ETCD configurations, this type of request can be carried out by any ETCD cluster member, since they are constantly updated on the current state of the stored data \cite{site:etcd-faq}.
 \end{itemize}
-On a more practical level, these requests can be sent either using a dedicated ETCD CLI [ref.] or through ETCD libraries/APIs developed in order to allow for interaction also within applications written in different programming languages. In our work, which focuses on code written in C++, the library of choice was \texttt{etcd-cpp-apiv3} [ref], which is considered to be one of the most updated and reliable ones. \\ \\
-Other functionalities provided by ETCD CLI and APIs are:
+On a more practical level, these requests can be sent either using a dedicated ETCD CLI or through ETCD libraries/APIs developed in order to allow for interaction also within applications written in different programming languages. In our work, which focuses on code written in C++, the library of choice was \texttt{etcd-cpp-apiv3} \cite{site:etcd-cpp-apiv3}, which is considered to be one of the most updated and reliable ones. \\ \\
+Other functionalities \cite{site:etcd-doc} provided by ETCD CLI and APIs are:
 \begin{itemize}
 	\item \textit{delete key}: which requests the delete of a specific key-value from the ETCD database;
 	\item \textit{watch key}: which is an interesting functionality, that allows clients to subscribe to value updates of specific keys, in order to be notified in real time. This feature is can be particularly helpful when implementing communication through shared memory, since it removes the need for clients to continuously poll the data, in order to verify the presence of changes;
 	\item \textit{transactions}: used to perform certain operations when one set of conditions is met or perform other operations when the conditions are not met;
 	\item \textit{leases}: mechanism generally used to detect whether a node is alive in the distributed system.
 \end{itemize}
-All these remote requests and functionalities, which allow the client to communicate with the ETCD system, are carried out using the HTTP protocol. This allows ETCD to leverage all the features provided by such protocol, including \textit{pipelining}: feature that allows the transmission of multiple requests in a single TCP packet, possibly improving the performance of the system. [ref. HTTP pipelining]
+All these remote requests and functionalities, which allow the client to communicate with the ETCD system, are carried out using the HTTP protocol. This allows ETCD to leverage all the features provided by such protocol, including \textit{pipelining}: feature that allows the transmission of multiple requests in a single TCP packet, possibly improving the performance of the system. \cite{site:http-pipelining}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.85\linewidth]{"immagini/Technologies/ETCD cluster"}
@@ -184,17 +184,17 @@ All these remote requests and functionalities, which allow the client to communi
 \end{figure}
 
 \subsection{Docker compatibility}
-Considering the distributed nature of the ETCD system, it is possible to actually implement ETCD nodes as Docker containers. They can be run both in standalone mode and in cluster mode [ref. ETCD Docker guide] with other ETCD containers, communicating using the Docker networking features. \\
+Considering the distributed nature of the ETCD system, it is possible to actually implement ETCD nodes as Docker containers. They can be run both in standalone mode and in cluster mode \cite{site:etcd-docker} with other ETCD containers, communicating using the Docker networking features. \\
 Moreover, as shown in figure \ref{fig:etcd-cluster}, different applications running on other Docker containers can connect and interact with the containerized ETCD system, using language-specific APIs or, if installed on the app container, directly the ETCD CLI.
 
 \subsection{System maintenance}
-ETCD clusters and nodes require periodic maintenance to remain reliable. Depending on the needs of the ETCD application, the maintenance can be automated and performed without downtime or significantly degraded performance [ref. ETCD maintenance]. \\ \\
+ETCD clusters and nodes require periodic maintenance to remain reliable. Depending on the needs of the ETCD application, the maintenance can be automated and performed without downtime or significantly degraded performance \cite{site:etcd-maintenance}. \\ \\
 The ETCD system, in fact, keeps an exact history of its keyspace, which should be periodically compacted in order to avoid performance degradation and eventual storage space exhaustion. On a more technical level, compacting the keyspace history drops all information about keys superseded prior to a given keyspace revision (version of the key). This operation can be configured to be performed periodically or after a set number of key revisions. \\ \\
 This freed space should then become available for additional writes to the keyspace. However, in order to completely free the computational resource of the host, an additional operation called \textit{defragmentation} is required. This operation releases the storage space still being consumed by the internal fragmentation of the backend database, and needs to be issued manually for each ETCD member, so that cluster-wide latency spikes may be avoided. \\ \\
 Even if the compaction operation can be performed automatically, maintaining the ETCD system using these tools can be quite expensive, both in computational terms and in practical terms, since the defragmentation can only to be launched manually when needed.
 
 \section{Redis}
-Redis is an open source, in-memory data structure store used as database, cache, message broker and streaming engine. Redis provides support for multiple different data structures, such as:
+Redis is an open source, in-memory data structure store used as database, cache, message broker and streaming engine \cite{site:redis-doc}. Redis provides support for multiple different data structures, such as:
 \begin{itemize}
 	\item strings;
 	\item hashes;
@@ -211,7 +211,7 @@ Differently from ETCD, which works mainly by operating on the disk, Redis works 
 The software is written in ANSI C and works with most POSIX systems, without external dependences.
 
 \subsection{Features and configurations}
-This system provides many interesting and, sometimes, unique features that can prove useful when managing a distributed system. These include:
+This system provides many interesting and, sometimes, unique features that can prove useful when managing a distributed system \cite{site:redis-doc}. These include:
 \begin{itemize}
 	\item \textit{LUA scripting}: used for writing scripts that interact with the keys stored in the database;
 	\item \textit{eviction policies}: for managing which data should be deleted in case a set memory limit is reached, in term of resource consumption. These policies usually take into consideration the frequency with which a value is accessed (e.g. Least Frequently Used - LFU) or the last time the value was accessed (e.g. Least Recently Used - LRU);
@@ -222,12 +222,12 @@ This system provides many interesting and, sometimes, unique features that can p
 	\item \textit{client-side caching}: this functionality be configured client-side, in order to decide which information to query from the Redis database and which to manage locally through a cache. This decision is typically tied to the frequency of changes that specific key is subject to (measured through the publish-subscribe mechanism);
 	\item \textit{pipelining}: implemented for managing multiple read and write requests with a reduced amount of read/write sys calls to the socket methods. This is particularly useful when dealing with multiple clients performing a large number of requests in the same time interval.
 \end{itemize}
-Additionally, if required by the context of application, it is also possible to configure \textit{Redis itself as a cache} [ref.], making all the stored keys "live" only for a certain period of time, before being deleted.
+Additionally, if required by the context of application, it is also possible to configure \textit{Redis itself as a cache}, making all the stored keys "live" only for a certain period of time, before being deleted.
 
 \pagebreak
 
 \subsection{Replication and synchronization mechanism}
-At the base of Redis replication there is a Leader-Follower (Master-Follower) consensus mechanism. Similarly to the Raft algorithm, it allows replica Redis instances to be exact copies of Master instances. \\
+At the base of Redis replication there is a Leader-Follower (Master-Follower) consensus mechanism \cite{site:redis-replication}. Similarly to the Raft algorithm, it allows replica Redis instances to be exact copies of Master instances. \\
 Moreover, the replica automatically reconnect to the Master every time the link breaks, and attempt to be an exact copy of it regardless of what happens to the master. On a general level, the Redis mechanism works very similarly to the Raft algorithm implemented in ETCD, with the same roles and principles at its basis (e.g. Leader election, log replication). \\ \\
 There are, however, very important differences to consider, which highlight the different approaches of the two systems to data consistency. \\
 First of all, Redis replicas (Followers) do not accept write requests in their default configuration, differently from ETCD where these requests are redirected by the Followers to the Leader. This is done in order to prevent multiple members to expose view of the distributed DB which is different from the one of the Leader. \\ \\
@@ -246,8 +246,8 @@ In general, we can assert that the main difference between the ETCD and Redis sy
 
 \subsection{Interaction with Redis}
 Similarly to ETCD, Redis also provides CLI commands (\texttt{redis-cli}) that can be used to interact with the Redis instance from command line. \\
-Moreover, regarding the possibility to interact with the Redis instance from applications written in specific programming languages (e.g. C++), Redis provides a list of APIs that can be used for this purpose [ref.]. \\
-In particular, for our project, the most fitting option is the \texttt{redis-plus-plus} C++ API [ref.], which is fairly more complex than the previously mentioned ETCD alternative, but provides a large amount of interesting functionalities. \\ \\
+Moreover, regarding the possibility to interact with the Redis instance from applications written in specific programming languages (e.g. C++), Redis provides a list of APIs that can be used for this purpose \cite{site:redis-clients}. \\
+In particular, for our project, the most fitting option is the \texttt{redis-plus-plus} C++ API \cite{site:redis-plus-plus}, which is fairly more complex than the previously mentioned ETCD alternative, but provides a large amount of interesting functionalities. \\ \\
 In term of key-value interactions, the features provided include all the ones mentioned in section \ref{ETCD-interaction} for ETCD, with the addition of:
 \begin{itemize}
 	\item \textit{pipelined requests}: to be configured directly in-code, by inserting requests into the pipeline structure and then call a dedicated method for their execution;
@@ -255,7 +255,7 @@ In term of key-value interactions, the features provided include all the ones me
 \end{itemize}
 
 \subsection{Docker compatibility}
-Considering the distributed nature of the Redis system, it is possible to actually implement Redis nodes as Docker containers. They can be run both in standalone mode and in cluster mode [ref. Redis Docker guide] with other Redis containers, communicating using the Docker networking features. \\
+Considering the distributed nature of the Redis system, it is possible to actually implement Redis nodes as Docker containers. They can be run both in standalone mode and in cluster mode \cite{site:redis-docker-guide} with other Redis containers, communicating using the Docker networking features. \\
 Moreover, as we can see in figure \ref{fig:redis-cluster}, different applications running on other Docker containers can connect and interact with the containerized Redis system, using language-specific APIs or, if installed on the app container, directly the Redis CLI.
 
 %\section{System V IPC}

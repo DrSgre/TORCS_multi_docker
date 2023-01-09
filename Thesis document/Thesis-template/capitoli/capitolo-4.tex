@@ -20,8 +20,8 @@ In addition to these three main criteria, we also try to focus on software which
 We can now elaborate more on the individual software we considered in our preliminary analysis, in the following sections.
 
 \subsection{Godot}
-Godot is a cross-platform Game Engine for the development of 2D and 3D games [ref.]. It provides a comprehensive set of tools, which allow the development of video games that can be easily exported to multiple platforms. \\ \\
-This characteristic can prove to be quite interesting for research purposes, as it enables multiple testing scenarios for applications, with different configurations [ref.]. Moreover, this software is described as semi-portable, allowing its executables to be run from any location and never requiring advanced system privileges. \\ \\
+Godot is a cross-platform Game Engine for the development of 2D and 3D games \cite{site:godot-doc}. It provides a comprehensive set of tools, which allow the development of video games that can be easily exported to multiple platforms. \\ \\
+This characteristic can prove to be quite interesting for research purposes, as it enables multiple testing scenarios for applications, with different configurations \cite{site:godot-github}. Moreover, this software is described as semi-portable, allowing its executables to be run from any location and never requiring advanced system privileges. \\ \\
 This development software supports multiple programming languages, such as:
 \begin{itemize}
 	\item \textit{GDScript}, which is the recommended Godot original programming language;
@@ -36,13 +36,13 @@ These cover most programming languages considered for our research project.
 	\caption[Representation of the Godot architecture.]{Representation of the Godot architecture.}
 	\label{fig:architecture-diagram}
 \end{figure}
-\\ The engine itself is reasonably well documented [ref.], with also a complete graphical representation of its whole architecture, which we can see in figure \ref{fig:architecture-diagram}. However, this architecture is still quite complex, with multiple layers and many modules very integrated with each other. The core components, despite being quite small-sized, are not necessarily a good fit for modularization purposes, as they are the less flexible part of the structure. \\ \\
-Nonetheless, Godot offers flexibility in the form of custom modules, which can be developed in C++ and used to add new functionalities to the original Game Engine. They can be both small-sized or large-sized (e.g. libraries) and used both for video games development and execution. \\ \\
-Finally, another feature provided by Godot is the implementation of multi-threading as servers. These structures are daemons which manage data, process it and push the elaborated result to other modules. As such, they can become an interesting component for the purpose of computation offloading in a distributed environment.
+\\ The engine itself is reasonably well documented \cite{site:godot-doc}, with also a complete graphical representation of its whole architecture \cite{site:godot-architecture}, which we can see in figure \ref{fig:architecture-diagram}. However, this architecture is still quite complex, with multiple layers and many modules very integrated with each other. The core components, despite being quite small-sized, are not necessarily a good fit for modularization purposes, as they are the less flexible part of the structure. \\ \\
+Nonetheless, Godot offers flexibility in the form of custom modules \cite{site:godot-modules}, which can be developed in C++ and used to add new functionalities to the original Game Engine. They can be both small-sized or large-sized (e.g. libraries) and used both for video games development and execution. \\ \\
+Finally, another feature provided by Godot is the implementation of multi-threading as servers \cite{site:godot-servers}. These structures are daemons which manage data, process it and push the elaborated result to other modules. As such, they can become an interesting component for the purpose of computation offloading in a distributed environment.
 
 \subsection{Python Minecraft Clone}
 In the following GitHub repository: \href{https://github.com/obiwac/python-minecraft-clone}{https://github.com/obiwac/python-minecraft-clone} we are provided with the source code of a Python clone of the video game Minecraft. \\
-Minecraft is a sandbox game, originally developed in the Java programming language, where the players explore a blocky, procedurally generated 3D world, where they may discover and extract raw minerals, craft tools and items, and build structures [ref. Minecraft Wiki]. 
+Minecraft is a sandbox game, originally developed in the Java programming language, where the players explore a blocky, procedurally generated 3D world, where they may discover and extract raw minerals, craft tools and items, and build structures \cite{site:minecraft-wiki}. 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.8\linewidth]{"immagini/Feasibility study/Minecraft"}
@@ -50,25 +50,25 @@ Minecraft is a sandbox game, originally developed in the Java programming langua
 	\label{fig:minecraft}
 \end{figure}
 \\
-Despite not being a Game Engine, this piece of software was deemed to be interesting for our purposes, considering the simplicity of its structure, which would make the identification of the core functionalities relatively easy. However, as discussed in the analysis criteria, the limited amount of features currently implemented could reduce the scope of a possible modularization, especially considering that the project is still in development. \\ \\
-In terms of documentation, this piece of software is also quite lacking, with only few comments inside the actual code and no external textual reference. Still, the related video tutorial series, referenced in the repository, is well structured and clearly explains the development of all the software features and components.
+Despite not being a Game Engine, this piece of software was deemed to be interesting for our purposes, considering the simplicity of its structure, which would make the identification of the core functionalities relatively easy \cite{site:python-minecraft-github}. However, as discussed in the analysis criteria, the limited amount of features currently implemented could reduce the scope of a possible modularization, especially considering that the project is still in development. \\ \\
+In terms of documentation, this piece of software is also quite lacking, with only few comments inside the actual code and no external textual reference. Still, the related video tutorial series \cite{site:python-minecraft-tutorial}, referenced in the repository, is well structured and clearly explains the development of all the software features and components.
 
 
 \subsection{Flightgear}
-Flightgear is an open-source flight simulator written mostly in C++ [ref.]. This software is quite complex in terms of structure, including a large number of subsystems handling tasks that range from simple features to more complex ones (e.g. multiplayer).
+Flightgear is an open-source flight simulator written mostly in C++ \cite{site:flightgear-wiki}. This software is quite complex in terms of structure, including a large number of subsystems handling tasks that range from simple features to more complex ones (e.g. multiplayer).
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.8\linewidth]{"immagini/Feasibility study/Flightgear"}
 	\caption[In-game screenshot of Flightgear.]{In-game screenshot of Flightgear.}
 	\label{fig:flightgear}
 \end{figure}
-\\ While this complexity aspect is certainly problematic for the modularization of its tasks, the software codebase is managed following programming best practices and with clear distinction between the individual functionalities. \\
-Moreover, the software is extensively documented, with a rich and well maintained Wiki that defines in clear terms what are its main features and tasks. \\ \\
-Being a "free-exploration" game, there are tasks that are computationally hard to manage and which could benefit from modularization. However, the software itself is quite demanding in terms of computational resources. This may cause performance issues that can introduce noise into measurements and evaluations, if the local hardware is not able to satisfy the software requirements.
+\\ While this complexity aspect is certainly problematic for the modularization of its tasks, the software codebase is managed following programming best practices and with clear distinction between the individual functionalities \cite{site:flightgear-github}. \\
+Moreover, the software is extensively documented, with a rich and well maintained Wiki that defines in clear terms what are its main features and tasks \cite{site:flightgear-dev}. \\ \\
+Being a "free-exploration" game, there are tasks that are computationally hard to manage and which could benefit from modularization. However, the software itself is quite demanding in terms of computational resources \cite{site:flightgear-performance}. This may cause performance issues that can introduce noise into measurements and evaluations, if the local hardware is not able to satisfy the software requirements.
 
 \subsection{TORCS - The Open Racing Car Simulator}
-TORCS is a 3D racing simulator designed to allow AI drivers and humans to compete with each other, with the aim of studying autonomous driving [ref.]. \\ \\
-This software includes both a video game and a Game Engine, with functionalities which are clearly separated inside the codebase. This separation is helpful for a possible modularization of the system, more so if we consider that some of its components are explicitly loaded during execution (plugin), essentially defining the runtime component of the Game Engine (e.g. Rendering, Simulation, Track, Robot). \\ \\
+TORCS is a 3D racing simulator designed to allow AI drivers and humans to compete with each other, with the aim of studying autonomous driving \cite{site:torcs-website}. \\ \\
+This software includes both a video game and a Game Engine, with functionalities which are clearly separated inside the codebase \cite{site:torcs-source}. This separation is helpful for a possible modularization of the system, more so if we consider that some of its components are explicitly loaded during execution (plugin), essentially defining the runtime component of the Game Engine (e.g. Rendering, Simulation, Track, Robot). \\ \\
 The codebase of this software is medium-sized, with enough functionalities to modularize, but also not excessively complex if the intention is to act on all of its components. Additionally, the system requirements for running simulated races are not high, which prevents performance problems related to insufficient resources and the negative effects that would ensue. \\ \\
 The main problem of this software is the lack of maintained documentation, as the provided one is quite outdated and sparse between multiple sources.
 
@@ -81,7 +81,7 @@ The main problem of this software is the lack of maintained documentation, as th
 
 
 \subsection{FoFiX}
-FoFiX is a highly customizable rhythm game supporting many modes of guitar, bass, drum, and vocal gameplay for up to four players. It is the continuation of a long succession of modifications to the original Frets on Fire by Unreal Voodoo [ref.]. 
+FoFiX is a highly customizable rhythm game supporting many modes of guitar, bass, drum, and vocal gameplay for up to four players. It is the continuation of a long succession of modifications to the original Frets on Fire by Unreal Voodoo \cite{site:fofix-github}. 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.75\linewidth]{"immagini/Feasibility study/Fofix"}
@@ -196,7 +196,7 @@ In general, the game state management is heavily centralized, with all the state
 \pagebreak
 
 \subsection{Simulated Car Racing Championship Competition (SCR)}\label{scr}
-The work presented in the paper by Daniele Loiacono \textit{el al.} proposes an interesting server-multiclient architecture for Simulated Car Recing Championship software. The goal of this kind of competition is to design a controller for racing car that compete on many tracks alone and/or against other drivers. \\ \\
+The work presented in the paper by Daniele Loiacono \textit{el al.} proposes an interesting server-multiclient architecture for Simulated Car Recing Championship software \cite{womak:scr-manual}. The goal of this kind of competition is to design a controller for racing car that compete on many tracks alone and/or against other drivers. \\ \\
 The basic TORCS architecture comes as a stand-alone application, where the robots are compiled as separate modules and loaded into main memory only when a race takes place. This architecture comes with three major drawbacks:
 \begin{itemize}
 	\item the races are not in real-time, since the execution of robots is blocking;
