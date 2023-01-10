@@ -16,14 +16,14 @@ This project takes inspiration from the previously mentioned SCR architecture, i
 \subsubsection{Original TORCS 1.3.7}
 The original codebase, in particular, includes the following high-level directories:
 \begin{itemize}
-	\item \textit{data}: containing useful data information about car models, tracks and UI elements;
+	\item \textit{data}: containing useful data information about car models, tracks and UI$_G$ elements;
 	\item \textit{doc}: containing general documentation related to the project functionalities and structure;
 	\item \textit{src}: containing the actual source code for the software, with its libraries and modules.
 \end{itemize}
 Inside the source code directory, we can find multiple lower-level directories related to the Game Engine modules and libraries, such as:
 \begin{itemize}
 	\item \textit{libs}: containing multiple TORCS utility libraries, as well as core components such as the \texttt{raceengineclient}, which is used to manage the main loop of the application;
-	\item \textit{drivers}: containing various AI implementations for handling robots (cars) behaviour. It also contains an "human" driver, with code related to user manual control of a car;
+	\item \textit{drivers}: containing various AI$_G$ implementations for handling robots (cars) behaviour. It also contains an "human" driver, with code related to user manual control of a car;
 	\item \textit{graphic}: containing code related to \texttt{ssgraph}, with elements to manage special effects, sound and general rendering of graphical elements;
 	\item \textit{simu}: containing code related to the management of the two possible types of simulation provided. This includes physic elements (e.g. collisions), but also data about the actuators functionalities used to drive the car (as described in section \ref{sensors-actuators});
 	\item \textit{track}: containing code for managing the build, structure and status of the racing tracks. 
@@ -63,7 +63,7 @@ While providing an reasonable starting point for implementing streaming communic
 \begin{figure}
 	\centering
 	\includegraphics[width=0.8\linewidth]{"immagini/Software development/patched-torcs-architecture"}
-	\caption[Proposed streaming architecture]{Proposed streaming architecture}
+	\caption[Proposed streaming architecture]{Proposed streaming architecture.}
 	\label{fig:patched-torcs-architecture}
 \end{figure}
 
@@ -111,8 +111,8 @@ Finally, the Distributed TORCS architecture presented in figure \ref{fig:develop
 \section{Distributed databases implementation}
 In order to allow the Game Engine modules located in different containers to communicate with each other, a dedicated mean of communication is required. In the implementation proposed by the Patched TORCS 1.3.7 project, the main TORCS executable and the SCR client communicate through a socket-based connection. This is a reasonable choice for simple action-state exchanges, however when multiple modules are accessing and modifying the same shared game state this approach might not be ideal. Inconsistency in the data read by different modules can, in fact, impact the video game functionalities. As such, we decide to implement data communication between the modules using a \textit{shared storage distributed database}. In this context, we evaluate two different solutions, considered to both to be fitting for the purpose of our work, namely: \textit{ETCD} and \textit{Redis}. \\ \\
 Both solutions are provided with Docker images (\href{https://hub.docker.com/r/bitnami/etcd}{ETCD image} and \href{https://hub.docker.com/_/redis}{Redis image}) that can be freely implemented into applications, as such the Docker integration is simple and straightforward, provided that said images are configured to be connected to the same Docker network as the other containers. \\ \\
-Nonetheless, in order to interact with the distributed databases instances from the TORCS application, we also require APIs and libraries dedicated to such purpose. As such, we decide to compile and link into TORCS both: \href{https://github.com/etcd-cpp-apiv3/etcd-cpp-apiv3}{etcd-cpp-apiv3} and \href{https://github.com/sewenew/redis-plus-plus}{redis-plus-plus}. In order to separate the two distributed databases implementations, we have two different and dedicated TORCS applications in our project repository. \\ \\
-The results of initial experiments exposed some performance issues with ETCD, mostly caused by the local storage of the history of all the keys that have been changed during execution, alongside multiple expensive DB snapshots. As such, we have applied some changes to the original ETCD application, in order to remove said expensive operations and correct some memory management issues arisen in our application context. The new ETCD Docker image referenced in the project is stored in our repository.
+Nonetheless, in order to interact with the distributed databases instances from the TORCS application, we also require APIs$_G$ and libraries dedicated to such purpose. As such, we decide to compile and link into TORCS both: \href{https://github.com/etcd-cpp-apiv3/etcd-cpp-apiv3}{etcd-cpp-apiv3} and \href{https://github.com/sewenew/redis-plus-plus}{redis-plus-plus}. In order to separate the two distributed databases implementations, we have two different and dedicated TORCS applications in our project repository. \\ \\
+The results of initial experiments exposed some performance issues with ETCD, mostly caused by the local storage of the history of all the keys that have been changed during execution, alongside multiple expensive DB$_G$ snapshots. As such, we have applied some changes to the original ETCD application, in order to remove said expensive operations and correct some memory management issues arisen in our application context. The new ETCD Docker image referenced in the project is stored in our repository.
 
 \begin{figure}[h!]
 	\centering
@@ -122,7 +122,7 @@ The results of initial experiments exposed some performance issues with ETCD, mo
 \end{figure}
 
 \subsection{OrbitDB}
-An additional distributed DB we considered for implementation is OrbitDB \cite{site:orbitdb}. This system is a decentralized database that uses the InterPlanetary File System (IPFS) as its storage layer. It is designed to be a lightweight distributed database, which requires no central authority to operate. \\ \\
+An additional distributed DB$_G$ we considered for implementation is OrbitDB \cite{site:orbitdb}. This system is a decentralized database that uses the InterPlanetary File System (IPFS) as its storage layer. It is designed to be a lightweight distributed database, which requires no central authority to operate. \\ \\
 OrbitDB stores data in a database structure that is similar to a key-value store or a document store. Each database is associated with a unique address, and data is stored in a series of append-only logs that are replicated across the IPFS network. This allows multiple users to access and modify the database concurrently, without the need for a central server. \\ \\
 OrbitDB is implemented in JavaScript and designed to be integrated into applications developed using this language (either using Node.js or native). This was considered to be strong limitation, in our context of application, since TORCS is strictly developed in C++, with no way to interact with such system. \\ \\
 As such, this solution was discarded, in favour of ETCD and Redis distributed databases.
@@ -144,7 +144,7 @@ In order to more clearly highlight the benefits of the Redis distributed databas
 	\caption[Redis 3-members cluster configuration.]{Redis 3-members cluster configuration.}
 	\label{fig:redis-cluster}
 \end{figure}
-As we can see in Figure \ref{fig:etcd-cluster}, the requests in the ETCD cluster implementation can be sent to any of the ETCD containers, which directly respond to read requests and redirect write requests to the Leader. The choice of which container to send the request is delegated to the ETCD C++ API, which uses a Round Robin (RR) strategy to balance out the workload between the instances. \\
+As we can see in Figure \ref{fig:etcd-cluster}, the requests in the ETCD cluster implementation can be sent to any of the ETCD containers, which directly respond to read requests and redirect write requests to the Leader. The choice of which container to send the request is delegated to the ETCD C++ API$_G$, which uses a Round Robin (RR$_G$) strategy to balance out the workload between the instances. \\
 In Figure \ref{fig:redis-cluster}, on the other hand, we see how all the requests are directed towards the Redis Master node, which immediately responds to the client upon completion.
 
 \section{Game image streaming}
@@ -168,13 +168,13 @@ One of the main problems arisen during the implementation of ETCD is the amount 
 This is particularly evident in our context of execution, where the game image streaming, alongside other functionalities later discussed, cause a constant flux of large-sized requests. \\
 As such, we operated some changes to the original ETCD software, by:
 \begin{itemize}
-	\item removing the functionality which caused the saving and update of WAL files, used for snapshotting the database;
-	\item instruct ETCD to create a new WAL folder at each database startup, restarting the database from a standard empty condition.
+	\item removing the functionality which caused the saving and update of WAL$_G$ files, used for snapshotting the database;
+	\item instruct ETCD to create a new WAL$_G$ folder at each database startup, restarting the database from a standard empty condition.
 \end{itemize}
 This was considered to be in line with the needs of our project, considering that long term storage of information was not required in this context. While this change greatly reduced the size of the data stored on the disk, the memory resources were still not managed efficiently enough. As such, we made use of two additional built-in ETCD functionalities: \textit{automatic periodic compaction} and \textit{defragmentation}. \\
 Since the ETCD defragmentation can only be requested manually, we set up a custom script to perform it at certain intervals of time. \\ \\
 Finally, after noticing a delay between the end of the defragmentation operations and the actual freeing of memory resources, we assumed that the system memory management was actually delegated to the Go Garbage Collector. As such, in order to see an immediate effect on the available resources after a defragmentation, we introduced an additional explicit call to the Go Garbage Collector, at the end of the related function. \\ \\
-In the end, we managed to keep the actual DB in-memory size within 300 MB, during TORCS execution, which was deemed reasonable to guarantee not to reach resource saturation.
+In the end, we managed to keep the actual DB$_G$ in-memory size within 300 MB, during TORCS execution, which was deemed reasonable to guarantee not to reach resource saturation.
 
 \section{Distributed state-action communication}\label{DDB-SA-communication}
 As discussed in the previous section, we managed to verify the possibility of replacing socket-based communication between TORCS system components, with a data exchange carried out through the shared memory of a distributed database. \\
@@ -190,7 +190,7 @@ The result of this implementation is a new SCR client-server architecture, provi
 
 
 \section{Music Player library}
-Up until this point, in the development process, we focused on containerizing Game Engine modules (e.g. AI driver) or introduce new functionalities (e.g. distributed databases, remote streaming). The TORCS software, however, is also composed of multiple libraries which may benefit from containerization. \\
+Up until this point, in the development process, we focused on containerizing Game Engine modules (e.g. AI$_G$ driver) or introduce new functionalities (e.g. distributed databases, remote streaming). The TORCS software, however, is also composed of multiple libraries which may benefit from containerization. \\
 These libraries, which we previously mentioned in section \ref{patched-torcs}, are smaller sized with respect to complete TORCS modules. However, they are still responsible for managing core functionalities of the system (e.g. music). \\ \\
 Before beginning the decoupling operations, we perform a preliminary analysis on the quantity of external references and dependencies present in some of the libraries. In fact, as the number of references increases, the complexity of the decoupling operation increases as well, considering the side effects on the external referencing components that must also be adapted. \\ \\
 The result of this analysis highlights the \textit{musicplayer} library as a reasonable candidate for containerization. This component is dedicated to managing the enabling and disabling of the music in the game menu, and presents no dependency towards other components, making it quite simple to implement as an independent executable. \\ \\
@@ -233,11 +233,11 @@ We also distinguish between \textit{static game state fields}, which are variabl
 \end{figure}
 
 \subsection{Component methods}
-The State Management middleware provides three methods:
+The State Manager middleware provides three methods:
 \begin{itemize}
 	\item \textit{StartStateManager}: accessible from other modules and taking \texttt{tRmInfo} (full game state data) as input parameter, this method performs the initialization of the \texttt{statemanager} component and its update loop;
-	\item \textit{SaveState}: only accessible inside the \texttt{statemanager} component and taking the current game state (\texttt{tSituation}) as input parameter, this method performs the storage on the distributed DB of the relevant game state fields and car state fields (for all cars);
-	\item \textit{LoadState}: only accessible inside the \texttt{statemanager} component and taking \texttt{tRmInfo} as input parameter, this method reads from the distributed DB the relevant game state fields and car state fields (for all cars), updating the local state accordingly.
+	\item \textit{SaveState}: only accessible inside the \texttt{statemanager} component and taking the current game state (\texttt{tSituation}) as input parameter, this method performs the storage on the distributed DB$_G$ of the relevant game state fields and car state fields (for all cars);
+	\item \textit{LoadState}: only accessible inside the \texttt{statemanager} component and taking \texttt{tRmInfo} as input parameter, this method reads from the distributed DB$_G$ the relevant game state fields and car state fields (for all cars), updating the local state accordingly.
 \end{itemize}
 We can now elaborate more on each method's elaboration logic.
 
@@ -282,14 +282,14 @@ This method operates with the following logic:
 		\end{itemize}
 	\end{enumerate}
 	\item the game state update loop is started, performing a cycle each 100 ms;
-	\item if the race is paused, the \texttt{statemanager} waits without performing requests. Otherwise, it checks whether the distributed DB \texttt{/state/currentTime} is different from the local value;
+	\item if the race is paused, the \texttt{statemanager} waits without performing requests. Otherwise, it checks whether the distributed DB$_G$ \texttt{/state/currentTime} is different from the local value;
 	\begin{enumerate}
-		\item if the remote value is greater than the local one, this means that the local GE values are outdated and the \textit{LoadState} method is called;
-		\item if the remote value is lower than the local one, this means that the local GE is able to provide updated state values to the distributed DB, so the \textit{SaveState} method is called.
+		\item if the remote value is greater than the local one, this means that the local GE$_G$ values are outdated and the \textit{LoadState} method is called;
+		\item if the remote value is lower than the local one, this means that the local GE$_G$ is able to provide updated state values to the distributed DB$_G$, so the \textit{SaveState} method is called.
 	\end{enumerate}
 	\item after the Load/Save operations have been performed, the thread sleeps for 100 ms and then starts a new cycle.
 \end{enumerate}
-Once the race has ended, all the distributed DB keys are removed as a clean up operation.
+Once the race has ended, all the distributed DB$_G$ keys are removed as a clean up operation.
 
 \subsubsection{StartStateManager}
 This method operates with the following logic:
@@ -352,8 +352,8 @@ With the introduction of this component into TORCS, we can see at execution time
 	\item pause/stop the race.
 	\item launch a race on a second TORCS executable.
 \end{enumerate}
-The \texttt{statemanager} on the second instance immediately synchronizes with the values stored into the distributed DB, updating the game time and teleporting the car to the position read from distributed DB.
-With some additional enhancements (e.g. add velocity and acceleration car state fields to distributed DB), it could be possible to implement a synchronization mechanism able to work in a distributed Game Engine environment.
+The \texttt{statemanager} on the second instance immediately synchronizes with the values stored into the distributed DB$_G$, updating the game time and teleporting the car to the position read from distributed DB$_G$.
+With some additional enhancements (e.g. add velocity and acceleration car state fields to distributed DB$_G$), it could be possible to implement a synchronization mechanism able to work in a distributed Game Engine environment.
 
 \begin{figure}
 	\centering

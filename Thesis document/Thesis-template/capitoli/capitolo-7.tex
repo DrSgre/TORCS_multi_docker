@@ -24,7 +24,7 @@ The experiment on the remote TORCS game execution between two different PCs, mak
 		>{\centering}p{0.25\textwidth}}
 	
 	
-	\caption{X11 forwarding performance assessment} \label{tab:X11-forwarding-assessment} \\
+	\caption{X11 forwarding performance assessment.} \label{tab:X11-forwarding-assessment} \\
 	\coloredTableHead
 	\textbf{\color{white}Configuration} & 
 	\centering\textbf{\color{white}Average framerate} &
@@ -38,23 +38,23 @@ The experiment on the remote TORCS game execution between two different PCs, mak
 	\centering\textbf{\color{white}Average latency}
 	\endhead
 	
-	Remote SSH with X11 Forwarding & 6.2 fps & 54 ms \cr
+	Remote SSH$_G$ with X11 Forwarding & 6.2 fps & 54 ms \cr
 	Direct X11 Forwarding & 7.1 fps & 52 ms \cr
 \end{longtable}
-As discussed in section \ref{X11-forwarding-assessment-desc}, we performed our experiment with two different configurations: with \textit{remote SSH} and with \textit{direct X11 Forwarding} (no-SSH). \\
+As discussed in section \ref{X11-forwarding-assessment-desc}, we performed our experiment with two different configurations: with \textit{remote SSH$_G$} and with \textit{direct X11 Forwarding} (no-SSH$_G$). \\
 Still, both these configurations are set up to work on a local network, which inevitably introduces a certain amount of network latency. We consider this delay to be a significant factor in our experiment, for the configuration of a realistic testing environment. \\
 As we can see in table \ref{tab:X11-forwarding-assessment}, for both configurations the average latency is measured to be around 50 ms, as such it is possible for this delay to have an impact on the resulting system performance. \\ \\
 The results we obtained, in terms of graphics framerate of the game, indicate generally low performance with both configurations, with around 6-7 fps for the remote game display. Considering these results, we can assert that X11 could, in fact, be a possible source for performance bottlenecks, when implementing systems which base their remote displaying functionalities on it. \\ \\
-Moreover, we also expected to observe a significant improvement in performance, when switching from an SSH-based connection to a non-SSH connection, due to the lack of data encryption in the data transfer. As we can see in the table, however, this is not necessarily the case. Even if there seems to be an improvement in the system performance, the difference between the two configurations is only marginal and generally lower than expected.
+Moreover, we also expected to observe a significant improvement in performance, when switching from an SSH$_G$-based connection to a non-SSH$_G$ connection, due to the lack of data encryption in the data transfer. As we can see in the table, however, this is not necessarily the case. Even if there seems to be an improvement in the system performance, the difference between the two configurations is only marginal and generally lower than expected.
 
 \subsection{ETCD for SCR state-action communication}
 After the introduction of on ETCD as a means for implementing SCR state-action communication, in place of the original socket-based connection, we observe the following system behaviour:
 \begin{itemize}
-	\item there is little no difference in the behaviour of the remote AI driver. The cars all drive correctly during the race, without crashing with other cars or running off the racing circuit, even with multiple different AI controlled cars;
+	\item there is little no difference in the behaviour of the remote AI$_G$ driver. The cars all drive correctly during the race, without crashing with other cars or running off the racing circuit, even with multiple different AI$_G$ controlled cars;
 	\item there is occasional stuttering in the game image rendering window, with drops of about 30-40 fps, possibly caused by delays in the processing of certain state-action operations by the distributed database.
 \end{itemize}
-These results indicates that the ETCD implementation was successful, as the core driving functionalities are not significantly impacted by the change. The stuttering effect is generally not problematic for the correct management of the race, as the AI driver are not impacted by this occasional phenomenon. \\ \\
-To provide a numerical representation of the time taken to manage each communication cycle, we present the round-trip-time (RTT) of each state-action exchange, in the two different configurations:
+These results indicates that the ETCD implementation was successful, as the core driving functionalities are not significantly impacted by the change. The stuttering effect is generally not problematic for the correct management of the race, as the AI$_G$ driver are not impacted by this occasional phenomenon. \\ \\
+To provide a numerical representation of the time taken to manage each communication cycle, we present the round-trip-time (RTT$_G$) of each state-action exchange, in the two different configurations:
 \definecolor{lightRowColor}{HTML}{fafafa}
 \definecolor{darkRowColor}{HTML}{ffcccb}
 
@@ -65,16 +65,16 @@ To provide a numerical representation of the time taken to manage each communica
 		>{\centering}p{0.25\textwidth}}
 	
 	
-	\caption{SCR state-action communication RTT - ETCD comparison} \label{tab:SCR-state-action-rtt-etcd} \\
+	\caption{SCR state-action communication RTT$_G$ - ETCD comparison.} \label{tab:SCR-state-action-rtt-etcd} \\
 	\coloredTableHead
 	\textbf{\color{white}Configuration} & 
-	\centering\textbf{\color{white}Average RTT}
+	\centering\textbf{\color{white}Average RTT$_G$}
 	\endfirsthead
 	
 	\rowcolor{white}\caption[]{(continue)}\\
 	\coloredTableHead 
 	\textbf{\color{white}Configuration} & 
-	\centering\textbf{\color{white}Average RTT}
+	\centering\textbf{\color{white}Average RTT$_G$}
 	\endhead
 	
 	Socket-based communication & 22.593 ms \cr
@@ -99,7 +99,7 @@ We now present the resource usage of multiple different system configurations, c
 		>{\centering}p{0.30\textwidth}}
 	
 	
-	\caption{Local environment with ZeroMQ} \label{tab:resource-local-env-zeromq} \\
+	\caption{Local environment with ZeroMQ.} \label{tab:resource-local-env-zeromq} \\
 	\coloredTableHead
 	\textbf{\color{white}Process} & 
 	\centering\textbf{\color{white}Average CPU usage} &
@@ -135,7 +135,7 @@ In this context, the remote game streaming image is affected by significant late
 		>{\centering}p{0.30\textwidth}}
 	
 	
-	\caption{Local environment with original ETCD} \label{tab:resource-local-env-orgetcd} \\
+	\caption{Local environment with original ETCD.} \label{tab:resource-local-env-orgetcd} \\
 	\coloredTableHead
 	\textbf{\color{white}Process} & 
 	\centering\textbf{\color{white}Average CPU usage} &
@@ -173,7 +173,7 @@ As we can see from table \ref{tab:resource-docker-env-orgetcd}, the amount of RA
 		>{\centering}p{0.30\textwidth}}
 	
 	
-	\caption{Local environment with updated ETCD} \label{tab:resource-local-env-upetcd} \\
+	\caption{Local environment with updated ETCD.} \label{tab:resource-local-env-upetcd} \\
 	\coloredTableHead
 	\textbf{\color{white}Process} & 
 	\centering\textbf{\color{white}Average CPU usage} &
@@ -211,7 +211,7 @@ Even with our changes to ETCD, the amount of memory required is still quite sign
 		>{\centering}p{0.28\textwidth}}
 	
 	
-	\caption{Local environment with Redis} \label{tab:resource-local-env-redis} \\
+	\caption{Local environment with Redis.} \label{tab:resource-local-env-redis} \\
 	\coloredTableHead
 	\textbf{\color{white}Process} & 
 	\centering\textbf{\color{white}Average CPU usage} &
@@ -246,7 +246,7 @@ In the local environment Redis performs very well, with low resource requirement
 		>{\centering}p{0.28\textwidth}}
 	
 	
-	\caption{Docker environment with ZeroMQ} \label{tab:resource-docker-env-zeromq} \\
+	\caption{Docker environment with ZeroMQ.} \label{tab:resource-docker-env-zeromq} \\
 	\coloredTableHead
 	\textbf{\color{white}Container} & 
 	\centering\textbf{\color{white}Average CPU usage} &
@@ -281,7 +281,7 @@ As in the local environment, the remote game streaming image is affected by sign
 		>{\centering}p{0.28\textwidth}}
 	
 	
-	\caption{Docker environment with original ETCD} \label{tab:resource-docker-env-orgetcd} \\
+	\caption{Docker environment with original ETCD.} \label{tab:resource-docker-env-orgetcd} \\
 	\coloredTableHead
 	\textbf{\color{white}Container} & 
 	\centering\textbf{\color{white}Average CPU usage} &
@@ -318,7 +318,7 @@ The RAM usage of the ETCD container is even worse than what was measured in its 
 		>{\centering}p{0.28\textwidth}}
 	
 	
-	\caption{Docker environment with updated ETCD} \label{tab:resource-docker-env-upetcd} \\
+	\caption{Docker environment with updated ETCD.} \label{tab:resource-docker-env-upetcd} \\
 	\coloredTableHead
 	\textbf{\color{white}Container} & 
 	\centering\textbf{\color{white}Average CPU usage} &
@@ -355,7 +355,7 @@ The RAM usage of the ETCD container is even worse than what was measured in its 
 		>{\centering}p{0.28\textwidth}}
 	
 	
-	\caption{Docker environment with Redis} \label{tab:resource-docker-env-redis} \\
+	\caption{Docker environment with Redis.} \label{tab:resource-docker-env-redis} \\
 	\coloredTableHead
 	\textbf{\color{white}Container} & 
 	\centering\textbf{\color{white}Average CPU usage} &
@@ -389,7 +389,7 @@ We now provide a representation of the result we obtained from the analysis aime
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=1\linewidth]{"../../TORCS_multi_docker/Experiments Data/Benchmarks/Images/ETCD saturation fix"}
-	\caption[ETCD saturation point representation]{ETCD saturation point representation}
+	\caption[ETCD saturation point representation.]{ETCD saturation point representation.}
 	\label{fig:etcd-saturation-fix}
 \end{figure}
 \\ As we can see from figure \ref{fig:etcd-saturation-fix}, the saturation point is reached when about 700 connected clients are creating workload through requests sent to the system, according to the parameters described in section \ref{benchmarking}. \\
@@ -398,15 +398,15 @@ On the ETCD system, the results we obtained are as follows:
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=1\linewidth]{"../../TORCS_multi_docker/Experiments Data/Benchmarks/Images/ETCD benchmark"}
-	\caption[ETCD benchmarking]{ETCD benchmarking}
+	\caption[ETCD benchmarking.]{ETCD benchmarking.}
 	\label{fig:etcd-benchmark}
 \end{figure}
-\\ As we can see from figure \ref{fig:etcd-benchmark}, both read and write requests throughput is significantly impacted by the latency we introduced. The write requests are relatively less impacted by the delay, thanks to the ETCD implementation of HTTP pipelining, which interests this type of requests. \\
+\\ As we can see from figure \ref{fig:etcd-benchmark}, both read and write requests throughput is significantly impacted by the latency we introduced. The write requests are relatively less impacted by the delay, thanks to the ETCD implementation of HTTP$_G$ pipelining, which interests this type of requests. \\
 On the Redis system, the results we obtained are as follows:
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=1\linewidth]{"../../TORCS_multi_docker/Experiments Data/Benchmarks/Images/Redis benchmark"}
-	\caption[Redis benchmarking]{Redis benchmarking}
+	\caption[Redis benchmarking]{Redis benchmarking.}
 	\label{fig:redis-benchmark}
 \end{figure}
 \\ As we can see from figure \ref{fig:redis-benchmark}, both read and write requests throughput is significantly impacted by the latency we introduced, with a the read requests being slightly more affected than the write requests.
@@ -415,15 +415,15 @@ On the Redis system, the results we obtained are as follows:
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=1\linewidth]{"../../TORCS_multi_docker/Experiments Data/Benchmarks/Images/ETCD-Redis writes benchmark"}
-	\caption[ETCD-Redis write benchmark comparison]{ETCD-Redis write benchmark comparison}
+	\caption[ETCD-Redis write benchmark comparison]{ETCD-Redis write benchmark comparison.}
 	\label{fig:etcd-redis-writes-benchmark}
 \end{figure}
 As we can see in figure \ref{fig:etcd-redis-writes-benchmark}, Redis always performs much better than ETCD in terms of write requests throughput. However, the impact of latency in this context is numerically greater on Redis than ETCD, and even proportionally the performance degradation in Redis ($\sim{}55\%$) is greater than in ETCD ($\sim{}39\%$). \\
-This is an expected behaviour, since ETCD implements HTTP pipelining, which decreases the number of packets used to manage the same amount of requests, thus reducing number of elements affected by network latency.
+This is an expected behaviour, since ETCD implements HTTP$_G$ pipelining, which decreases the number of packets used to manage the same amount of requests, thus reducing number of elements affected by network latency.
 \begin{figure}
 	\centering
 	\includegraphics[width=1\linewidth]{"../../TORCS_multi_docker/Experiments Data/Benchmarks/Images/ETCD-Redis reads benchmark"}
-	\caption[ETCD-Redis reads benchmark]{ETCD-Redis reads benchmark}
+	\caption[ETCD-Redis reads benchmark]{ETCD-Redis reads benchmark.}
 	\label{fig:etcd-redis-reads-benchmark}
 \end{figure}
 \\ \\ In the context of read requests, as we can see in figure \ref{fig:etcd-redis-reads-benchmark}, Redis still always performs better than ETCD. Additionally, while numerically the impact of latency on Redis is greater than on ETCD, proportionally the decrease in performance is greater on ETCD ($\sim{}79\%$) than it is on Redis ($\sim{}68\%$). \\ \\
@@ -439,21 +439,21 @@ We now present the graphical representation of the network traffic measured for 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.95\linewidth]{"../../TORCS_multi_docker/Experiments Data/Network-traffic-data/Images/New/App_data_log"}
-	\caption[Network traffic in the TORCS application container - ETCD]{Network traffic in the TORCS application container (App)}
+	\caption[Network traffic in the TORCS application container - ETCD]{Network traffic in the TORCS application container (App).}
 	\label{fig:appdatalog}
 \end{figure}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.95\linewidth]{"../../TORCS_multi_docker/Experiments Data/Network-traffic-data/Images/New/Client_data_log"}
-	\caption[Network traffic in the remote AI driver container - ETCD]{Network traffic in the remote AI driver container (client)}
+	\caption[Network traffic in the remote AI$_G$ driver container - ETCD]{Network traffic in the remote AI$_G$ driver container (client).}
 	\label{fig:clientdatalog}
 \end{figure}
 As we can see from figure \ref{fig:clientdatalog}, no data is written to/read from the disk by the container, as its Block I/O values never increase. \\
-As for the Network I/O, we can see in figure \ref{fig:appdatalog} the amount of traffic generated by the remote streaming functionality and the game state writing component of the SCR state-action communication, which is particularly intense: in the order of multiple GBs, within 90 seconds of execution time. The IA driver, on the other hand, just presents network traffic values that can be related to the writing of the next action into the distributed database, as part of the SCR state-action communication.
+As for the Network I/O, we can see in figure \ref{fig:appdatalog} the amount of traffic generated by the remote streaming functionality and the game state writing component of the SCR state-action communication, which is particularly intense: in the order of multiple GBs, within 90 seconds of execution time. The AI$_G$ driver, on the other hand, just presents network traffic values that can be related to the writing of the next action into the distributed database, as part of the SCR state-action communication.
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=1\linewidth]{"../../TORCS_multi_docker/Experiments Data/Network-traffic-data/Images/New/ETCD_data_log"}
-	\caption[Network traffic in the ETCD container]{Network traffic in the ETCD container - ETCD}
+	\caption[Network traffic in the ETCD container]{Network traffic in the ETCD container - ETCD.}
 	\label{fig:etcddatalog}
 \end{figure}
 \\ In figure \ref{fig:etcddatalog}, we see that a noticeable amount of data is written to the disk by the ETCD system, mainly related to the local snapshotting and storage of the database. \\
@@ -463,13 +463,13 @@ Additionally, we notice how the Network I/O values can be directly correlated wi
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.95\linewidth]{"../../TORCS_multi_docker/Experiments Data/Network-traffic-data-redis/Images/New/app_data_log"}
-	\caption[Network traffic in the TORCS application container - Redis]{Network traffic in the TORCS main container - Redis}
+	\caption[Network traffic in the TORCS application container - Redis]{Network traffic in the TORCS main container - Redis.}
 	\label{fig:appdatalogredis}
 \end{figure}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.95\linewidth]{"../../TORCS_multi_docker/Experiments Data/Network-traffic-data-redis/Images/New/Client_data_log"}
-	\caption[Network traffic in the remote AI driver container - Redis]{Network traffic in the remote AI driver container - Redis}
+	\caption[Network traffic in the remote AI$_G$ driver container - Redis]{Network traffic in the remote AI$_G$ driver container - Redis.}
 	\label{fig:clientdatalogredis}
 \end{figure}
 As we can see from figure \ref{fig:clientdatalogredis}, no data is written to/read from the disk by the container, as its Block I/O values never increase. \\
@@ -478,7 +478,7 @@ The output network traffic, on the other hand, reflects the much more intense co
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.95\linewidth]{"../../TORCS_multi_docker/Experiments Data/Network-traffic-data-redis/Images/New/Redis_data_log"}
-	\caption[Network traffic in the Redis container - Redis]{Network traffic in the Redis container - Redis}
+	\caption[Network traffic in the Redis container - Redis]{Network traffic in the Redis container - Redis.}
 	\label{fig:redisdatalog}
 \end{figure}
 \\ In figure \ref{fig:redisdatalog}, we see that no data is written to/read from te disk by the container, as its Block I/O values never increase. This is an expected behaviour, considering that Redis is an in-memory database, which should not persist any data on the disk, if not configured otherwise. \\
@@ -490,7 +490,7 @@ Additionally, from the Block I/O values, we can see how the amount of data writt
 Finally, these results make us reason on whether a game image streaming implementation using a distributed database is actually a fitting solution. The large amount of data transferred, which can congest the distributed database, and the performance measured during the experiment discussed in section \ref{game-image-streaming-solutions}, indicate that this approach may not be ideal.
 
 \subsection{SCR client-server responsiveness}
-We present the results obtained from the experiment conducted with the aim of measuring the average round-trip-time (RTT) in the SCR client-server communication, on the four system configurations we mentioned in section \ref{scr-responsiveness-desc}.
+We present the results obtained from the experiment conducted with the aim of measuring the average round-trip-time (RTT$_G$) in the SCR client-server communication, on the four system configurations we mentioned in section \ref{scr-responsiveness-desc}.
 
 \definecolor{lightRowColor}{HTML}{fafafa}
 \definecolor{darkRowColor}{HTML}{ffcccb}
@@ -505,10 +505,10 @@ We present the results obtained from the experiment conducted with the aim of me
 		>{\centering}p{0.18\textwidth}}
 	
 	
-	\caption{SCR client-server responsiveness} \\
+	\caption{SCR client-server responsiveness.} \\
 	\coloredTableHead
 	\textbf{\color{white}Configuration} & 
-	\centering\textbf{\color{white}Average RTT} &
+	\centering\textbf{\color{white}Average RTT$_G$} &
 	\centering\textbf{\color{white}CI low. bound} &
 	\centering\textbf{\color{white}CI up. bound} &
 	\centering\textbf{\color{white}Sample size}
@@ -531,8 +531,8 @@ We present the results obtained from the experiment conducted with the aim of me
 Considering the stand-alone (solo) configurations of the system, we can see that both provide stable and comparable values. Moreover, the confidence intervals of the Redis configuration are completely included into the ones of the ETCD configuration, as such we can assert that the Redis implementation performs in the same range as the ETCD implementation, in our context of execution. \\ \\
 From the results obtained in the 3-members cluster configurations, we can see how the Redis configuration performs very similarly to its stand-alone version. This is due to its Eventual Consistency mechanism, which allows it not to be heavily influenced by the presence of replication. \\
 ETCD, on the other hand, performs much worse in its cluster version due to the low scalability provided by its Strong Consistency mechanism. \\ \\
-If we compare the two systems cluster configurations, we can see a clear difference in terms of average RTT. Even if the Redis confidence interval upper bound still crosses with the ETCD lower bound, this overlap is much less significant with respect to their stand-alone versions. Moreover, considering the technical characteristics of the two systems, introducing additional nodes into the cluster would most likely make this difference even more evident. \\
-As such, we conclude that in their cluster configuration, the Redis distributed database performs better than ETCD in terms of average RTT, in our context of execution.
+If we compare the two systems cluster configurations, we can see a clear difference in terms of average RTT$_G$. Even if the Redis confidence interval upper bound still crosses with the ETCD lower bound, this overlap is much less significant with respect to their stand-alone versions. Moreover, considering the technical characteristics of the two systems, introducing additional nodes into the cluster would most likely make this difference even more evident. \\
+As such, we conclude that in their cluster configuration, the Redis distributed database performs better than ETCD in terms of average RTT$_G$, in our context of execution.
 
 \subsection{Network latency impact assessment}
 We present the results obtained from our experiment with the introduction of an increasing amount of network latency on the distributed databases Leader node, measuring the framerate on both the main TORCS display and the remote streaming display.
@@ -540,13 +540,13 @@ We present the results obtained from our experiment with the introduction of an 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.79\linewidth]{"../../TORCS_multi_docker/Experiments Data/Streaming-FPS-data/Images/TORCS_merged_fps"}
-	\caption[TORCS main display framerate variation - ETCD stand-alone]{TORCS main display framerate variation - ETCD stand-alone}
+	\caption[TORCS main display framerate variation - ETCD stand-alone]{TORCS main display framerate variation - ETCD stand-alone.}
 	\label{fig:torcs-merged-fps-etcd}
 \end{figure}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.79\linewidth]{"../../TORCS_multi_docker/Experiments Data/Streaming-FPS-data/Images/screenpipe_merged_fps"}
-	\caption[Remote streaming display framerate variation - ETCD stand-alone]{Remote streaming display framerate variation - ETCD stand-alone}
+	\caption[Remote streaming display framerate variation - ETCD stand-alone]{Remote streaming display framerate variation - ETCD stand-alone.}
 	\label{fig:screenpipe-merged-fps-etcd}
 \end{figure}
 As we can see from figure \ref{fig:torcs-merged-fps-etcd}, as the amount of network introduced increases, the framerate rapidly decreases up to less than half of the original value, at the 20 ms mark. Then it further decreases, with a generally slower rate, as the delay introduced reaches 100 ms. \\
@@ -557,13 +557,13 @@ Considering this behaviour, we can assert that network latency heavily impacts t
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.79\linewidth]{"../../TORCS_multi_docker/Experiments Data/Streaming-FPS-data-redis/Images/TORCS_fps"}
-	\caption[TORCS main display framerate variation - Redis stand-alone]{TORCS main display framerate variation - Redis stand-alone}
+	\caption[TORCS main display framerate variation - Redis stand-alone]{TORCS main display framerate variation - Redis stand-alone.}
 	\label{fig:torcs-merged-fps-redis}
 \end{figure}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.79\linewidth]{"../../TORCS_multi_docker/Experiments Data/Streaming-FPS-data-redis/Images/screenpipe_fps"}
-	\caption[Remote streaming display framerate variation - Redis stand-alone]{Remote streaming display framerate variation - Redis stand-alone}
+	\caption[Remote streaming display framerate variation - Redis stand-alone]{Remote streaming display framerate variation - Redis stand-alone.}
 	\label{fig:screenpipe-merged-fps-redis}
 \end{figure}
 As we can see from figure \ref{fig:torcs-merged-fps-redis}, when no network latency is present, the performance in terms of framerate is very good, with more than 80 fps on average. However, as the amount of network introduced increases, the framerate rapidly decreases to less than 10 fps, at the 20 ms mark. Then it further decreases, with a generally slower rate, as the delay introduced reaches 100 ms. The remote streaming display framerate is also impacted by the introduction of network latency in a similar manner, with an initial sharper decrease and a more gradual one, from the 20 ms mark to 100 ms. \\ \\
@@ -573,13 +573,13 @@ Considering this behaviour, we can assert that network latency heavily impacts t
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.59\linewidth]{"../../TORCS_multi_docker/Experiments Data/Streaming-FPS-cluster-data/Images/TORCS_fps_cluster"}
-	\caption[TORCS main display framerate variation - ETCD cluster]{TORCS main display framerate variation - ETCD cluster}
+	\caption[TORCS main display framerate variation - ETCD cluster]{TORCS main display framerate variation - ETCD cluster.}
 	\label{fig:torcs-merged-fps-etcd-cluster}
 \end{figure}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.60\linewidth]{"../../TORCS_multi_docker/Experiments Data/Streaming-FPS-cluster-data/Images/screenpipe_fps_cluster"}
-	\caption[Remote streaming display framerate variation - ETCD cluster]{Remote streaming display framerate variation - ETCD cluster}
+	\caption[Remote streaming display framerate variation - ETCD cluster]{Remote streaming display framerate variation - ETCD cluster.}
 	\label{fig:screenpipe-merged-fps-etcd-cluster}
 \end{figure}
 As we can see from figure \ref{fig:torcs-merged-fps-etcd-cluster}, as the amount of network introduced increases, the framerate rapidly decreases up to less than half of the original value, at the 20 ms mark. Then it further decreases, with a generally slower rate, as the delay introduced reaches 100 ms. \\
@@ -588,13 +588,13 @@ Considering this behaviour, we can assert that network latency heavily impacts t
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.60\linewidth]{"../../TORCS_multi_docker/Experiments Data/Streaming-FPS-cluster-data/Images/TORCS_fps_cluster_solo"}
-	\caption[TORCS main display framerate comparison - ETCD stand-alone vs. cluster]{TORCS main display framerate comparison - ETCD stand-alone vs. cluster}
+	\caption[TORCS main display framerate comparison - ETCD stand-alone vs. cluster]{TORCS main display framerate comparison - ETCD stand-alone vs. cluster.}
 	\label{fig:torcs-fps-cluster-solo-etcd}
 \end{figure}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.60\linewidth]{"../../TORCS_multi_docker/Experiments Data/Streaming-FPS-cluster-data/Images/screenpipe_fps_cluster_solo"}
-	\caption[Remote display framerate comparison - ETCD stand-alone vs. cluster]{Remote display framerate comparison - ETCD stand-alone vs. cluster}
+	\caption[Remote display framerate comparison - ETCD stand-alone vs. cluster]{Remote display framerate comparison - ETCD stand-alone vs. cluster.}
 	\label{fig:screenpipe-fps-cluster-solo-etcd}
 \end{figure}
 If we then compare the main TORCS display performance of the system in its ETCD cluster version against the performance in its stand-alone version, as we can see in figure \ref{fig:torcs-fps-cluster-solo-etcd}, the stand-alone performs better overall. This is an expected behaviour, considering the Strong Consistency mechanism implemented by ETCD, which requires the Leader to wait for all the replicas to synchronize before proceeding with processing further requests. As such, if more replicas are introduced they delay is likely to increase.
@@ -603,13 +603,13 @@ If we then compare the main TORCS display performance of the system in its ETCD 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.60\linewidth]{"../../TORCS_multi_docker/Experiments Data/Streaming-FPS-cluster-redis-data/Images/TORCS_fps_cluster"}
-	\caption[TORCS main display framerate variation - Redis cluster]{TORCS main display framerate variation - Redis cluster}
+	\caption[TORCS main display framerate variation - Redis cluster]{TORCS main display framerate variation - Redis cluster.}
 	\label{fig:torcs-merged-fps-redis-cluster}
 \end{figure}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.60\linewidth]{"../../TORCS_multi_docker/Experiments Data/Streaming-FPS-cluster-redis-data/Images/screenpipe_fps_cluster"}
-	\caption[Remote streaming display framerate variation - Redis cluster]{Remote streaming display framerate variation - Redis cluster}
+	\caption[Remote streaming display framerate variation - Redis cluster]{Remote streaming display framerate variation - Redis cluster.}
 	\label{fig:screenpipe-merged-fps-redis-cluster}
 \end{figure}
 As we can see from figure \ref{fig:torcs-merged-fps-redis-cluster}, when no network latency is present, the performance in terms of framerate is very good, with almost 80 fps on average. However, as the amount of network introduced increases, the framerate rapidly decreases to less than 10 fps, at the 20 ms mark. Then it further decreases, with a generally slower rate, as the delay introduced reaches 100 ms. \\
@@ -619,13 +619,13 @@ If we then compare the main TORCS display performance of the system in its Redis
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.61\linewidth]{"../../TORCS_multi_docker/Experiments Data/Streaming-FPS-cluster-redis-data/Images/TORCS_fps_cluster_solo"}
-	\caption[TORCS main display framerate comparison - Redis stand-alone vs. cluster]{TORCS main display framerate comparison - Redis stand-alone vs. cluster}
+	\caption[TORCS main display framerate comparison - Redis stand-alone vs. cluster]{TORCS main display framerate comparison - Redis stand-alone vs. cluster.}
 	\label{fig:torcs-fps-cluster-solo-redis}
 \end{figure}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.61\linewidth]{"../../TORCS_multi_docker/Experiments Data/Streaming-FPS-cluster-redis-data/Images/screenpipe_fps_cluster_solo"}
-	\caption[Remote display framerate comparison - Redis stand-alone vs. cluster]{Remote display framerate comparison - Redis stand-alone vs. cluster}
+	\caption[Remote display framerate comparison - Redis stand-alone vs. cluster]{Remote display framerate comparison - Redis stand-alone vs. cluster.}
 	\label{fig:screenpipe-fps-cluster-solo-redis}
 \end{figure}
 
@@ -636,15 +636,15 @@ After discussing the behaviour of the single system configurations in relation t
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.9\linewidth]{"../../TORCS_multi_docker/Experiments Data/Streaming-FPS-data-redis/Images/TORCS_fps_comparison"}
-	\caption[TORCS main display framerate comparison - stand-alone]{TORCS main display framerate comparison - stand-alone}
+	\caption[TORCS main display framerate comparison - stand-alone]{TORCS main display framerate comparison - stand-alone.}
 	\label{fig:torcs-fps-comparison}
 \end{figure}
 \\ As we can see from figure \ref{fig:torcs-fps-comparison}, the TORCS display framerate is much higher in the Redis configuration, when no latency is introduced. However, the introduction of even low amounts ($\sim{}$4 ms) of latency generate a shard drop in the Redis system performance, decreasing it to the same level or lower than ETCD. \\ \\
-This behaviour is likely tied to the ETCD implementation of HTTP pipelining, which helps it mitigating the effects of latency on its operations. Redis, without a dedicated in-code implementation, does not provide the pipelining functionality, as such it is to be expected that its performance gets outclassed by ETCD in situations with moderate to high latency.
+This behaviour is likely tied to the ETCD implementation of HTTP$_G$ pipelining, which helps it mitigating the effects of latency on its operations. Redis, without a dedicated in-code implementation, does not provide the pipelining functionality, as such it is to be expected that its performance gets outclassed by ETCD in situations with moderate to high latency.
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.9\linewidth]{"../../TORCS_multi_docker/Experiments Data/Streaming-FPS-data-redis/Images/screenpipe_fps_comparison"}
-	\caption[Remote display framerate comparison - stand-alone]{Remote display framerate comparison - stand-alone}
+	\caption[Remote display framerate comparison - stand-alone]{Remote display framerate comparison - stand-alone.}
 	\label{fig:screenpipe-fps-comparison}
 \end{figure}
 \\ The situation in the remote display is quite similar, as we can see from figure \ref{fig:screenpipe-fps-comparison}, with Redis providing better performance in situations with little to no network latency and ETCD providing better performance in situations where latency is introduced.
@@ -654,16 +654,16 @@ After discussing the behaviour of the single system configurations in relation t
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.61\linewidth]{"../../TORCS_multi_docker/Experiments Data/Streaming-FPS-cluster-redis-data/Images/TORCS_fps_cluster_comparison"}
-	\caption[TORCS main display framerate comparison - cluster]{TORCS main display framerate comparison - cluster}
+	\caption[TORCS main display framerate comparison - cluster]{TORCS main display framerate comparison - cluster.}
 	\label{fig:torcs-fps-cluster-comparison}
 \end{figure}
-As we can see from figure \ref{fig:torcs-fps-cluster-comparison}, the TORCS display framerate is much higher in the Redis configuration, when no latency is introduced. However, the introduction of even low amounts ($\sim{}$4 ms) of latency generate a shard drop in the Redis system performance, decreasing it to the same level or lower than ETCD. This behaviour is likely tied to the ETCD implementation of HTTP pipelining, which helps it mitigating the effects of latency on its operations. Redis, without a dedicated in-code implementation, does not provide the pipelining functionality, as such it is to be expected that its performance gets outclassed by ETCD in situations with moderate to high latency. \\ \\
+As we can see from figure \ref{fig:torcs-fps-cluster-comparison}, the TORCS display framerate is much higher in the Redis configuration, when no latency is introduced. However, the introduction of even low amounts ($\sim{}$4 ms) of latency generate a shard drop in the Redis system performance, decreasing it to the same level or lower than ETCD. This behaviour is likely tied to the ETCD implementation of HTTP$_G$ pipelining, which helps it mitigating the effects of latency on its operations. Redis, without a dedicated in-code implementation, does not provide the pipelining functionality, as such it is to be expected that its performance gets outclassed by ETCD in situations with moderate to high latency. \\ \\
 Still, with the cluster configuration, Redis is able to provide additional benefits related to the replication mechanism. Leveraging the characteristics of its Eventual Consistency mechanism, Redis is able to provide generally the same performance as its stand-alone version, differently from ETCD which does not perform as well in terms of scalability in the number of cluster nodes. \\
-This behaviour can be seen in figure \ref{fig:torcs-fps-cluster-comparison} where, if compared with figure \ref{fig:torcs-fps-comparison}, the amount of latency required to have the Redis performance become worse than ETCD is much larger ($\sim{}$16 ms against the previous $\sim{}$4 ms). This is an interesting result, which highlights a trade-off between the benefits provided by the ETCD implementation of HTTP pipelining and the benefits provided by Redis Eventual Consistency replication mechanism.
+This behaviour can be seen in figure \ref{fig:torcs-fps-cluster-comparison} where, if compared with figure \ref{fig:torcs-fps-comparison}, the amount of latency required to have the Redis performance become worse than ETCD is much larger ($\sim{}$16 ms against the previous $\sim{}$4 ms). This is an interesting result, which highlights a trade-off between the benefits provided by the ETCD implementation of HTTP$_G$ pipelining and the benefits provided by Redis Eventual Consistency replication mechanism.
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.61\linewidth]{"../../TORCS_multi_docker/Experiments Data/Streaming-FPS-cluster-redis-data/Images/screenpipe_fps_cluster_comparison"}
-	\caption[Remote display framerate comparison - cluster]{Remote display framerate comparison - cluster}
+	\caption[Remote display framerate comparison - cluster]{Remote display framerate comparison - cluster.}
 	\label{fig:screenpipe-fps-cluster-comparison}
 \end{figure}
 
@@ -675,13 +675,13 @@ In this particular configuration, we only consider write requests as they were t
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.75\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-data/Images/FPS_1_field"}
-	\caption[Graphics framerate - ETCD stand-alone - 1 game state field]{Graphics framerate - ETCD stand-alone - 1 game state field}
+	\caption[Graphics framerate - ETCD stand-alone - 1 game state field]{Graphics framerate - ETCD stand-alone - 1 game state field.}
 	\label{fig:fps-1-field-etcd}
 \end{figure}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.8\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-data/Images/requests_1_field"}
-	\caption[Requests processed - ETCD stand-alone - 1 game state field]{Requests processed - ETCD stand-alone - 1 game state field}
+	\caption[Requests processed - ETCD stand-alone - 1 game state field]{Requests processed - ETCD stand-alone - 1 game state field.}
 	\label{fig:requests-1-field-etcd}
 \end{figure}
 \\ As we can see from figure \ref{fig:fps-1-field-etcd}, managing 1 game state field (\texttt{deltaTime}) using the distributed database influences the graphics framerate, decreasing it from about $77$ fps to about $60$ fps. While the decrease is not monotonic, we can notice that the value tends to become lower as the network latency increases. \\ \\
@@ -689,7 +689,7 @@ In terms of processed requests, we can see in figure \ref{fig:requests-1-field-e
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.75\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-data/Images/FPS_2_field_fix"}
-	\caption[Graphics framerate - ETCD stand-alone - 2 game state fields]{Graphics framerate - ETCD stand-alone - 2 game state fields}
+	\caption[Graphics framerate - ETCD stand-alone - 2 game state fields]{Graphics framerate - ETCD stand-alone - 2 game state fields.}
 	\label{fig:fps-2-field-etcd}
 \end{figure}
 \\ As we can see from figure \ref{fig:fps-2-field-etcd}, managing 2 game state fields (\texttt{deltaTime}, \texttt{currentTime}) using the distributed database, heavily influences the graphics framerate, decreasing it up to about 10 fps even when no latency is introduced. \\ \\
@@ -698,13 +698,13 @@ In terms of processed requests, we can see in figure \ref{fig:requests-2-field-e
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.8\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-data/Images/requests_2_field"}
-	\caption[Requests processed - ETCD stand-alone - 2 game state fields]{Requests processed - ETCD stand-alone - 2 game state fields}
+	\caption[Requests processed - ETCD stand-alone - 2 game state fields]{Requests processed - ETCD stand-alone - 2 game state fields.}
 	\label{fig:requests-2-field-etcd}
 \end{figure}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.77\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-data/Images/FPS_3_field_fix"}
-	\caption[Graphics framerate - ETCD stand-alone - 3 game state fields]{Graphics framerate - ETCD stand-alone - 3 game state fields}
+	\caption[Graphics framerate - ETCD stand-alone - 3 game state fields]{Graphics framerate - ETCD stand-alone - 3 game state fields.}
 	\label{fig:fps-3-field-etcd}
 \end{figure}
 \\ As we can see from figure \ref{fig:fps-3-field-etcd}, managing 3 game state fields (\texttt{deltaTime}, \texttt{currentTime}, \texttt{raceState}) using the distributed database, heavily influences the graphics framerate, decreasing it up to less than 10 fps even when no latency is introduced. \\ \\
@@ -712,21 +712,21 @@ The introduction of network latency in this context further affects the system p
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.8\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-data/Images/requests_3_field"}
-	\caption[Requests processed - ETCD stand-alone - 3 game state fields]{Requests processed - ETCD stand-alone - 3 game state fields}
+	\caption[Requests processed - ETCD stand-alone - 3 game state fields]{Requests processed - ETCD stand-alone - 3 game state fields.}
 	\label{fig:requests-3-field-etcd}
 \end{figure}
 Finally, we if compare the results of the multiple measurements we just discussed, as presented in figure \ref{fig:fps-comparison-etcd}, we can see that the increasing amount of game state fields stored into ETCD greatly impacts its performance in a negative way. Additionally, the introduction of network latency also has a significant impact on performance, making the game completely unplayable in the context where 2-3 game state are being managed with this approach. \\ 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.9\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-data/Images/FPS_comparison"}
-	\caption[Graphics framerate comparison - ETCD stand-alone]{Graphics framerate comparison - ETCD stand-alone}
+	\caption[Graphics framerate comparison - ETCD stand-alone]{Graphics framerate comparison - ETCD stand-alone.}
 	\label{fig:fps-comparison-etcd}
 \end{figure}
 \\ As such, we conclude that using ETCD for this type of approach is not a feasible solution, as the impact on system performance of the delay introduced by the distribute DB processing of requests, in addition to network latency, is excessively heavy.
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.9\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-data/Images/requests_comparison"}
-	\caption[Requests processed comparison - ETCD stand-alone]{Requests processed comparison - ETCD stand-alone}
+	\caption[Requests processed comparison - ETCD stand-alone]{Requests processed comparison - ETCD stand-alone.}
 	\label{fig:requests-comparison-etcd}
 \end{figure}
 
@@ -735,13 +735,13 @@ For the system configuration with 0 game state fields stored we measure an avera
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.75\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-Experiments-data-redis/Images/FPS_1_field"}
-	\caption[Graphics framerate - Redis stand-alone - 1 game state field]{Graphics framerate - Redis stand-alone - 1 game state field}
+	\caption[Graphics framerate - Redis stand-alone - 1 game state field]{Graphics framerate - Redis stand-alone - 1 game state field.}
 	\label{fig:fps-1-field-redis}
 \end{figure}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.76\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-Experiments-data-redis/Images/Requests_1_field"}
-	\caption[Requests processed - Redis stand-alone - 1 game state field]{Requests processed - Redis stand-alone - 1 game state field}
+	\caption[Requests processed - Redis stand-alone - 1 game state field]{Requests processed - Redis stand-alone - 1 game state field.}
 	\label{fig:requests-1-field-redis}
 \end{figure}
 \\ As we can see from figure \ref{fig:fps-1-field-redis}, managing 1 game state field (\texttt{deltaTime}) using the distributed database does not significantly influences the graphics framerate, when no network latency is introduced. However, when even low amounts of latency are introduced, the graphics framerate rapidly drops, decreasing it from about $80$ fps to about $20$ fps as latency increases. This decrease is gradual and monotonic, highlighting weaker performance in the context of slow connections. \\ \\
@@ -749,7 +749,7 @@ In terms of processed requests, we can see in figure \ref{fig:requests-1-field-r
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.75\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-Experiments-data-redis/Images/FPS_2_field"}
-	\caption[Graphics framerate - Redis stand-alone - 2 game state field]{Graphics framerate - Redis stand-alone - 2 game state field}
+	\caption[Graphics framerate - Redis stand-alone - 2 game state field]{Graphics framerate - Redis stand-alone - 2 game state field.}
 	\label{fig:fps-2-field-redis}
 \end{figure}
 \\ As we can see from figure \ref{fig:fps-2-field-redis}, managing 2 game state fields (\texttt{deltaTime}, \texttt{currentTime}) using the distributed database, heavily influences the graphics framerate, decreasing it up to about 60 fps even when no latency is introduced. Still, considering the characteristics of the \texttt{currentTime} game state field we introduced, the system performance with this configuration a relatively good. \\ \\
@@ -758,13 +758,13 @@ In terms of processed requests, we can see in figure \ref{fig:requests-2-field-r
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-Experiments-data-redis/Images/Requests_2_field"}
-	\caption[Requests processed - Redis stand-alone - 2 game state field]{Requests processed - Redis stand-alone - 2 game state field}
+	\caption[Requests processed - Redis stand-alone - 2 game state field]{Requests processed - Redis stand-alone - 2 game state field.}
 	\label{fig:requests-2-field-redis}
 \end{figure}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.6\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-Experiments-data-redis/Images/FPS_3_field"}
-	\caption[Graphics framerate - Redis stand-alone - 3 game state fields]{Graphics framerate - Redis stand-alone - 3 game state fields}
+	\caption[Graphics framerate - Redis stand-alone - 3 game state fields]{Graphics framerate - Redis stand-alone - 3 game state fields.}
 	\label{fig:fps-3-field-redis}
 \end{figure}
 \\ As we can see from figure \ref{fig:fps-3-field-redis}, managing 3 game state fields (\texttt{deltaTime}, \texttt{currentTime}, \texttt{raceState}) using the distributed database, heavily influences the graphics framerate, decreasing it up to less than 60 fps even when no latency is introduced. Still, considering the characteristics of the \texttt{currentTime} game state field we previously introduced, the system performance with this configuration a relatively good. \\ \\
@@ -772,7 +772,7 @@ The introduction of network latency in this context further affects the system p
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-Experiments-data-redis/Images/Requests_3_field"}
-	\caption[Requests processed - Redis stand-alone - 3 game state fields]{Requests processed - Redis stand-alone - 3 game state fields}
+	\caption[Requests processed - Redis stand-alone - 3 game state fields]{Requests processed - Redis stand-alone - 3 game state fields.}
 	\label{fig:requests-3-field-redis}
 \end{figure}
 \pagebreak
@@ -781,19 +781,19 @@ Additionally, the introduction of network latency also has a significant impact 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.95\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-Experiments-data-redis/Images/FPS_comparison"}
-	\caption[Graphics framerate comparison - Redis stand-alone]{Graphics framerate comparison - Redis stand-alone}
+	\caption[Graphics framerate comparison - Redis stand-alone]{Graphics framerate comparison - Redis stand-alone.}
 	\label{fig:fps-comparison-redis}
 \end{figure}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.75\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-Experiments-data-redis/Images/Write_requests_comparison"}
-	\caption[Write requests processed comparison - Redis stand-alone]{Write requests processed comparison - Redis stand-alone}
+	\caption[Write requests processed comparison - Redis stand-alone]{Write requests processed comparison - Redis stand-alone.}
 	\label{fig:write-requests-comparison-redis}
 \end{figure}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.8\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-Experiments-data-redis/Images/Read_requests_comparison"}
-	\caption[Read requests processed comparison - Redis stand-alone]{Read requests processed comparison - Redis stand-alone}
+	\caption[Read requests processed comparison - Redis stand-alone]{Read requests processed comparison - Redis stand-alone.}
 	\label{fig:read-requests-comparison-redis}
 \end{figure}
 \\ As such, we conclude that using Redis for this type of approach is not a feasible solution, as the impact on system performance of the delay introduced by the distribute DB processing of requests, in addition to network latency, is excessively heavy.
@@ -803,13 +803,13 @@ For the system configuration with 0 game state fields stored we measure an avera
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.9\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-cluster-data/Images/FPS_1_field_solo_comp"}
-	\caption[Graphics framerate - ETCD cluster - 1 game state field]{Graphics framerate - ETCD cluster - 1 game state field}
+	\caption[Graphics framerate - ETCD cluster - 1 game state field]{Graphics framerate - ETCD cluster - 1 game state field.}
 	\label{fig:fps-1-field-etcd-cluster}
 \end{figure}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.60\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-cluster-data/Images/requests_1_field_solo_comp"}
-	\caption[Requests processed - ETCD cluster - 1 game state field]{Requests processed - ETCD cluster - 1 game state field}
+	\caption[Requests processed - ETCD cluster - 1 game state field]{Requests processed - ETCD cluster - 1 game state field.}
 	\label{fig:requests-1-field-etcd-cluster}
 \end{figure}
 \\ As we can see from figure \ref{fig:fps-1-field-etcd-cluster}, managing 1 game state field (\texttt{deltaTime}) using the distributed database influences the graphics framerate, decreasing it from about $65$ fps to about $55$ fps. While the decrease is not monotonic, we can notice that the value tends to become lower as the network latency increases. This behaviour is similar to what we experienced in the stand-alone configuration, as we can see from the crossing confidence intervals. \\ \\
@@ -817,7 +817,7 @@ In terms of processed requests, we can see in figure \ref{fig:requests-1-field-e
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.60\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-cluster-data/Images/FPS_2_field_solo_comp"}
-	\caption[Graphics framerate - ETCD cluster - 2 game state fields]{Graphics framerate - ETCD cluster - 2 game state fields}
+	\caption[Graphics framerate - ETCD cluster - 2 game state fields]{Graphics framerate - ETCD cluster - 2 game state fields.}
 	\label{fig:fps-2-field-etcd-cluster}
 \end{figure}
 \\ As we can see from figure \ref{fig:fps-2-field-etcd-cluster}, managing 2 game state fields (\texttt{deltaTime}, \texttt{currentTime}) using the distributed database, heavily influences the graphics framerate, decreasing it up to about 5 fps even when no latency is introduced. This behaviour is similar to what we experienced in the stand-alone configuration, with generally lower values in the cluster version. \\ \\
@@ -826,13 +826,13 @@ In terms of processed requests, we can see in figure \ref{fig:requests-2-field-e
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.65\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-cluster-data/Images/requests_2_field"}
-	\caption[Requests processed - ETCD cluster - 2 game state fields]{Requests processed - ETCD cluster - 2 game state fields}
+	\caption[Requests processed - ETCD cluster - 2 game state fields]{Requests processed - ETCD cluster - 2 game state fields.}
 	\label{fig:requests-2-field-etcd-cluster}
 \end{figure}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.60\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-cluster-data/Images/FPS_3_field_solo_comp"}
-	\caption[Graphics framerate - ETCD cluster - 3 game state fields]{Graphics framerate - ETCD cluster - 3 game state fields}
+	\caption[Graphics framerate - ETCD cluster - 3 game state fields]{Graphics framerate - ETCD cluster - 3 game state fields.}
 	\label{fig:fps-3-field-etcd-cluster}
 \end{figure}
 \\ As we can see from figure \ref{fig:fps-3-field-etcd-cluster}, managing 3 game state fields (\texttt{deltaTime}, \texttt{currentTime}, \texttt{raceState}) using the distributed database, heavily influences the graphics framerate, decreasing it up to less than 5 fps even when no latency is introduced. This behaviour is similar to what we experienced in the stand-alone configuration, with generally lower values in the cluster version. \\ \\
@@ -840,7 +840,7 @@ The introduction of network latency in this context further affects the system p
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.65\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-cluster-data/Images/requests_3_field_solo_comp"}
-	\caption[Requests processed - ETCD stand-alone - 3 game state fields]{Requests processed - ETCD cluster - 3 game state fields}
+	\caption[Requests processed - ETCD stand-alone - 3 game state fields]{Requests processed - ETCD cluster - 3 game state fields.}
 	\label{fig:requests-3-field-etcd-cluster}
 \end{figure}
 \pagebreak
@@ -848,35 +848,35 @@ The introduction of network latency in this context further affects the system p
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.95\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-cluster-data/Images/FPS_final_comp"}
-	\caption[Graphics framerate comparison - ETCD cluster]{Graphics framerate comparison - ETCD cluster}
+	\caption[Graphics framerate comparison - ETCD cluster]{Graphics framerate comparison - ETCD cluster.}
 	\label{fig:fps-comparison-etcd-cluster}
 \end{figure}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.65\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-cluster-data/Images/write_requests_final_comp"}
-	\caption[Write requests processed comparison - ETCD cluster]{Write requests processed comparison - ETCD cluster}
+	\caption[Write requests processed comparison - ETCD cluster]{Write requests processed comparison - ETCD cluster.}
 	\label{fig:write-requests-comparison-etcd-cluster}
 \end{figure}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.70\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-cluster-data/Images/read_requests_final_comp"}
-	\caption[Read requests processed comparison - ETCD cluster]{Read requests processed comparison - ETCD cluster}
+	\caption[Read requests processed comparison - ETCD cluster]{Read requests processed comparison - ETCD cluster.}
 	\label{fig:read-requests-comparison-etcd-cluster}
 \end{figure}
-\\ As such, we conclude that using ETCD, in its cluster version, for this type of approach is not a feasible solution, as the impact on system performance of the delay introduced by the distribute DB processing of requests, in addition to network latency, is excessively heavy.
+\\ As such, we conclude that using ETCD, in its cluster version, for this type of approach is not a feasible solution, as the impact on system performance of the delay introduced by the distribute DB$_G$ processing of requests, in addition to network latency, is excessively heavy.
 
 \subsubsection{Redis 3-members cluster configuration}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.60\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-cluster-redis-data/Images/FPS_1_field_solo_comp"}
-	\caption[Graphics framerate - Redis cluster - 1 game state field]{Graphics framerate - Redis cluster - 1 game state field}
+	\caption[Graphics framerate - Redis cluster - 1 game state field]{Graphics framerate - Redis cluster - 1 game state field.}
 	\label{fig:fps-1-field-redis-cluster}
 \end{figure}
 For the system configuration with 0 game state fields stored we measure an average framerate of $77.170$ fps, which is not influenced by any network latency introduced into the distributed database, as there is no communication between TORCS and the storage. In this configuration, we consider both write and read requests rates. \\
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.64\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-cluster-redis-data/Images/Requests_1_field_solo_comp"}
-	\caption[Requests processed - Redis cluster - 1 game state field]{Requests processed - Redis cluster - 1 game state field}
+	\caption[Requests processed - Redis cluster - 1 game state field]{Requests processed - Redis cluster - 1 game state field.}
 	\label{fig:requests-1-field-redis-cluster}
 \end{figure}
 \\ As we can see from figure \ref{fig:fps-1-field-redis-cluster}, managing 1 game state field (\texttt{deltaTime}) using the distributed database does not significantly influences the graphics framerate, when no network latency is introduced. However, when even low amounts of latency are introduced, the graphics framerate rapidly drops, decreasing it from about $80$ fps to about $20$ fps as latency increases. This decrease is gradual and monotonic, highlighting weaker performance in the context of slow connections. This behaviour is similar to what we experienced in the stand-alone configuration, as we can see from the crossing confidence intervals. \\ \\
@@ -884,7 +884,7 @@ In terms of processed requests, we can see in figure \ref{fig:requests-1-field-r
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.60\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-cluster-redis-data/Images/FPS_2_field_solo_comp"}
-	\caption[Graphics framerate - Redis cluster - 2 game state field]{Graphics framerate - Redis cluster - 2 game state field}
+	\caption[Graphics framerate - Redis cluster - 2 game state field]{Graphics framerate - Redis cluster - 2 game state field.}
 	\label{fig:fps-2-field-redis-cluster}
 \end{figure}
 \\ As we can see from figure \ref{fig:fps-2-field-redis-cluster}, managing 2 game state fields (\texttt{deltaTime}, \texttt{currentTime}) using the distributed database, heavily influences the graphics framerate, decreasing it up to about 60 fps even when no latency is introduced. Still, considering the characteristics of the \texttt{currentTime} game state field we introduced, the system performance with this configuration a relatively good. \\ \\
@@ -893,13 +893,13 @@ In terms of processed requests, we can see in figure \ref{fig:requests-2-field-r
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.64\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-cluster-redis-data/Images/Requests_2_field_solo_comp"}
-	\caption[Requests processed - Redis cluster - 2 game state field]{Requests processed - Redis cluster - 2 game state field}
+	\caption[Requests processed - Redis cluster - 2 game state field]{Requests processed - Redis cluster - 2 game state field.}
 	\label{fig:requests-2-field-redis-cluster}
 \end{figure}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.6\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-cluster-redis-data/Images/FPS_3_field_solo_comp"}
-	\caption[Graphics framerate - Redis cluster - 3 game state fields]{Graphics framerate - Redis cluster - 3 game state fields}
+	\caption[Graphics framerate - Redis cluster - 3 game state fields]{Graphics framerate - Redis cluster - 3 game state fields.}
 	\label{fig:fps-3-field-redis-cluster}
 \end{figure}
 \\ As we can see from figure \ref{fig:fps-3-field-redis-cluster}, managing 3 game state fields (\texttt{deltaTime}, \texttt{currentTime}, \texttt{raceState}) using the distributed database, heavily influences the graphics framerate, decreasing it up to less than 60 fps even when no latency is introduced. Still, considering the characteristics of the \texttt{currentTime} game state field we previously introduced, the system performance with this configuration is relatively good. \\ \\
@@ -907,7 +907,7 @@ The introduction of network latency in this context further affects the system p
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-cluster-redis-data/Images/Requests_3_field_solo_comp"}
-	\caption[Requests processed - Redis cluster - 3 game state fields]{Requests processed - Redis stand-alone - 3 game state fields}
+	\caption[Requests processed - Redis cluster - 3 game state fields]{Requests processed - Redis stand-alone - 3 game state fields.}
 	\label{fig:requests-3-field-redis-cluster}
 \end{figure}
 \pagebreak
@@ -916,43 +916,43 @@ Additionally, the introduction of network latency also has a significant impact 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.95\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-cluster-redis-data/Images/FPS_final_comp"}
-	\caption[Graphics framerate comparison - Redis cluster]{Graphics framerate comparison - Redis cluster}
+	\caption[Graphics framerate comparison - Redis cluster]{Graphics framerate comparison - Redis cluster.}
 	\label{fig:fps-comparison-redis-cluster}
 \end{figure}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.65\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-cluster-redis-data/Images/write_requests_final_comp"}
-	\caption[Write requests processed comparison - Redis cluster]{Write requests processed comparison - Redis cluster}
+	\caption[Write requests processed comparison - Redis cluster]{Write requests processed comparison - Redis cluster.}
 	\label{fig:write-requests-comparison-redis-cluster}
 \end{figure}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.65\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-cluster-redis-data/Images/read_requests_final_comp"}
 	\caption[Read requests processed comparison - Redis cluster]{Read requests processed comparison - Redis cluster}
-	\label{fig:read-requests-comparison-redis-cluster}
+	\label{fig:read-requests-comparison-redis-cluster.}
 \end{figure}
-\\ As such, we conclude that using Redis, in its cluster configuration, is not a feasible solution for this type of approach, as the impact on system performance of the delay introduced by the distributed DB processing of requests, in addition to network latency, is excessively heavy.
+\\ As such, we conclude that using Redis, in its cluster configuration, is not a feasible solution for this type of approach, as the impact on system performance of the delay introduced by the distributed DB$_G$ processing of requests, in addition to network latency, is excessively heavy.
 
 \subsubsection{Final system stand-alone comparisons}
 We now proceed to compare, with each other, the results obtained in the ETCD and Redis stand-alone configurations, for each number of game state fields introduced into the storage. \\
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.65\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-Experiments-data-redis/Images/FPS_1_field_comparison"}
-	\caption[Graphics framerate comparison - 1 game state field - stand-alone]{Graphics framerate comparison - 1 game state field - stand-alone}
+	\caption[Graphics framerate comparison - 1 game state field - stand-alone]{Graphics framerate comparison - 1 game state field - stand-alone.}
 	\label{fig:fps-1-field-comparison-standalone}
 \end{figure}
-\\ As we can see in figure \ref{fig:fps-1-field-comparison-standalone}, managing 1 game state field (\texttt{deltaTime}), Redis provides a better graphics framerate in situations with no network latency. However, in when network latency is introduced, ETCD immediately performs better than Redis, regardless of the amount of delay. This is likely due to ETCD implementation of HTTP pipelining, which allow it to mitigate the effects of network latency on its data communication. \\
+\\ As we can see in figure \ref{fig:fps-1-field-comparison-standalone}, managing 1 game state field (\texttt{deltaTime}), Redis provides a better graphics framerate in situations with no network latency. However, in when network latency is introduced, ETCD immediately performs better than Redis, regardless of the amount of delay. This is likely due to ETCD implementation of HTTP$_G$ pipelining, which allow it to mitigate the effects of network latency on its data communication. \\
 This characteristic is also similarly reflected in the write request rate, where ETCD always perform better than Redis in situations where latency is introduced, as we can see from figure \ref{fig:requests-1-field-comparison-standalone}.
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.65\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-Experiments-data-redis/Images/Requests_1_field_comparison"}
-	\caption[Requests processed comparison - 1 game state field - stand-alone]{Requests processed comparison - 1 game state field - stand-alone}
+	\caption[Requests processed comparison - 1 game state field - stand-alone]{Requests processed comparison - 1 game state field - stand-alone.}
 	\label{fig:requests-1-field-comparison-standalone}
 \end{figure}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.65\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-Experiments-data-redis/Images/FPS_2_field_comparison"}
-	\caption[Graphics framerate comparison - 2 game state fields - stand-alone]{Graphics framerate comparison - 2 game state fields - stand-alone}
+	\caption[Graphics framerate comparison - 2 game state fields - stand-alone]{Graphics framerate comparison - 2 game state fields - stand-alone.}
 	\label{fig:fps-2-field-comparison-standalone}
 \end{figure}
 \\ As we can see in figure \ref{fig:fps-2-field-comparison-standalone}, managing 2 game state field (\texttt{deltaTime}, \texttt{currentTime}), Redis provides a better graphics framerate in situations with little to no network latency. However, in when even low network latency is introduced, ETCD tends to reach the same level of Redis in terms of performance, for the same reason we previously discussed. \\
@@ -960,13 +960,13 @@ This characteristic is also similarly reflected in the write request rate, where
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.68\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-Experiments-data-redis/Images/Requests_2_field_comparison"}
-	\caption[Requests processed comparison - 2 game state fields - stand-alone]{Requests processed comparison - 2 game state fields - stand-alone}
+	\caption[Requests processed comparison - 2 game state fields - stand-alone]{Requests processed comparison - 2 game state fields - stand-alone.}
 	\label{fig:requests-2-field-comparison-standalone}
 \end{figure}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.65\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-Experiments-data-redis/Images/FPS_3_field_comparison"}
-	\caption[Graphics framerate comparison - 3 game state fields - stand-alone]{Graphics framerate comparison - 3 game state fields - stand-alone}
+	\caption[Graphics framerate comparison - 3 game state fields - stand-alone]{Graphics framerate comparison - 3 game state fields - stand-alone.}
 	\label{fig:fps-3-field-comparison-standalone}
 \end{figure}
 \\ As we can see in figure \ref{fig:fps-3-field-comparison-standalone}, managing 3 game state field (\texttt{deltaTime}, \texttt{currentTime}, \texttt{raceState}), Redis provides a better graphics framerate in situations with little to no network latency. However, in when even low network latency is introduced, ETCD tends to reach the same level of Redis in terms of performance, for the same reason we previously discussed. \\
@@ -974,10 +974,10 @@ This characteristic is also similarly reflected in the write request rate, where
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.68\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-Experiments-data-redis/Images/Requests_3_field_comparison"}
-	\caption[Requests processed comparison - 3 game state fields - stand-alone]{Requests processed comparison - 3 game state fields - stand-alone}
+	\caption[Requests processed comparison - 3 game state fields - stand-alone]{Requests processed comparison - 3 game state fields - stand-alone.}
 	\label{fig:requests-3-field-comparison-standalone}
 \end{figure}
-Considering these results, we can assert that, in the context of this specific approach, Redis performs better than ETCD in their respective stand-alone versions. Redis provides generally better performance than ETCD in situations with no latency introduced, whereas, when network latency is present, Redis still performs on par with ETCD, despite its HTTP pipelining implementation. \\ \\
+Considering these results, we can assert that, in the context of this specific approach, Redis performs better than ETCD in their respective stand-alone versions. Redis provides generally better performance than ETCD in situations with no latency introduced, whereas, when network latency is present, Redis still performs on par with ETCD, despite its HTTP$_G$ pipelining implementation. \\ \\
 Still, neither of these two systems provide performance suitable for this type of approach, mainly due to shortcomings in the approach itself. The extremely large number of requests required to be satisfied in order to allow it the approach to succeed is excessively large for distributed databases. Moreover, the frequency of game state updates further exacerbates this problem. As such, we considered alternative solutions such as the State Manager middleware described in section \ref{state-manager-middleware}. 
 
 \subsubsection{Final system 3-members cluster comparisons}
@@ -985,21 +985,21 @@ We now proceed to compare, with each other, the results obtained in the ETCD and
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.60\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-cluster-redis-data/Images/FPS_1_field_comp"}
-	\caption[Graphics framerate comparison - 1 game state field - cluster]{Graphics framerate comparison - 1 game state field - cluster}
+	\caption[Graphics framerate comparison - 1 game state field - cluster]{Graphics framerate comparison - 1 game state field - cluster.}
 	\label{fig:fps-1-field-comparison-cluster}
 \end{figure}
-\\ As we can see in figure \ref{fig:fps-1-field-comparison-cluster}, managing 1 game state field (\texttt{deltaTime}), Redis provides a better graphics framerate in situations with no network latency. However, in when network latency is introduced, ETCD immediately performs better than Redis, regardless of the amount of delay. This is likely due to ETCD implementation of HTTP pipelining, which allow it to mitigate the effects of network latency on its data communication. \\
+\\ As we can see in figure \ref{fig:fps-1-field-comparison-cluster}, managing 1 game state field (\texttt{deltaTime}), Redis provides a better graphics framerate in situations with no network latency. However, in when network latency is introduced, ETCD immediately performs better than Redis, regardless of the amount of delay. This is likely due to ETCD implementation of HTTP$_G$ pipelining, which allow it to mitigate the effects of network latency on its data communication. \\
 This characteristic is also similarly reflected in the write request rate, where ETCD performs about the same as Redis in situations both is situations with and without network latency, as we can see from figure \ref{fig:requests-1-field-comparison-cluster}. \\
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.63\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-cluster-redis-data/Images/requests_1_field_comp"}
-	\caption[Requests processed comparison - 1 game state field - stand-alone]{Requests processed comparison - 1 game state field - cluster}
+	\caption[Requests processed comparison - 1 game state field - stand-alone]{Requests processed comparison - 1 game state field - cluster.}
 	\label{fig:requests-1-field-comparison-cluster}
 \end{figure}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.60\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-cluster-redis-data/Images/FPS_2_field_comp"}
-	\caption[Graphics framerate comparison - 2 game state fields - cluster]{Graphics framerate comparison - 2 game state fields - cluster}
+	\caption[Graphics framerate comparison - 2 game state fields - cluster]{Graphics framerate comparison - 2 game state fields - cluster.}
 	\label{fig:fps-2-field-comparison-cluster}
 \end{figure}
 \\ As we can see in figure \ref{fig:fps-2-field-comparison-cluster}, managing 2 game state field (\texttt{deltaTime}, \texttt{currentTime}), Redis provides a better graphics framerate in situations with little to no network latency. However, in when even low network latency is introduced, ETCD tends to reach the same level of Redis in terms of performance, for the same reason we previously discussed. Still, if compared with the situation in the stand-alone configuration (figure \ref{fig:fps-2-field-comparison-standalone}) Redis manages to provide better performance than ETCD up to an higher value of network latency than before. This is due to the benefits provided by Redis Eventual Consistency mechanism, which should provide generally better performance than ETCD Strong Consistency mechanism, is cluster configurations. \\
@@ -1007,13 +1007,13 @@ This characteristic is also similarly reflected in the request rate, where Redis
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.68\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-cluster-redis-data/Images/requests_2_field_comp"}
-	\caption[Requests processed comparison - 2 game state fields - cluster]{Requests processed comparison - 2 game state fields - cluster}
+	\caption[Requests processed comparison - 2 game state fields - cluster]{Requests processed comparison - 2 game state fields - cluster.}
 	\label{fig:requests-2-field-comparison-cluster}
 \end{figure}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.63\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-cluster-redis-data/Images/FPS_3_field_comp"}
-	\caption[Graphics framerate comparison - 3 game state fields - cluster]{Graphics framerate comparison - 3 game state fields - cluster}
+	\caption[Graphics framerate comparison - 3 game state fields - cluster]{Graphics framerate comparison - 3 game state fields - cluster.}
 	\label{fig:fps-3-field-comparison-cluster}
 \end{figure}
 \\ As we can see in figure \ref{fig:fps-3-field-comparison-cluster}, managing 3 game state field (\texttt{deltaTime}, \texttt{currentTime}, \texttt{raceState}), Redis provides a better graphics framerate in situations with little to no network latency. However, in when even low network latency is introduced, ETCD tends to reach the same level of Redis in terms of performance, for the same reason we previously discussed. The benefits of the Redis replication mechanism are also still present, as previously discussed. \\
@@ -1021,10 +1021,10 @@ This characteristic is also similarly reflected in the request rate, where Redis
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.68\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-cluster-redis-data/Images/requests_3_field_comp"}
-	\caption[Requests processed comparison - 3 game state fields - cluster]{Requests processed comparison - 3 game state fields - cluster}
+	\caption[Requests processed comparison - 3 game state fields - cluster]{Requests processed comparison - 3 game state fields - cluster.}
 	\label{fig:requests-3-field-comparison-cluster}
 \end{figure}
-\\ Considering these results, we can assert that, in the context of this specific approach, Redis performs better than ETCD in their respective 3-members cluster versions. Redis provides generally better performance than ETCD in situations with no latency introduced, whereas, when network latency is present, Redis still performs on par with ETCD, despite its HTTP pipelining implementation. In the cluster configuration this difference is even more evident than in the stand-alone version, considering the benefits provided by Redis Eventual Consistency mechanism.
+\\ Considering these results, we can assert that, in the context of this specific approach, Redis performs better than ETCD in their respective 3-members cluster versions. Redis provides generally better performance than ETCD in situations with no latency introduced, whereas, when network latency is present, Redis still performs on par with ETCD, despite its HTTP$_G$ pipelining implementation. In the cluster configuration this difference is even more evident than in the stand-alone version, considering the benefits provided by Redis Eventual Consistency mechanism.
 
 \subsection{Distribution of static game state data}
 In this experiment we began by introducing the storage of the \texttt{totLaps} game state field into the distributed database, in a configuration with only write requests.
@@ -1041,7 +1041,7 @@ In this experiment we began by introducing the storage of the \texttt{totLaps} g
 		>{\centering}p{0.16\textwidth}}
 		
 	
-	\caption{\textit{totLaps} field storage write performance} \label{tab:totlaps-fps-write} \\
+	\caption{\textit{totLaps} field storage write performance.} \label{tab:totlaps-fps-write} \\
 	\coloredTableHead
 	\textbf{\color{white}Field} & 
 	\centering\textbf{\color{white}Write request rate} &
@@ -1075,7 +1075,7 @@ If we then introduce the read requests, without changing the write request rate,
 		>{\centering}p{0.16\textwidth}}
 	
 	
-	\caption{\textit{totLaps} field storage read performance} \label{tab:totlaps-fps-read} \\
+	\caption{\textit{totLaps} field storage read performance.} \label{tab:totlaps-fps-read} \\
 	\coloredTableHead
 	\textbf{\color{white}Field} & 
 	\centering\textbf{\color{white}Read request rate} &
@@ -1109,7 +1109,7 @@ Considering the lack of significant impact on performance, we proceed by replaci
 		>{\centering}p{0.16\textwidth}}
 	
 	
-	\caption{\textit{maxDamage} field storage write performance} \label{tab:maxDamage-fps-write} \\
+	\caption{\textit{maxDamage} field storage write performance.} \label{tab:maxDamage-fps-write} \\
 	\coloredTableHead
 	\textbf{\color{white}Field} & 
 	\centering\textbf{\color{white}Write request rate} &
@@ -1143,7 +1143,7 @@ If we then introduce the read requests, without changing the write request rate,
 		>{\centering}p{0.16\textwidth}}
 	
 	
-	\caption{\textit{maxDamage} field storage read performance} \label{tab:maxDamage-fps-read} \\
+	\caption{\textit{maxDamage} field storage read performance.} \label{tab:maxDamage-fps-read} \\
 	\coloredTableHead
 	\textbf{\color{white}Field} & 
 	\centering\textbf{\color{white}Read request rate} &
@@ -1177,7 +1177,7 @@ Still, there is no significant impact on performance, as such we proceed by repl
 		>{\centering}p{0.16\textwidth}}
 	
 	
-	\caption{\textit{raceType} field storage write performance} \label{tab:raceType-fps-write} \\
+	\caption{\textit{raceType} field storage write performance.} \label{tab:raceType-fps-write} \\
 	\coloredTableHead
 	\textbf{\color{white}Field} & 
 	\centering\textbf{\color{white}Write request rate} &
@@ -1212,7 +1212,7 @@ If we then introduce the read requests, without changing the write request rate,
 		>{\centering}p{0.16\textwidth}}
 	
 	
-	\caption{\textit{raceType} field storage read performance} \label{tab:raceType-fps-read} \\
+	\caption{\textit{raceType} field storage read performance.} \label{tab:raceType-fps-read} \\
 	\coloredTableHead
 	\textbf{\color{white}Field} & 
 	\centering\textbf{\color{white}Read request rate} &
@@ -1246,7 +1246,7 @@ Considering the lack of significant impact on performance, we proceed by replaci
 		>{\centering}p{0.16\textwidth}}
 	
 	
-	\caption{\textit{ncars} field storage write performance} \label{tab:ncars-fps-write} \\
+	\caption{\textit{ncars} field storage write performance.} \label{tab:ncars-fps-write} \\
 	\coloredTableHead
 	\textbf{\color{white}Field} & 
 	\centering\textbf{\color{white}Write request rate} &
@@ -1280,7 +1280,7 @@ If we then introduce the read requests, without changing the write request rate,
 		>{\centering}p{0.16\textwidth}}
 	
 	
-	\caption{\textit{ncars} field storage read performance} \label{tab:ncars-fps-read} \\
+	\caption{\textit{ncars} field storage read performance.} \label{tab:ncars-fps-read} \\
 	\coloredTableHead
 	\textbf{\color{white}Field} & 
 	\centering\textbf{\color{white}Read request rate} &
@@ -1317,7 +1317,7 @@ As such, we proceed with measuring the system performance without any simulation
 		>{\centering}p{0.16\textwidth}}
 	
 	
-	\caption{\textit{ncars} field storage read performance - no simulation} \label{tab:ncars-fps-read-sim} \\
+	\caption{\textit{ncars} field storage read performance - no simulation.} \label{tab:ncars-fps-read-sim} \\
 	\coloredTableHead
 	\textbf{\color{white}Field} & 
 	\centering\textbf{\color{white}Read request rate} &
@@ -1345,14 +1345,14 @@ We now present the results obtained by graphics framerate measurements conducted
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.80\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-Experiments-data-next/Images/TORCS_sim_delay"}
-	\caption[TORCS graphics framerate on increasing simulation delay]{TORCS gprahics framerate on increasing simulation delay}
+	\caption[TORCS graphics framerate on increasing simulation delay]{TORCS gprahics framerate on increasing simulation delay.}
 	\label{fig:torcs-sim-delay}
 \end{figure}
 \\ As we can see from figure \ref{fig:torcs-sim-delay}, even low amounts of delay introduced into the simulation module greatly impact the performance of the TORCS graphics module, by reducing the framerate by more than one half with even just 2 ms of delay introduced. After the initial sharp drop, the framerate decreases more gradually as the delay increases, still verifying our assumption of a direct correlation between the graphics and physics module in the TORCS architecture.
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.8\linewidth]{"../../TORCS_multi_docker/Experiments Data/GameState-FPS-Experiments-data-next/Images/TORCS_sim_delay_bound"}
-	\caption[TORCS graphics framerate on increasing simulation delay w/ bounds]{TORCS graphics framerate on increasing simulation delay w/ bounds}
+	\caption[TORCS graphics framerate on increasing simulation delay w/ bounds]{TORCS graphics framerate on increasing simulation delay w/ bounds.}
 	\label{fig:torcs-sim-delay-bound}
 \end{figure}
 \\ Then, after computing the theoretical upper bounds for the framerate at each step of the increasing delay, we proceed with comparing them with the actual measured framerate. Our expectation is that the actual framerate never exceeds the bounds we computed. Considering that at the 0 ms mark there is effectively no upper bound to be computed, we fix it at 125 fps in our representation, since this value is never reached by the measured framerate. \\
@@ -1364,14 +1364,14 @@ Using the same configuration as in the previous experiment, we now measure the g
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.9\linewidth]{"../../TORCS_multi_docker/Experiments Data/Latency-TORCS-GE-FPS/Images/FPS_merged"}
-	\caption[Graphics and GE framerate comparison]{Graphics and GE framerate comparison}
+	\caption[Graphics and GE$_G$ framerate comparison]{Graphics and GE$_G$ framerate comparison.}
 	\label{fig:graphics-GE-fps}
 \end{figure}
 \\ As we can see from figure \ref{fig:graphics-GE-fps}, both framerates values gradually decrease, as the delay value increases. This is expected behaviour, considering the effects on the graphics framerate we verified in the previous experiment, but also indicates a direct correlation between the graphics framerate and the Game Engine framerate. \\
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.8\linewidth]{"../../TORCS_multi_docker/Experiments Data/Latency-TORCS-GE-FPS/Images/op_time"}
-	\caption[Net operational time w/ delays]{Net operational time w/ delays}
+	\caption[Net operational time w/ delays]{Net operational time w/ delays.}
 	\label{fig:op-time}
 \end{figure}
 \\ At the same time, in figure \ref{fig:op-time}, we can see how the net operational time becomes increasingly lower with the increasing delay, up to little more than 3000 ms over 90000 total ms of execution. This means that the actual amount of time available to compute the frames is very limited, in a situation with moderate delay in the simulation module. \\ \\
@@ -1392,7 +1392,7 @@ In order to quantify the inconsistency between the local instance state and the 
 		>{\centering}p{0.16\textwidth}}
 	
 	
-	\caption{Temporal inconsistency in the State Manager} \label{tab:temporal-inconsistency} \\
+	\caption{Temporal inconsistency in the State Manager.} \label{tab:temporal-inconsistency} \\
 	\coloredTableHead
 	\textbf{\color{white}System} & 
 	\centering\textbf{\color{white}Average time inconsistency} &
@@ -1429,7 +1429,7 @@ During this experiment we measured the positional state inconsistency between re
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.78\linewidth]{"../../TORCS_multi_docker/Experiments Data/Inconsistency-state-test/Images/Redis_inc"}
-	\caption[Redis positional state inconsistency]{Redis positional state inconsistency}
+	\caption[Redis positional state inconsistency]{Redis positional state inconsistency.}
 	\label{fig:redis-inconsistency}
 \end{figure}
 As we can see in figure \ref{fig:redis-inconsistency}, the impact on the positional state inconsistency caused by the introduction of even low (<5 ms) amounts of latency is very significant. The increase in inconsistency is mostly regular, with a much heavier impact on the position of the car, rather than speed or acceleration.
@@ -1439,7 +1439,7 @@ In the ETCD stand-alone configuration, the behaviour is essentially similar to t
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.78\linewidth]{"../../TORCS_multi_docker/Experiments Data/Inconsistency-state-test/Images/ETCD_inc"}
-	\caption[ETCD positional state inconsistency]{ETCD positional state inconsistency}
+	\caption[ETCD positional state inconsistency]{ETCD positional state inconsistency.}
 	\label{fig:etcd-inconsistency}
 \end{figure}
 
@@ -1447,7 +1447,7 @@ In the ETCD stand-alone configuration, the behaviour is essentially similar to t
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.78\linewidth]{"../../TORCS_multi_docker/Experiments Data/Inconsistency-state-test/Images/Redis_cluster_inc"}
-	\caption[Redis cluster positional state inconsistency]{Redis cluster positional state inconsistency}
+	\caption[Redis cluster positional state inconsistency]{Redis cluster positional state inconsistency.}
 	\label{fig:redis-cluster-inconsistency}
 \end{figure}
 In the Redis 3-members cluster configuration, we experience a similar situation as in the stand-alone version, with a mostly regular increase of the inconsistency value as the amount of delay introduced increases.
@@ -1456,7 +1456,7 @@ In the Redis 3-members cluster configuration, we experience a similar situation 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.78\linewidth]{"../../TORCS_multi_docker/Experiments Data/Inconsistency-state-test/Images/ETCD_cluster_inc"}
-	\caption[ETCD cluster positional state inconsistency]{ETCD cluster positional state inconsistency}
+	\caption[ETCD cluster positional state inconsistency]{ETCD cluster positional state inconsistency.}
 	\label{fig:etcd-cluster-inconsistency}
 \end{figure}
 In the ETCD 3-members cluster configuration, we experience a similar situation as in the stand-alone version, with a mostly regular increase of the inconsistency value as the amount of delay introduced increases.
@@ -1466,20 +1466,20 @@ After experiencing a mostly similar behaviour in term of inconsistency increase 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.80\linewidth]{"../../TORCS_multi_docker/Experiments Data/Inconsistency-state-test/Images/Position_inc_comparison"}
-	\caption[Position state inconsistency comparison]{Position state inconsistency comparison}
+	\caption[Position state inconsistency comparison]{Position state inconsistency comparison.}
 	\label{fig:position-inconsistency-comparison}
 \end{figure}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.80\linewidth]{"../../TORCS_multi_docker/Experiments Data/Inconsistency-state-test/Images/Speed_inc_comparison"}
-	\caption[Speed state inconsistency comparison]{Speed state inconsistency comparison}
+	\caption[Speed state inconsistency comparison]{Speed state inconsistency comparison.}
 	\label{fig:speed-inconsistency-comparison}
 \end{figure}
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.80\linewidth]{"../../TORCS_multi_docker/Experiments Data/Inconsistency-state-test/Images/Acc_inc_comparison"}
-	\caption[Acceleration state inconsistency comparison]{Acceleration state inconsistency comparison}
+	\caption[Acceleration state inconsistency comparison]{Acceleration state inconsistency comparison.}
 	\label{fig:acceleration-inconsistency-comparison}
 \end{figure}
-\\ From the graphs (figures \ref{fig:position-inconsistency-comparison}, \ref{fig:speed-inconsistency-comparison}, \ref{fig:acceleration-inconsistency-comparison}) we can see that the ETCD cluster version is presenting a higher degree of inconsistency, in terms of car position, speed and acceleration. The other three system configurations, on the other hand, perform better, with Redis generally providing slightly lower inconsistency with when no latency is present. However, leveraging the benefits provided by HTTP pipelining, ETCD provides performance similar to Redis, when latency is introduced. \\ \\
+\\ From the graphs (figures \ref{fig:position-inconsistency-comparison}, \ref{fig:speed-inconsistency-comparison}, \ref{fig:acceleration-inconsistency-comparison}) we can see that the ETCD cluster version is presenting a higher degree of inconsistency, in terms of car position, speed and acceleration. The other three system configurations, on the other hand, perform better, with Redis generally providing slightly lower inconsistency with when no latency is present. However, leveraging the benefits provided by HTTP$_G$ pipelining, ETCD provides performance similar to Redis, when latency is introduced. \\ \\
 Still, comparing the two cluster versions, Redis present better scalability in the number of nodes, with respect to ETCD, and thus better performance.

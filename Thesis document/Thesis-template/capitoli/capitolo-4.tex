@@ -67,7 +67,7 @@ Moreover, the software is extensively documented, with a rich and well maintaine
 Being a "free-exploration" game, there are tasks that are computationally hard to manage and which could benefit from modularization. However, the software itself is quite demanding in terms of computational resources \cite{site:flightgear-performance}. This may cause performance issues that can introduce noise into measurements and evaluations, if the local hardware is not able to satisfy the software requirements.
 
 \subsection{TORCS - The Open Racing Car Simulator}
-TORCS is a 3D racing simulator designed to allow AI drivers and humans to compete with each other, with the aim of studying autonomous driving \cite{site:torcs-website}. \\ \\
+TORCS is a 3D racing simulator designed to allow AI$_G$ drivers and humans to compete with each other, with the aim of studying autonomous driving \cite{site:torcs-website}. \\ \\
 This software includes both a video game and a Game Engine, with functionalities which are clearly separated inside the codebase \cite{site:torcs-source}. This separation is helpful for a possible modularization of the system, more so if we consider that some of its components are explicitly loaded during execution (plugin), essentially defining the runtime component of the Game Engine (e.g. Rendering, Simulation, Track, Robot). \\ \\
 The codebase of this software is medium-sized, with enough functionalities to modularize, but also not excessively complex if the intention is to act on all of its components. Additionally, the system requirements for running simulated races are not high, which prevents performance problems related to insufficient resources and the negative effects that would ensue. \\ \\
 The main problem of this software is the lack of maintained documentation, as the provided one is quite outdated and sparse between multiple sources.
@@ -85,7 +85,7 @@ FoFiX is a highly customizable rhythm game supporting many modes of guitar, bass
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.75\linewidth]{"immagini/Feasibility study/Fofix"}
-	\caption[In-game screenshot of FoFiX]{In-game screenshot of FoFiX}
+	\caption[In-game screenshot of FoFiX]{In-game screenshot of FoFiX.}
 	\label{fig:fofix}
 \end{figure}
 \\ The codebase itself of this game is medium-sized and written exclusively in the Python programming language. The code contains multiple small tasks, related to specific functionalities that could be benefit from modularization. However, the software was not developed with clear separation between the various functionalities, which are instead quite sparse and disorganized, thus hindering possible modularization operations. \\ \\
@@ -108,7 +108,7 @@ We now provide a summarization of each software evaluation, in the following tab
 		>{\centering}p{0.20\textwidth} 
 		>{}p{0.80\textwidth}}
 	
-	\caption{Summary of the analysis} \\
+	\caption{Summary of the analysis.} \\
 	\coloredTableHead
 	\textbf{\color{white}Proposal} & 
 	\centering\textbf{\color{white}Evaluation}
@@ -134,8 +134,8 @@ After TORCS was chosen, as output of the Preliminary analysis, a more in-depth a
 \subsection{Architecture}
 The TORCS architecture is composed of three main layers:
 \begin{itemize}
-	\item \textit{orchestration layer}: which contains the logic used to call the methods defined in the TORCS API and libraries, for general functionalities such as main menu management or game engine initialization;
-	\item \textit{API layer}: which contains the actual implementation of the TORCS functionalities, separated in different libraries with specific purposes;
+	\item \textit{orchestration layer}: which contains the logic used to call the methods defined in the TORCS API$_G$ and libraries, for general functionalities such as main menu management or game engine initialization;
+	\item \textit{API$_G$ layer}: which contains the actual implementation of the TORCS functionalities, separated in different libraries with specific purposes;
 	\item \textit{plugin layer}: which contains the Game Engine modules, related to general functionalities that are loaded and used at runtime (e.g. Rendering, Simulation, Track, Robot).
 \end{itemize}
 \begin{figure}[h!]
@@ -150,25 +150,25 @@ As we can see in the simplified representation of the architecture, on figure \r
 As previously mentioned, this layer provides the programming logic for controlling the major program flow using different components, including:
 \begin{itemize}
 	\item a \textit{Entry Stage}, which is the first phase of TORCS start-up operations. In this process, the command line is analysed and, depending on the desired operation mode, TORCS is run either: in command-line mode, with no graphic and real time, or with the graphical menu;
-	\item a \textit{Menu} and its components, which are responsible for offering a visual user interface to ease the setup of TORCS. All the settings selected during its usage are persisted in XML files and are read later by the respective components. The components also include a \textit{Race Menu}, which is a special menu that allows the creation of custom racing sessions;
+	\item a \textit{Menu} and its components, which are responsible for offering a visual user interface to ease the setup of TORCS. All the settings selected during its usage are persisted in XML$_G$ files and are read later by the respective components. The components also include a \textit{Race Menu}, which is a special menu that allows the creation of custom racing sessions;
 	\item a \textit{State Engine}, which controls the execution of the race specific configurations, including setup, run and shutdown of the simulation. Changes in the TORCS game state can be triggered by data inspection or function calls returned values, allowing the implementation of functionalities which interact with the simulation itself.
 \end{itemize}
 
-\subsubsection{API layer}
+\subsubsection{API$_G$ layer}
 This layer defines some interfaces and libraries which are used in multiple parts of the project, such as:
 \begin{itemize}
-	\item XML parameter file handling;
+	\item XML$_G$ parameter file handling;
 	\item common functions for robots;
 	\item features related to portability;
 	\item configurations for game screens;
 	\item music player functionalities.
 \end{itemize}
-These include also tools for AI development and creation of \textit{adaptive agents}.
+These include also tools for AI$_G$ development and creation of \textit{adaptive agents}.
 
 \subsubsection{Plugin layer}
 This layer provides multiple plugins which all have specified interfaces and are loaded based on the configurations during runtime. These include Game Engine core functionalities and modules, such as:
 \begin{itemize}
-	\item \textit{Rendering}: responsible for rendering the current game situation. The default implementation performs visual and audio 3D rendering, based on OpenGL 1.3 and OpenAL APIs;
+	\item \textit{Rendering}: responsible for rendering the current game situation. The default implementation performs visual and audio 3D rendering, based on OpenGL 1.3 and OpenAL APIs$_G$;
 	\item \textit{Simulation}: responsible for progressing the situation by a given time step;
 	\item \textit{Track}: responsible for loading tracks into the TORCS circuit management structure;
 	\item \textit{Robot}: responsible for driving cars in the simulation. TORCS can load multiple robots at the same time to drive multiple cars, with one robot supporting up to 10 cars at once. This module can also provide a "Human Driver" (human), which takes input from the user to control the car.
@@ -181,14 +181,14 @@ The TORCS simulation loop starts in the State Engine with an initial update and,
 The simulation updates can be configured with four different operating modes:
 \begin{itemize}
 	\item \textit{Interactive Mode}: mostly suitable for interactive simulations, taking into account simulation time and real time. In this context, the simulation time is progressed until it has caught up to the real time and then proceeds with rendering one frame;
-	\item \textit{Blind Mode}: used for practice sessions, this mode considers only simulation time and no 3D scenery is rendered. The list in the GUI related the current progress is always updated every 2 seconds of simulation time;
+	\item \textit{Blind Mode}: used for practice sessions, this mode considers only simulation time and no 3D scenery is rendered. The list in the GUI$_G$ related the current progress is always updated every 2 seconds of simulation time;
 	\item \textit{Frame Capturing Mode}: this mode is used to capture frames at exact points in simulation time (e.g. every 0.03s). The time is not synchronized with real time, so the simulation might be faster or slower than real time, depending on the generated load;
-	\item \textit{Console Mode}: this mode has no GUI, it only prints on a terminal some progress information.
+	\item \textit{Console Mode}: this mode has no GUI$_G$, it only prints on a terminal some progress information.
 \end{itemize}
 Regardless of the chosen mode, the simulation time step is executed by a Race Engine component during the game main loop. \\ \\
 Like most other Game Engines, TORCS manages the information about the current state of the engine with dedicated data structures. More specifically, TORCS game state is divided in three main components:
 \begin{itemize}
-	\item \textit{Race state}: which is the state related to the current race that is taking place, whether it is started, running, paused or stopped. This state is managed mainly through user GUI or functionalities (e.g. pause game), which are enabled by the core elements of the \texttt{raceengineclient} TORCS library;
+	\item \textit{Race state}: which is the state related to the current race that is taking place, whether it is started, running, paused or stopped. This state is managed mainly through user GUI$_G$ or functionalities (e.g. pause game), which are enabled by the core elements of the \texttt{raceengineclient} TORCS library;
 	\item \textit{Car state}: different for each car present in a specific race that is taking place, this state contains the information about the current state of the car (e.g. position, damage, speed). This state is updated during each step in the loop of the \texttt{simulation} module;
 	\item \textit{Space state}: this component contains the most relevant information about the general game state (e.g. current race time, number of players), even including a reference to the Car state itself. Like the Car state, it is updated during each step in the loop of the \texttt{simulation} module. 
 \end{itemize}
@@ -211,13 +211,13 @@ The basic TORCS architecture comes as a stand-alone application, where the robot
 \end{figure}
 This proposal involves an evolution of the original TORCS architecture, with three important extensions:
 \begin{itemize}
-	\item it structures TORCS as a client-server application, where the robots are run as external processes and connected to the race server using UDP;
+	\item it structures TORCS as a client-server application, where the robots are run as external processes and connected to the race server using UDP$_G$;
 	\item it introduces real-time races, with each game tick corresponding to about 20 ms of simulated time. In this context, the server sends the current sensory input to each bot and waits for 10 ms (real-time) to receive an action from the robot. Then, if no action arrives, the simulation continues with the last performed action, otherwise a new game state is computed with the new action provided;
 	\item the competition software creates a physical separation between the driver code and the race server, with an abstraction layer, thus improving its resilience to cheating.
 \end{itemize}
-It also adds \textit{scr-server} to the original architecture, which is a component dedicated to managing the connection between the game and a client robot using UDP.
+It also adds \textit{scr-server} to the original architecture, which is a component dedicated to managing the connection between the game and a client robot using UDP$_G$.
 \subsubsection{Sensors and actuators}\label{sensors-actuators}
-The input provided by the server to the driver robots consist of data about the current Car state, Race state and Space state. This information can be used by the drivers to compute the next action to send to the server, following the logic of its Artificial Intelligence (AI). \\
+The input provided by the server to the driver robots consist of data about the current Car state, Race state and Space state. This information can be used by the drivers to compute the next action to send to the server, following the logic of its Artificial Intelligence (AI$_G$). \\
 In order to obtain such data, the robots use a number of sensors, which come as part of the client structure and are able to read information from the environment surrounding the robot during the races (this includes the presence of opponent cars). \\ \\
 Moreover, the robots are able to control the car in the game through a rather typical set of actuators, which includes:
 \begin{itemize}

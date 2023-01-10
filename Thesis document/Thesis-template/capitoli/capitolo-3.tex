@@ -8,7 +8,7 @@
 \intro{This chapter discusses the technologies \textbf{used} or \textbf{considered} during the project, providing an in-depth description and motivating their choice.}
 
 \section{Docker}
-Docker is defined as a set of platform as a service (PaaS) products that use OS-level virtualization to package and run applications in loosely isolated environments called \textit{containers} \cite{site:docker-wiki}. \\
+Docker is defined as a set of platform as a service (PaaS$_G$) products that use OS$_G$-level virtualization to package and run applications in loosely isolated environments called \textit{containers} \cite{site:docker-wiki}. \\
 These containers can be seen as lightweight virtual machines, containing all the software needed to run applications. The flexibility of such environments makes it easy to run multiple simultaneous instances of them on the same host, allocating them a defined quantity of resources. \\ \\
 In general, the main features of Docker are \cite{site:docker-website}:
 \begin{itemize}
@@ -25,7 +25,7 @@ Docker is designed with a client-server architecture \cite{site:docker-overview}
 	\item \textit{Docker client}: which talks to a daemon and it's one of the primary ways to interact with Docker;
 	\item \textit{Docker daemon}: which performs the operations related to building, running and distributing Docker containers.
 \end{itemize}
-Both these components can be run on the same system or remotely, communicating using REST API and using UNIX sockets or a dedicated network interface.
+Both these components can be run on the same system or remotely, communicating using REST API$_G$ and using UNIX sockets or a dedicated network interface.
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=1\linewidth]{"immagini/Technologies/Docker architecture"}
@@ -35,7 +35,7 @@ Both these components can be run on the same system or remotely, communicating u
 
 
 \subsection{Docker-compose}\label{docker-compose}
-Compose is a tool used for defining and running applications which require multiple Docker containers, in a simplified manner \cite{site:docker-compose-doc}. Using Compose, it's possible to provide a single YAML file to configure the services needed by the application and then, with a single command, create and start all these containerized services. \\
+Compose is a tool used for defining and running applications which require multiple Docker containers, in a simplified manner \cite{site:docker-compose-doc}. Using Compose, it's possible to provide a single YAML$_G$ file to configure the services needed by the application and then, with a single command, create and start all these containerized services. \\
 Some of the main features provided by this tool are:
 \begin{itemize}
 	\item \textit{multiple isolated environments on a single host}, which, even if possible without this tool, is made much easier and configurable;
@@ -52,7 +52,7 @@ The main components \cite{site:nvidia-docker-repo} include:
 	\item the \texttt{nvidia-docker} wrapper;
 	\item the \textit{NVIDIA Container Runtime}, which mostly includes NVIDIA specific code and additional hooks;
 	\item the\textit{ NVIDIA Container Runtime Hook}, which includes a script that implements the interface required for the start-up of the container and settings of configurations;
-	\item the \textit{NVIDIA Container Library and CLI}, providing a library and a simple CLI utility to configure GNU/Linux containers leveraging NVIDIA GPUS.
+	\item the \textit{NVIDIA Container Library and CLI$_G$}, providing a library and a simple CLI$_G$ utility to configure GNU/Linux containers leveraging NVIDIA GPUS.
 \end{itemize}
 \begin{figure}[h!]
 	\centering
@@ -63,7 +63,7 @@ The main components \cite{site:nvidia-docker-repo} include:
 This toolkit can be an interesting addition for implementing Game Engine graphics modules. However, it is currently not compatible with Docker-compose, which is also an important tool for building distributed system applications.
 
 \section{ETCD}
-ETCD is described as a disk-based, distributed and reliable Key-Value Store, which allows the storage of data that can be accessed by a distributed system \cite{site:etcd-desc}. More specifically, ETCD is designed to reliably store infrequently updated data, exposing previous versions of key-value pairs to support inexpensive snapshots of the DB and watch history events \cite{site:etcd-data-model}. \\ \\
+ETCD is described as a disk-based, distributed and reliable Key-Value Store, which allows the storage of data that can be accessed by a distributed system \cite{site:etcd-desc}. More specifically, ETCD is designed to reliably store infrequently updated data, exposing previous versions of key-value pairs to support inexpensive snapshots of the DB$_G$ and watch history events \cite{site:etcd-data-model}. \\ \\
 In order to provide these features, ETCD presents a persistent, multi-version, concurrency-control data model for its key-value storage. This component preserves the previous version of any key-value pair when its value is overwritten with new data. As such, this storage system is described as immutable, since its operations do ot update the structure in-place, but instead generate a new updated structure, where all past versions of the keys are accessible and watchable after modification. \\ \\
 In order to guarantee the storage of strongly consistent data, ETCD uses a leader-based consensus protocol called \textit{Raft} for data replication and log execution. The implementation of such algorithm, as well as the rest of ETCD architecture, is developed in the Go programming language, which is particularly fitting for distributed system environments.
 
@@ -167,8 +167,8 @@ ETCD allows direct interactions from the client through specific requests, which
 	\item \textit{write key}: where the client, communicating with any node of the ETCD cluster, instruct the distributed system to write a new key-value or modify an existing key-value. Following the Raft algorithm, if this type of request is sent to a Follower node, it is redirected to the Leader for the actual processing;
 	\item \textit{read key}: where the client, communicating with any node of the ETCD cluster, asks for the value of a specific key. According to ETCD configurations, this type of request can be carried out by any ETCD cluster member, since they are constantly updated on the current state of the stored data \cite{site:etcd-faq}.
 \end{itemize}
-On a more practical level, these requests can be sent either using a dedicated ETCD CLI or through ETCD libraries/APIs developed in order to allow for interaction also within applications written in different programming languages. In our work, which focuses on code written in C++, the library of choice was \texttt{etcd-cpp-apiv3} \cite{site:etcd-cpp-apiv3}, which is considered to be one of the most updated and reliable ones. \\ \\
-Other functionalities \cite{site:etcd-doc} provided by ETCD CLI and APIs are:
+On a more practical level, these requests can be sent either using a dedicated ETCD CLI$_G$ or through ETCD libraries/APIs$_G$ developed in order to allow for interaction also within applications written in different programming languages. In our work, which focuses on code written in C++, the library of choice was \texttt{etcd-cpp-apiv3} \cite{site:etcd-cpp-apiv3}, which is considered to be one of the most updated and reliable ones. \\ \\
+Other functionalities \cite{site:etcd-doc} provided by ETCD CLI$_G$ and APIs$_G$ are:
 \begin{itemize}
 	\item \textit{delete key}: which requests the delete of a specific key-value from the ETCD database;
 	\item \textit{watch key}: which is an interesting functionality, that allows clients to subscribe to value updates of specific keys, in order to be notified in real time. This feature is can be particularly helpful when implementing communication through shared memory, since it removes the need for clients to continuously poll the data, in order to verify the presence of changes;
@@ -185,7 +185,7 @@ All these remote requests and functionalities, which allow the client to communi
 
 \subsection{Docker compatibility}
 Considering the distributed nature of the ETCD system, it is possible to actually implement ETCD nodes as Docker containers. They can be run both in standalone mode and in cluster mode \cite{site:etcd-docker} with other ETCD containers, communicating using the Docker networking features. \\
-Moreover, as shown in figure \ref{fig:etcd-cluster}, different applications running on other Docker containers can connect and interact with the containerized ETCD system, using language-specific APIs or, if installed on the app container, directly the ETCD CLI.
+Moreover, as shown in figure \ref{fig:etcd-cluster}, different applications running on other Docker containers can connect and interact with the containerized ETCD system, using language-specific APIs$_G$ or, if installed on the app container, directly the ETCD CLI$_G$.
 
 \subsection{System maintenance}
 ETCD clusters and nodes require periodic maintenance to remain reliable. Depending on the needs of the ETCD application, the maintenance can be automated and performed without downtime or significantly degraded performance \cite{site:etcd-maintenance}. \\ \\
@@ -230,8 +230,8 @@ Additionally, if required by the context of application, it is also possible to 
 At the base of Redis replication there is a Leader-Follower (Master-Follower) consensus mechanism \cite{site:redis-replication}. Similarly to the Raft algorithm, it allows replica Redis instances to be exact copies of Master instances. \\
 Moreover, the replica automatically reconnect to the Master every time the link breaks, and attempt to be an exact copy of it regardless of what happens to the master. On a general level, the Redis mechanism works very similarly to the Raft algorithm implemented in ETCD, with the same roles and principles at its basis (e.g. Leader election, log replication). \\ \\
 There are, however, very important differences to consider, which highlight the different approaches of the two systems to data consistency. \\
-First of all, Redis replicas (Followers) do not accept write requests in their default configuration, differently from ETCD where these requests are redirected by the Followers to the Leader. This is done in order to prevent multiple members to expose view of the distributed DB which is different from the one of the Leader. \\ \\
-The second difference is related to the management of members disconnections. In ETCD full snapshots of the database are periodically stored on the disk by the single members, and in case of disconnection they always request full synchronization of the last snapshot to the Leader. In Redis, on the other hand, snapshots of the DB are not stored on the disk, in the default non-persistence configuration. As such, when disconnections happen the member request just partial synchronization with the current log of the Master, only for the commands lost during the downtime. Full synchronization requires, in fact, the creation of a new complete snapshot of the Master's DB, which is a computationally expensive operation. As such, this process is performed only in cases when partial synchronization is not possible. \\ \\
+First of all, Redis replicas (Followers) do not accept write requests in their default configuration, differently from ETCD where these requests are redirected by the Followers to the Leader. This is done in order to prevent multiple members to expose view of the distributed DB$_G$ which is different from the one of the Leader. \\ \\
+The second difference is related to the management of members disconnections. In ETCD full snapshots of the database are periodically stored on the disk by the single members, and in case of disconnection they always request full synchronization of the last snapshot to the Leader. In Redis, on the other hand, snapshots of the DB$_G$ are not stored on the disk, in the default non-persistence configuration. As such, when disconnections happen the member request just partial synchronization with the current log of the Master, only for the commands lost during the downtime. Full synchronization requires, in fact, the creation of a new complete snapshot of the Master's DB, which is a computationally expensive operation. As such, this process is performed only in cases when partial synchronization is not possible. \\ \\
 The third, and most important, difference is related to the management of write requests. In ETCD, as mentioned in section \ref{etcd-replication}, the Leader waits for the write operation to be \textit{commited}, before sending the positive result to the client which requested it. This is an important aspect, which characterizes a system with Strong Consistency of data as a priority. \\
 However, in Redis, this is considered to be time-inefficient. As such, when managing write requests, Redis immediately sends a positive result to the Client, as soon as the writing has been completed on the Master's log, without waiting for the replicas synchronization. \\
 This might become problematic in situations where the Master node crashes before the synchronization with the replicas is complete, since the Followers will not have inside their logs the write requests that has been declared completed to the Client. As such, this system cannot be defined as Strongly Consistent. However, considering that the replicas will still, in the end, contain the same data inside their databases, this system provides Eventual Consistency of the stored data. \\ \\
@@ -245,9 +245,9 @@ In general, we can assert that the main difference between the ETCD and Redis sy
 \end{figure}
 
 \subsection{Interaction with Redis}
-Similarly to ETCD, Redis also provides CLI commands (\texttt{redis-cli}) that can be used to interact with the Redis instance from command line. \\
-Moreover, regarding the possibility to interact with the Redis instance from applications written in specific programming languages (e.g. C++), Redis provides a list of APIs that can be used for this purpose \cite{site:redis-clients}. \\
-In particular, for our project, the most fitting option is the \texttt{redis-plus-plus} C++ API \cite{site:redis-plus-plus}, which is fairly more complex than the previously mentioned ETCD alternative, but provides a large amount of interesting functionalities. \\ \\
+Similarly to ETCD, Redis also provides CLI$_G$ commands (\texttt{redis-cli}) that can be used to interact with the Redis instance from command line. \\
+Moreover, regarding the possibility to interact with the Redis instance from applications written in specific programming languages (e.g. C++), Redis provides a list of APIs$_G$ that can be used for this purpose \cite{site:redis-clients}. \\
+In particular, for our project, the most fitting option is the \texttt{redis-plus-plus} C++ API$_G$ \cite{site:redis-plus-plus}, which is fairly more complex than the previously mentioned ETCD alternative, but provides a large amount of interesting functionalities. \\ \\
 In term of key-value interactions, the features provided include all the ones mentioned in section \ref{ETCD-interaction} for ETCD, with the addition of:
 \begin{itemize}
 	\item \textit{pipelined requests}: to be configured directly in-code, by inserting requests into the pipeline structure and then call a dedicated method for their execution;
@@ -256,7 +256,7 @@ In term of key-value interactions, the features provided include all the ones me
 
 \subsection{Docker compatibility}
 Considering the distributed nature of the Redis system, it is possible to actually implement Redis nodes as Docker containers. They can be run both in standalone mode and in cluster mode \cite{site:redis-docker-guide} with other Redis containers, communicating using the Docker networking features. \\
-Moreover, as we can see in figure \ref{fig:redis-cluster}, different applications running on other Docker containers can connect and interact with the containerized Redis system, using language-specific APIs or, if installed on the app container, directly the Redis CLI.
+Moreover, as we can see in figure \ref{fig:redis-cluster}, different applications running on other Docker containers can connect and interact with the containerized Redis system, using language-specific APIs$_G$ or, if installed on the app container, directly the Redis CLI$_G$.
 
 %\section{System V IPC}
 %\intro{General description of System V IPC, its features and aspects considered during our work.}
