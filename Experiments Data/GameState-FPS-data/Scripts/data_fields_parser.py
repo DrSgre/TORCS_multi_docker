@@ -40,7 +40,7 @@ def plot_data_FPS():
     ax = fig.add_axes([0.1, 0.1, 0.6, 0.75])
     ax.plot(x, y, 'o-', label='Average FPS')
     ax.set_xlabel('latency (ms)', size=12)
-    ax.set_ylabel('average requests (req/s)', size=12)
+    ax.set_ylabel('framerate (fps)', size=12)
     ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0)
     plt.fill_between(x, ci_l, ci_u, color='blue', alpha=0.1)
     plt.ylim([-1, 80])
