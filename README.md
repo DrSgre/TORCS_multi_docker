@@ -16,7 +16,7 @@ This repository contains the source code of a project aimed toward the modulariz
 Representation of the current state of the modularization:
 <br />
 
-https://user-images.githubusercontent.com/16836365/201628770-1248d952-d13a-4686-a9fb-fabdf58155d8.mp4
+https://user-images.githubusercontent.com/16836365/211305251-1e758868-4d72-4e15-920b-8ba14377825e.mp4
 
 <br />
 The Redis version presents the same architecture, with Redis in place of ETCD.
